@@ -32,8 +32,7 @@ services:
     image: docker-vlo-beta:1.2.2-3-g14fefe4
     environment:
       - VLO_DOCKER_SOLR_URL=http://vlo_solr:8983/solr/vlo-index
-      #TODO: configurable public URL
-      - VLO_DOCKER_PUBLIC_HOME_URL=http://localhost:8080/vlo
+      - VLO_DOCKER_PUBLIC_HOME_URL
     depends_on:
       - vlo_solr
     ports:
