@@ -17,13 +17,14 @@ services:
     image: solr-clarin:latest
     environment:
       - SOLR_HOME
+      - SOLR_DATA_HOME
     depends_on:
       - vlo_solr_init
     ports:
       - 8983:8983
     volumes:
       - vlo-solr-home:${SOLR_HOME}
-      - /tmp/solrdata/vlo-index/data:${VLO_SOLR_DATA}
+      - /tmp/solrdata:${SOLR_DATA_HOME}
     restart: unless-stopped
 #    logging:
 #      driver: "fluentd"
