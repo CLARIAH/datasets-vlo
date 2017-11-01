@@ -16,12 +16,30 @@ services:
     environment:
       - SOLR_HOME=/srv/vlo-solr-home
     depends_on:
-        - vlo_solr_init
+      - vlo_solr_init
     ports:
       - 8983:8983
     volumes:
       - vlo-solr-home:/srv/vlo-solr-home
       - /tmp/solrdata/vlo-index/data:/srv/vlo-solr-home/vlo-index/data
+    restart: unless-stopped
+#    logging:
+#      driver: "fluentd"
+#      options:
+#        fluentd-address: localhost:24224
+#        tag: docker.spf_pipelines
+  vlo_web:
+    image: docker-vlo-beta:1.2.2-3-g14fefe4
+    environment:
+      - VLO_DOCKER_SOLR_URL=http://vlo_solr:8983/solr/vlo-index
+      #TODO: configurable public URL
+      - VLO_DOCKER_PUBLIC_HOME_URL=http://localhost:8080/vlo
+    depends_on:
+      - vlo_solr
+    ports:
+      - 8080:8080
+    links:
+      - vlo_solr
     restart: unless-stopped
 #    logging:
 #      driver: "fluentd"
