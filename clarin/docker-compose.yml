@@ -1,10 +1,12 @@
 version: '2'
 services:
   vlo_solr_init:
-    image: docker-vlo-beta:1.2.2-3-g14fefe4
+    image: docker-vlo-beta:1.2.2-5-g2fd5a0e
     entrypoint: /opt/populate-vlo-solr-home.sh
+    environment:
+      - SOLR_HOME
     volumes:
-      - vlo-solr-home:/srv/vlo-solr-home
+      - vlo-solr-home:${SOLR_HOME}
     restart: "no"
 #    logging:
 #      driver: "fluentd"
@@ -14,14 +16,14 @@ services:
   vlo_solr:
     image: solr-clarin:latest
     environment:
-      - SOLR_HOME=/srv/vlo-solr-home
+      - SOLR_HOME
     depends_on:
       - vlo_solr_init
     ports:
       - 8983:8983
     volumes:
-      - vlo-solr-home:/srv/vlo-solr-home
-      - /tmp/solrdata/vlo-index/data:/srv/vlo-solr-home/vlo-index/data
+      - vlo-solr-home:${SOLR_HOME}
+      - /tmp/solrdata/vlo-index/data:${VLO_SOLR_DATA}
     restart: unless-stopped
 #    logging:
 #      driver: "fluentd"
@@ -29,7 +31,7 @@ services:
 #        fluentd-address: localhost:24224
 #        tag: docker.spf_pipelines
   vlo_web:
-    image: docker-vlo-beta:1.2.2-3-g14fefe4
+    image: docker-vlo-beta:1.2.2-5-g2fd5a0e
     environment:
       - VLO_DOCKER_SOLR_URL=http://vlo_solr:8983/solr/vlo-index
       - VLO_DOCKER_PUBLIC_HOME_URL
