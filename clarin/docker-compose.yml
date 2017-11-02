@@ -1,7 +1,7 @@
 version: '2'
 services:
   vlo_solr_init:
-    image: docker-vlo-beta:1.2.2-5-g2fd5a0e
+    image: registry.gitlab.com/clarin-eric/docker-vlo-beta:1.3.0-alpha1
     entrypoint: /opt/populate-vlo-solr-home.sh
     environment:
       - SOLR_HOME
@@ -14,7 +14,8 @@ services:
 #        fluentd-address: localhost:24224
 #        tag: docker.spf_pipelines
   vlo_solr:
-    image: solr-clarin:latest
+    #image: registry.gitlab.com/clarin-eric/docker-solr:1.0.0-alpha1
+    image: docker-solr:1.0.0-alpha1-4-g502343b
     environment:
       - SOLR_HOME
       - SOLR_DATA_HOME
@@ -32,7 +33,7 @@ services:
 #        fluentd-address: localhost:24224
 #        tag: docker.spf_pipelines
   vlo_web:
-    image: docker-vlo-beta:1.2.2-5-g2fd5a0e
+    image: registry.gitlab.com/clarin-eric/docker-vlo-beta:1.3.0-alpha1
     environment:
       - VLO_DOCKER_SOLR_URL=http://vlo_solr:8983/solr/vlo-index
       - VLO_DOCKER_PUBLIC_HOME_URL
