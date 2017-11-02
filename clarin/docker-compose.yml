@@ -51,4 +51,4 @@ services:
 #        tag: docker.spf_pipelines
 volumes:
     vlo-solr-home:
-        external: false
+        external: true
