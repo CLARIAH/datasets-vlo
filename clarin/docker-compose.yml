@@ -8,11 +8,6 @@ services:
     volumes:
       - vlo-solr-home:${SOLR_HOME}
     restart: "no"
-#    logging:
-#      driver: "fluentd"
-#      options:
-#        fluentd-address: localhost:24224
-#        tag: docker.spf_pipelines
   vlo_solr:
     image: registry.gitlab.com/clarin-eric/docker-solr:${SOLR_IMAGE_VERSION}
     environment:
@@ -26,19 +21,15 @@ services:
                     do
                         echo 'Waiting for Solr home content...'; 
                         sleep 1; 
-                    done 
+                    done
+                        && chown -R solr ${SOLR_DATA_HOME}
                         && /usr/bin/entrypoint.sh"]
     ports:
       - 8983:8983
     volumes:
       - vlo-solr-home:${SOLR_HOME}
-      - /tmp/solrdata:${SOLR_DATA_HOME}
+      - ${HOST_SOLR_DATA_HOME}:${SOLR_DATA_HOME}
     restart: unless-stopped
-#    logging:
-#      driver: "fluentd"
-#      options:
-#        fluentd-address: localhost:24224
-#        tag: docker.spf_pipelines
   vlo_web:
     image: registry.gitlab.com/clarin-eric/docker-vlo-beta:${VLO_IMAGE_VERSION}
     environment:
@@ -51,11 +42,6 @@ services:
     links:
       - vlo_solr
     restart: unless-stopped
-#    logging:
-#      driver: "fluentd"
-#      options:
-#        fluentd-address: localhost:24224
-#        tag: docker.spf_pipelines
 volumes:
     vlo-solr-home:
         external: true

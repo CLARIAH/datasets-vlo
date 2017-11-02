@@ -1,0 +1,9 @@
+# VLO docker compose configuration overlay for production (and beta)
+version: '2'
+services:
+  vlo_solr:
+    volumes:
+      - vlo-solr-data:${SOLR_DATA_HOME}
+volumes:
+    vlo-solr-data:
+        external: true
