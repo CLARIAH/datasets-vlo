@@ -21,6 +21,14 @@ services:
       - SOLR_DATA_HOME
     depends_on:
       - vlo_solr_init
+    entrypoint: ["/bin/bash", 
+                    "-c", 
+                    "while [ ! -f ${SOLR_HOME}/solr.xml ];
+                    do
+                        echo 'Waiting for Solr home content...'; 
+                        sleep 1; 
+                    done 
+                        && /usr/bin/entrypoint.sh"]
     ports:
       - 8983:8983
     volumes:
