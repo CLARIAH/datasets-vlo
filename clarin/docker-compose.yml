@@ -33,7 +33,7 @@ services:
   vlo_web:
     image: registry.gitlab.com/clarin-eric/docker-vlo-beta:${VLO_IMAGE_VERSION}
     environment:
-      - VLO_DOCKER_SOLR_URL=http://vlo_solr:8983/solr/vlo-index
+      - VLO_DOCKER_SOLR_URL=http://vlo_solr:8983/solr/vlo-index/
       - VLO_DOCKER_PUBLIC_HOME_URL
     depends_on:
       - vlo_solr
