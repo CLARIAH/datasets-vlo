@@ -6,13 +6,13 @@ services:
       - vlo-solr-data:${SOLR_DATA_HOME}
   vlo_web:
     environment:
-      - VLO_MAPPING_DEFINITIONS_DIST_URL="https://github.com/clarin-eric/VLO-mapping/archive/master.tar.gz"
-      - VLO_DOCKER_PUBLIC_HOME_URL="https://vlo.clarin.eu"
-      - VLO_DOCKER_DATAROOTS_FILE="dataroots-production.xml"
-      - VLO_DOCKER_FILE_PROCESSING_THREADS="-1"
-      - VLO_DOCKER_SOLR_THREADS="4"
-      - VLO_DOCKER_DELETE_ALL_FIRST="false"
-      - VLO_DOCKER_MAX_DAYS_IN_SOLR="7"
+      - VLO_MAPPING_DEFINITIONS_DIST_URL=https://github.com/clarin-eric/VLO-mapping/archive/master.tar.gz
+      - VLO_DOCKER_PUBLIC_HOME_URL=https://vlo.clarin.eu
+      - VLO_DOCKER_DATAROOTS_FILE=dataroots-production.xml
+      - VLO_DOCKER_FILE_PROCESSING_THREADS=-1
+      - VLO_DOCKER_SOLR_THREADS=4
+      - VLO_DOCKER_DELETE_ALL_FIRST=false
+      - VLO_DOCKER_MAX_DAYS_IN_SOLR=7
       - STATSD_PREFIX=vlo.production
     volumes:
       - vlo-statsd:/opt/statsd
