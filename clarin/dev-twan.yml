@@ -1,5 +1,8 @@
 version: '2'
 services:
   vlo_web:
+    environment:
+      - VLO_DOCKER_DATAROOTS_FILE=/opt/vlo-local/config/dataroots-docker.xml
     volumes:
+      - /Users/twagoo/vlo/docker/config:/opt/vlo-local/config
       - /Users/twagoo/vlo/files/sample-roots:${METADATA_DIR}
