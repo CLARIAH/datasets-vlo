@@ -1,0 +1,26 @@
+# VLO docker compose configuration overlay for production (and beta)
+version: '2'
+services:
+  vlo_solr:
+    volumes:
+      - vlo-solr-data:${SOLR_DATA_HOME}
+  vlo_web:
+    environment:
+      - VLO_MAPPING_DEFINITIONS_DIST_URL="https://github.com/clarin-eric/VLO-mapping/archive/beta.tar.gz"
+      - VLO_DOCKER_PUBLIC_HOME_URL="https://beta-vlo.clarin.eu"
+      - VLO_DOCKER_DATAROOTS_FILE="dataroots-beta.xml"
+      - VLO_DOCKER_FILE_PROCESSING_THREADS="-1"
+      - VLO_DOCKER_SOLR_THREADS="2"
+      - VLO_DOCKER_DELETE_ALL_FIRST="false"
+      - VLO_DOCKER_MAX_DAYS_IN_SOLR="7"
+      - STATSD_PREFIX=vlo.production
+    volumes:
+      - vlo-statsd:/opt/statsd
+      - vlo-sitemap:/opt/sitemap
+volumes:
+    vlo-solr-data:
+        external: true
+    vlo-statsd:
+        external: true
+    vlo-sitemap:
+        external: true
