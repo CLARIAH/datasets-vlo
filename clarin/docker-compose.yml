@@ -24,8 +24,6 @@ services:
                     done
                         && chown -R solr ${SOLR_DATA_HOME}
                         && /usr/bin/entrypoint.sh"]
-    ports:
-      - 8983:8983
     volumes:
       - vlo-solr-home:${SOLR_HOME}
       - ${HOST_SOLR_DATA_HOME}:${SOLR_DATA_HOME}
