@@ -44,4 +44,4 @@ services:
     restart: unless-stopped
 volumes:
     vlo-solr-home:
-        external: true
+        external: false
