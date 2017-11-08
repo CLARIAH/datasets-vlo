@@ -4,6 +4,7 @@ services:
   vlo_solr:
     volumes:
       - /srv/solr-data:${SOLR_DATA_HOME}
+      - /srv/solr-export:${SOLR_EXPORT_DIR}
   vlo_web:
     environment:
       - VLO_MAPPING_DEFINITIONS_DIST_URL=https://github.com/clarin-eric/VLO-mapping/archive/beta.tar.gz
