@@ -3,6 +3,7 @@ services:
   vlo_solr_init:
     image: registry.gitlab.com/clarin-eric/docker-vlo-beta:${VLO_IMAGE_VERSION}
     entrypoint: ["sleep", "1"]
+    user: solr
     volumes:
       # this initialises the Solr home directory
       - vlo-solr-home:/opt/vlo/solr/vlo-solr-home
@@ -14,16 +15,21 @@ services:
       - SOLR_DATA_HOME
     depends_on:
       - vlo_solr_init # to ensure Solr home directory content
-    entrypoint: ["bash", "-c", "[ -f ${SOLR_HOME}/solr.xml ] && /usr/bin/entrypoint.sh"]
+    entrypoint: ["bash", "-c", "[ -f ${SOLR_HOME}/solr.xml ] 
+                        && chown -R solr ${SOLR_HOME} ${SOLR_EXPORT_DIR} ${SOLR_DATA_HOME}
+                        && /usr/bin/entrypoint.sh"]
     volumes:
       - vlo-solr-home:${SOLR_HOME}
-      - ${HOST_SOLR_DATA_HOME}:${SOLR_DATA_HOME}
+      - vlo-solr-export:${SOLR_EXPORT_DIR}
+      - vlo-solr-data:${SOLR_DATA_HOME}
     restart: unless-stopped
   vlo_web:
     image: registry.gitlab.com/clarin-eric/docker-vlo-beta:${VLO_IMAGE_VERSION}
     environment:
-      - VLO_DOCKER_SOLR_URL=http://vlo_solr:8983/solr/vlo-index/
+      - VLO_DOCKER_SOLR_URL
       - VLO_DOCKER_PUBLIC_HOME_URL
+      - SOLR_EXPORT_URL=$VLO_DOCKER_SOLR_URL
+      - SOLR_EXPORT_DIR
     links:
       - vlo_solr
     ports:
@@ -31,4 +37,8 @@ services:
     restart: unless-stopped
 volumes:
     vlo-solr-home:
+        external: false
+    vlo-solr-data:
+        external: false
+    vlo-solr-export:
         external: false
