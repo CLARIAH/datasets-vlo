@@ -24,7 +24,7 @@ services:
     image: registry.gitlab.com/clarin-eric/docker-vlo-beta:${VLO_IMAGE_VERSION}
     environment:
       - VLO_DOCKER_SOLR_URL
-      - VLO_DOCKER_PUBLIC_HOME_URL
+      - VLO_DOCKER_PUBLIC_HOME_URL=http://localhost:8080
     links:
       - vlo_solr
     ports:
