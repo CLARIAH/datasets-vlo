@@ -1,10 +1,26 @@
-# Compose configuration for the Virtual Language Observatory
+# Docker compose configuration for the Virtual Language Observatory
 
 This configuration combines a Solr server and a VLO web app instance. The latter image
 can also be used to run an import, and contains an initialisation mechanism for the *Solr
 home directory*, which is executed before the Server is started.
 
 See [VLO on GitHub](https://github.com/clarin-eric/VLO).
+
+## Configuration overlays
+
+In addition to `docker-compose.yml`, a number of `.yml` files are present that can be
+used as configuration overlays. They apply to different environments and/or usage
+scenarios. To use them, provide both the 'base' configuration and the overlay as input
+files to the `docker-compose` command. For example, a complete configuration ready to be
+launched in _production_ can be started by executing:
+
+```sh
+docker-compose -f docker-compose.yml -f production.yml up
+```
+
+There are overlays for development, the beta and production environments and
+environments that have a fluentd running on the host. Note that more than one overlay can
+be applied if needed.
 
 ## Usage
 
@@ -45,7 +61,7 @@ on the host, and then start the Solr server normally.
 You can provision the Solr image with existing data by mounting it to 
 `/docker-entrypoint-initsolr.d/solr_data` 
 
-```
+```sh
 HOST_DATA_DIR=/my/solr/data
 docker-compose down -v
 docker-compose run -v $HOST_DATA_DIR:/docker-entrypoint-initsolr.d/solr_data vlo_solr
