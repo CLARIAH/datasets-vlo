@@ -4,9 +4,6 @@ services:
   vlo_solr:
     environment:
       - SOLR_JAVA_MEM=-Xms1G -Xmx4G
-    volumes:
-      - /srv/solr-data:${SOLR_DATA_HOME}
-      - /srv/solr-export:${SOLR_EXPORT_DIR}
   vlo_web:
     environment:
       - VLO_MAPPING_DEFINITIONS_DIST_URL=https://github.com/clarin-eric/VLO-mapping/archive/beta.tar.gz
@@ -17,6 +14,9 @@ services:
       - VLO_DOCKER_DELETE_ALL_FIRST=false
       - VLO_DOCKER_MAX_DAYS_IN_SOLR=7
       - STATSD_PREFIX=vlo.beta
+    volumes:
+      - vlo-statsd:/opt/statsd
+      - vlo-sitemap:/opt/sitemap
     volumes:
       - /srv/vlo-data:${METADATA_DIR}
       - /srv/vlo-statsd:/opt/statsd

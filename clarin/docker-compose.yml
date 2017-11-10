@@ -5,22 +5,19 @@ services:
     entrypoint: ["sleep", "1"]
     user: solr
     volumes:
-      # this initialises the Solr home directory
-      - vlo-solr-home:/opt/vlo/solr/vlo-solr-home
+      # this copies data for Solr home directory provisioning
+      - solr-home-provisioning:/opt/vlo/solr/vlo-solr-home
     restart: "no"
   vlo_solr:
     image: registry.gitlab.com/clarin-eric/docker-solr:${SOLR_IMAGE_VERSION}
     environment:
-      - SOLR_HOME
       - SOLR_DATA_HOME
     depends_on:
       - vlo_solr_init # to ensure Solr home directory content
-    entrypoint: ["bash", "-c", "[ -f ${SOLR_HOME}/solr.xml ] 
-                        && chown -R solr ${SOLR_HOME} ${SOLR_EXPORT_DIR} ${SOLR_DATA_HOME}
+    entrypoint: ["bash", "-c", "[ -f ${SOLR_HOME_PROVISIONING_PATH}/solr.xml ]
                         && /usr/bin/entrypoint.sh"]
     volumes:
-      - vlo-solr-home:${SOLR_HOME}
-      - vlo-solr-export:${SOLR_EXPORT_DIR}
+      - solr-home-provisioning:${SOLR_HOME_PROVISIONING_PATH}
       - vlo-solr-data:${SOLR_DATA_HOME}
     restart: unless-stopped
   vlo_web:
@@ -28,17 +25,13 @@ services:
     environment:
       - VLO_DOCKER_SOLR_URL
       - VLO_DOCKER_PUBLIC_HOME_URL
-      - SOLR_EXPORT_URL=$VLO_DOCKER_SOLR_URL
-      - SOLR_EXPORT_DIR
     links:
       - vlo_solr
     ports:
       - 8080:8080
     restart: unless-stopped
 volumes:
-    vlo-solr-home:
+    solr-home-provisioning:
         external: false
     vlo-solr-data:
-        external: false
-    vlo-solr-export:
         external: false

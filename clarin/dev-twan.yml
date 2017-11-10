@@ -1,9 +1,8 @@
 version: '2'
 services:
   vlo_solr:
-    volumes:
-      - /tmp/vlo-solr-data:${SOLR_DATA_HOME}
-      - /tmp/vlo-solr-export:${SOLR_EXPORT_DIR}
+#    volumes:
+#      - /tmp/vlo-solr-data:${SOLR_DATA_PROVISIONING_PATH}
   vlo_web:
     environment:
       - VLO_DOCKER_DATAROOTS_FILE=/opt/vlo-local/config/dataroots-docker.xml

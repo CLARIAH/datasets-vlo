@@ -29,22 +29,32 @@ Then run:
 docker-compose exec vlo_web /opt/importer.sh
 ```
 
-### Import or export the VLO Solr index
-
-Be aware that the importing will **overwrite the existing index**, so be **_CAREFUL_**!
-
-To export:
+### Export Solr data
 
 ```sh
-docker-compose exec vlo_web /opt/solr-replication.sh --export my_backup
+HOST_EXPORT_TARGET=/my/solr/data
+docker-compose down
+docker-compose run -v $HOST_EXPORT_TARGET:/solr-export -e SOLR_DATA_EXPORT_TARGET=/solr-export vlo_solr
 ```
 
-To import:
+This will copy the container's `SOLR_DATA_HOME` content to the specified target directory
+on the host, and then start the Solr server normally.
 
-```sh
-docker-compose exec vlo_web /opt/solr-replication.sh --import my_backup
+### Provide existing Solr data
+
+You can provision the Solr image with existing data by mounting it to 
+`/docker-entrypoint-initsolr.d/solr_data` 
+
+```
+HOST_DATA_DIR=/my/solr/data
+docker-compose down -v
+docker-compose run -v $HOST_DATA_DIR:/docker-entrypoint-initsolr.d/solr_data vlo_solr
 ```
 
-Mount a volume to `/srv/vlo-solr-export` if you want to transfer the exported data to
-another host.
+This will copy the content of the specified source directory to the `SOLR_DATA_HOME`
+directory of the container before starting Solr.
 
+You can provide you own alternative Solr _configuration_ in a similar way by mounting
+valid 'Solr home' content to `/docker-entrypoint-initsolr.d/solr_home`. This approach is
+used by default to provision the Solr image with Solr home content from the VLO image;
+normally you should not have to deviate from this.

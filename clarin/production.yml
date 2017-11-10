@@ -4,9 +4,6 @@ services:
   vlo_solr:
     environment:
       - SOLR_JAVA_MEM=-Xms1G -Xmx4G
-    volumes:
-      - /srv/solr-data:${SOLR_DATA_HOME}
-      - /srv/solr-export:${SOLR_EXPORT_DIR}
   vlo_web:
     environment:
       - VLO_MAPPING_DEFINITIONS_DIST_URL=https://github.com/clarin-eric/VLO-mapping/archive/master.tar.gz
