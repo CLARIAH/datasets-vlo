@@ -26,7 +26,7 @@ be applied if needed.
 
 ### Run the importer to ingest CMDI metadata into the VLO
 
-Set the following **environment variables** or a version thereof that appies to your
+Set the following **environment variables** or a version thereof that applies to your
 environment:
 
 - `METADATA_DIR=/srv/vlo-data`
@@ -37,9 +37,18 @@ Assuming the following **mounts**:
 - `/my/local/vlo/config` -> `/opt/vlo/config`
 
 The latter contains your custom dataroots definition pointing to the dataroots in 
-aforementioned metadata directory.
+aforementioned metadata directory. You can also use one of the [bundled data root
+definitions](https://github.com/clarin-eric/VLO/tree/master/vlo-commons/src/main/resources),
+in which case you don't have to mount a configuration overlay - only data. For example,
+you can set:
 
-Then run:
+- `VLO_DOCKER_DATAROOTS_FILE=dataroots-production.xml`
+
+to use
+[dataroots-production.xml](https://github.com/clarin-eric/VLO/blob/master/vlo-commons/src/main/resources/dataroots-production.xml).
+Make sure that the paths match your data mount!
+
+After having started the services, you can start the import by running:
 
 ```sh
 docker-compose exec vlo_web /opt/importer.sh
