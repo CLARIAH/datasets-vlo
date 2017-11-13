@@ -24,7 +24,7 @@ be applied if needed.
 
 ## Usage
 
-### Import metadata into the VLO
+### Run the importer to ingest CMDI metadata into the VLO
 
 Set the following **environment variables** or a version thereof that appies to your
 environment:
@@ -54,11 +54,12 @@ docker-compose run -v $HOST_EXPORT_TARGET:/solr-export -e SOLR_DATA_EXPORT_TARGE
 ```
 
 This will copy the container's `SOLR_DATA_HOME` content to the specified target directory
-on the host, and then start the Solr server normally.
+on the host, and then terminate, i.e. doing this will *not start Solr*.
 
-### Provide existing Solr data
+### Provide (import) existing Solr data
 
-You can provision the Solr image with existing data by mounting it to 
+You can provision the Solr image with existing data (in the form as it can be exported
+by following the instructions above) by mounting this data directory to
 `/docker-entrypoint-initsolr.d/solr_data` 
 
 ```sh
