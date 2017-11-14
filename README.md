@@ -24,6 +24,23 @@ be applied if needed.
 
 ## Usage
 
+### Run with sample data
+
+To run the VLO with some [sample data](https://gitlab.com/CLARIN-ERIC/docker-vlo-sample-data)
+without the need to configure anything, run the following in the `clarin` directory:
+
+```sh
+docker-compose -f docker-compose.yml sample-data.yml up -d
+```
+
+Then connect to [localhost:8080](http://localhost:8080) to visit your local VLO instance.
+
+Make sure to use the following command to bring the services down again:
+
+```sh
+docker-compose -f docker-compose.yml sample-data.yml down
+```
+
 ### Run the importer to ingest CMDI metadata into the VLO
 
 Set the following **environment variables** or a version thereof that applies to your
