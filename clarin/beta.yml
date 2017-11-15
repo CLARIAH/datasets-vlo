@@ -15,9 +15,6 @@ services:
       - VLO_DOCKER_MAX_DAYS_IN_SOLR=7
       - STATSD_PREFIX=vlo.beta
     volumes:
-      - vlo-statsd:/opt/statsd
-      - vlo-sitemap:/opt/sitemap
-    volumes:
       - /srv/vlo-data:${METADATA_DIR}
       - /srv/vlo-statsd:/opt/statsd
       - /srv/vlo-sitemap:/opt/sitemap
