@@ -21,3 +21,5 @@ services:
       - /srv/vlo-data:${METADATA_DIR}
       - /srv/vlo-statsd:/opt/statsd
       - /srv/vlo-sitemap:/opt/sitemap
+    ports:
+      - 8080:8080

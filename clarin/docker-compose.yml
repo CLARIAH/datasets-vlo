@@ -28,7 +28,7 @@ services:
     links:
       - vlo_solr
     ports:
-      - 8080:8080
+      - 8181:8080
     restart: unless-stopped
 volumes:
     solr-home-provisioning:
