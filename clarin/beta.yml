@@ -23,4 +23,5 @@ services:
       - /srv/vlo-statsd:/opt/statsd
       - /srv/vlo-sitemap:/opt/sitemap
     ports:
-      - 8080:8080
+      - 80:8080 #only open port on MPCDF host
+
