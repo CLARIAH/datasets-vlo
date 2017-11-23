@@ -2,7 +2,7 @@
 version: '2'
 services:
   vlo_sample_data:
-    image: registry.gitlab.com/clarin-eric/docker-vlo-sample-data:1.0.0
+    image: registry.gitlab.com/clarin-eric/docker-vlo-sample-data:1.1.0
     volumes:
       # volume for CMDI records shared with vlo_web (see volumes below)
       - sample_data:/vlo-data
