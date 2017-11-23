@@ -13,6 +13,10 @@ services:
       - VLO_DOCKER_SOLR_THREADS=4
       - VLO_DOCKER_DELETE_ALL_FIRST=false
       - VLO_DOCKER_MAX_DAYS_IN_SOLR=7
+      - VLO_DOCKER_PIWIK_ENABLE_TRACKER=true
+      - VLO_DOCKER_PIWIK_SITE_ID=3
+      - VLO_DOCKER_PIWIK_HOST=https://stats.clarin.eu/
+      - VLO_DOCKER_PIWIK_DOMAINS=*.vlo.clarin.eu
       - STATSD_PREFIX=vlo.production
     volumes:
       - vlo-statsd:/opt/statsd

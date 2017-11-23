@@ -25,6 +25,7 @@ services:
     environment:
       - VLO_DOCKER_SOLR_URL
       - VLO_DOCKER_PUBLIC_HOME_URL=http://localhost:8080
+      - VLO_DOCKER_PIWIK_ENABLE_TRACKER=false
     links:
       - vlo_solr
     ports:
