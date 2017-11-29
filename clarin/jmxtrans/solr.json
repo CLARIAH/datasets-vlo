@@ -1,0 +1,67 @@
+{
+  "servers" : [ {
+    "port" : "18983",
+    "host" : "vlo_solr",
+    "queries" : [ {
+      "obj" : "java.lang:type=Memory",
+      "resultAlias": "jvm-memory",
+      "attr" : [ "HeapMemoryUsage", "NonHeapMemoryUsage" ],
+      "outputWriters" : [ {
+        "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriter",
+        "port" : 8125,
+        "host" : "grafana_graphite",
+        "bucketType" : "g"
+      } ]
+    }, {
+      "obj" : "solr:dom1=core,dom2=vlo-index,category=SEARCHER,scope=searcher,name=numDocs",
+      "resultAlias": "numDocs",
+      "attr" : [ "Value" ],
+      "outputWriters" : [ {
+        "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriter",
+        "port" : 8125,
+        "host" : "grafana_graphite",
+        "bucketType" : "g"
+      } ]
+    }, {
+      "obj" : "solr:dom1=core,dom2=vlo-index,category=INDEX,name=sizeInBytes",
+      "resultAlias": "indexSizeBytes",
+      "attr" : [ "Value" ],
+      "outputWriters" : [ {
+        "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriter",
+        "port" : 8125,
+        "host" : "grafana_graphite",
+        "bucketType" : "g"
+      } ]
+    }, {
+      "obj" : "solr:dom1=core,dom2=vlo-index,category=QUERY,scope=/select,name=requestTimes",
+      "resultAlias": "queryRequestTimes",
+      "attr" : [ "Count", "Mean", "FiveMinuteRate" ],
+      "outputWriters" : [ {
+        "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriter",
+        "port" : 8125,
+        "host" : "grafana_graphite",
+        "bucketType" : "g"
+      } ]
+    }, {
+      "obj" : "solr:dom1=core,dom2=vlo-index,category=UPDATE,scope=/update,name=requestTimes",
+      "resultAlias": "updateRequestTimes",
+      "attr" : [ "Count", "Mean", "FiveMinuteRate" ],
+      "outputWriters" : [ {
+        "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriter",
+        "port" : 8125,
+        "host" : "grafana_graphite",
+        "bucketType" : "g"
+      } ]
+    }, {
+      "obj" : "solr:dom1=jetty,name0=org,name1=eclipse,name2=jetty,name3=server,name4=handler,name5=DefaultHandler,name=2xx-responses",
+      "resultAlias": "jetty-2xx-responses",
+      "attr" : [ "Count", "Mean", "FiveMinuteRate" ],
+      "outputWriters" : [ {
+        "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriter",
+        "port" : 8125,
+        "host" : "grafana_graphite",
+        "bucketType" : "g"
+      } ]
+    } ]
+  } ]
+}

@@ -20,19 +20,23 @@ services:
       - solr-home-provisioning:${SOLR_HOME_PROVISIONING_PATH}
       - vlo-solr-data:${SOLR_DATA_HOME}
     restart: unless-stopped
+    networks:
+        - network_vlo
   vlo_web:
     image: registry.gitlab.com/clarin-eric/docker-vlo-beta:${VLO_IMAGE_VERSION}
     environment:
       - VLO_DOCKER_SOLR_URL=http://vlo_solr:8983/solr/vlo-index/
       - VLO_DOCKER_PUBLIC_HOME_URL=http://localhost:8080
       - VLO_DOCKER_PIWIK_ENABLE_TRACKER=false
-    links:
-      - vlo_solr
     ports:
       - 8181:8080
     restart: unless-stopped
+    networks:
+        - network_vlo
 volumes:
     solr-home-provisioning:
         external: false
     vlo-solr-data:
         external: false
+networks:
+  network_vlo:

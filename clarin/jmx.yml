@@ -1,0 +1,20 @@
+version: '2'
+services:
+  vlo_solr:
+    environment:
+      - ENABLE_REMOTE_JMX_OPTS=true
+      - RMI_PORT=18983
+      - SOLR_OPTS=-Djava.rmi.server.hostname=vlo_solr
+    networks:
+      - network_vlo
+  jmxtrans:
+    image: registry.gitlab.com/clarin-eric/docker-jmxtrans:1.0.0
+    depends_on:
+      - vlo_solr
+    environment:
+        - JSON_DIR=/var/lib/jmxtrans
+        - JMXTRANS_OPTS="-Dhostalias=${HOST}"
+    volumes:
+        - ./jmxtrans:/var/lib/jmxtrans
+    networks:
+      - network_vlo
