@@ -4,38 +4,8 @@
     "host" : "${solr_jmx_host}",
     "alias": "${host_alias}",
     "queries" : [ {
-      "obj" : "java.lang:type=Memory",
-      "resultAlias": "vlo.solr.jvm-memory",
-      "attr" : [ "HeapMemoryUsage", "NonHeapMemoryUsage" ],
-      "outputWriters" : [ {
-        "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriter",
-        "port" : "${statsd_port}",
-        "host" : "${statsd_host}",
-        "bucketType" : "g"
-      } ]
-    }, {
-      "obj" : "solr:dom1=core,dom2=vlo-index,category=SEARCHER,scope=searcher,name=numDocs",
-      "resultAlias": "vlo.solr.numDocs",
-      "attr" : [ "Value" ],
-      "outputWriters" : [ {
-        "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriter",
-        "port" : "${statsd_port}",
-        "host" : "${statsd_host}",
-        "bucketType" : "g"
-      } ]
-    }, {
-      "obj" : "solr:dom1=core,dom2=vlo-index,category=INDEX,name=sizeInBytes",
-      "resultAlias": "vlo.solr.indexSizeBytes",
-      "attr" : [ "Value" ],
-      "outputWriters" : [ {
-        "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriter",
-        "port" : "${statsd_port}",
-        "host" : "${statsd_host}",
-        "bucketType" : "g"
-      } ]
-    }, {
-      "obj" : "solr:dom1=core,dom2=vlo-index,category=QUERY,scope=/select,name=requestTimes",
-      "resultAlias": "vlo.solr.queryRequestTimes",
+      "obj" : "solr:dom1=jetty,name0=org,name1=eclipse,name2=jetty,name3=server,name4=handler,name5=DefaultHandler,name=1xx-responses",
+      "resultAlias": "vlo.solr.jetty.1xx-responses",
       "attr" : [ "Count", "Mean", "FiveMinuteRate" ],
       "outputWriters" : [ {
         "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriter",
@@ -44,8 +14,38 @@
         "bucketType" : "g"
       } ]
     }, {
-      "obj" : "solr:dom1=core,dom2=vlo-index,category=UPDATE,scope=/update,name=requestTimes",
-      "resultAlias": "vlo.solr.updateRequestTimes",
+      "obj" : "solr:dom1=jetty,name0=org,name1=eclipse,name2=jetty,name3=server,name4=handler,name5=DefaultHandler,name=2xx-responses",
+      "resultAlias": "vlo.solr.jetty.2xx-responses",
+      "attr" : [ "Count", "Mean", "FiveMinuteRate" ],
+      "outputWriters" : [ {
+        "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriter",
+        "port" : "${statsd_port}",
+        "host" : "${statsd_host}",
+        "bucketType" : "g"
+      } ]
+    }, {
+      "obj" : "solr:dom1=jetty,name0=org,name1=eclipse,name2=jetty,name3=server,name4=handler,name5=DefaultHandler,name=3xx-responses",
+      "resultAlias": "vlo.solr.jetty.3xx-responses",
+      "attr" : [ "Count", "Mean", "FiveMinuteRate" ],
+      "outputWriters" : [ {
+        "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriter",
+        "port" : "${statsd_port}",
+        "host" : "${statsd_host}",
+        "bucketType" : "g"
+      } ]
+    }, {
+      "obj" : "solr:dom1=jetty,name0=org,name1=eclipse,name2=jetty,name3=server,name4=handler,name5=DefaultHandler,name=4xx-responses",
+      "resultAlias": "vlo.solr.jetty.4xx-responses",
+      "attr" : [ "Count", "Mean", "FiveMinuteRate" ],
+      "outputWriters" : [ {
+        "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriter",
+        "port" : "${statsd_port}",
+        "host" : "${statsd_host}",
+        "bucketType" : "g"
+      } ]
+    }, {
+      "obj" : "solr:dom1=jetty,name0=org,name1=eclipse,name2=jetty,name3=server,name4=handler,name5=DefaultHandler,name=5xx-responses",
+      "resultAlias": "vlo.solr.jetty.5xx-responses",
       "attr" : [ "Count", "Mean", "FiveMinuteRate" ],
       "outputWriters" : [ {
         "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriter",
