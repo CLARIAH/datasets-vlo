@@ -1,3 +1,8 @@
+# Configuration overlay for monitoring with jmxtrans and statsd
+#
+# In order to use, you will need to export the 
+# JMXTRANS_HOST_ALIAS, JMXTRANS_STATSD_HOST and JMXTRANS_STATSD_PORT variables!
+
 version: '2'
 services:
   vlo_solr:
@@ -12,9 +17,9 @@ services:
     depends_on:
       - vlo_solr
     environment:
-        - JSON_DIR=/var/lib/jmxtrans
-        - JMXTRANS_OPTS="-Dhostalias=${HOST}"
+      - JSON_DIR=/var/lib/jmxtrans
+      - JMXTRANS_OPTS=-Dhost_alias=${JMXTRANS_HOST_ALIAS} -Dstatsd_host=${JMXTRANS_STATSD_HOST} -Dstatsd_port=${JMXTRANS_STATSD_PORT} -Dsolr_jmx_host=vlo_solr -Dsolr_jmx_port=18983 
     volumes:
-        - ./jmxtrans:/var/lib/jmxtrans
+      - ./jmxtrans:/var/lib/jmxtrans
     networks:
       - network_vlo

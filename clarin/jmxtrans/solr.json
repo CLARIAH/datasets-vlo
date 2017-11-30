@@ -1,15 +1,16 @@
 {
   "servers" : [ {
-    "port" : "18983",
-    "host" : "vlo_solr",
+    "port" : "${solr_jmx_port}",
+    "host" : "${solr_jmx_host}",
+    "alias": "${host_alias}",
     "queries" : [ {
       "obj" : "java.lang:type=Memory",
       "resultAlias": "jvm-memory",
       "attr" : [ "HeapMemoryUsage", "NonHeapMemoryUsage" ],
       "outputWriters" : [ {
         "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriter",
-        "port" : 8125,
-        "host" : "grafana_graphite",
+        "port" : "${statsd_port}",
+        "host" : "${statsd_host}",
         "bucketType" : "g"
       } ]
     }, {
@@ -18,8 +19,8 @@
       "attr" : [ "Value" ],
       "outputWriters" : [ {
         "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriter",
-        "port" : 8125,
-        "host" : "grafana_graphite",
+        "port" : "${statsd_port}",
+        "host" : "${statsd_host}",
         "bucketType" : "g"
       } ]
     }, {
@@ -28,8 +29,8 @@
       "attr" : [ "Value" ],
       "outputWriters" : [ {
         "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriter",
-        "port" : 8125,
-        "host" : "grafana_graphite",
+        "port" : "${statsd_port}",
+        "host" : "${statsd_host}",
         "bucketType" : "g"
       } ]
     }, {
@@ -38,8 +39,8 @@
       "attr" : [ "Count", "Mean", "FiveMinuteRate" ],
       "outputWriters" : [ {
         "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriter",
-        "port" : 8125,
-        "host" : "grafana_graphite",
+        "port" : "${statsd_port}",
+        "host" : "${statsd_host}",
         "bucketType" : "g"
       } ]
     }, {
@@ -48,8 +49,8 @@
       "attr" : [ "Count", "Mean", "FiveMinuteRate" ],
       "outputWriters" : [ {
         "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriter",
-        "port" : 8125,
-        "host" : "grafana_graphite",
+        "port" : "${statsd_port}",
+        "host" : "${statsd_host}",
         "bucketType" : "g"
       } ]
     }, {
@@ -58,8 +59,8 @@
       "attr" : [ "Count", "Mean", "FiveMinuteRate" ],
       "outputWriters" : [ {
         "@class" : "com.googlecode.jmxtrans.model.output.StatsDWriter",
-        "port" : 8125,
-        "host" : "grafana_graphite",
+        "port" : "${statsd_port}",
+        "host" : "${statsd_host}",
         "bucketType" : "g"
       } ]
     } ]
