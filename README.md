@@ -6,6 +6,25 @@ directory* to the Solr server container.
 
 See [VLO on GitHub](https://github.com/clarin-eric/VLO).
 
+## Environment
+
+A number of environment variables are required. The `.env-template` provides a template
+for a `.env` with usable defaults. Doing the following should get you started:
+
+```sh
+cp clarin/.env-template clarin/.env
+```
+
+Alternatively you may want to persist a modified version of the file somewhere else on
+your host:
+
+```sh
+cp clarin/.env-template /my/configs/vlo/.env
+ln -s /my/configs/vlo/.env clarin/.env
+```
+
+Note that some configuration overlays (see below) may need additional variables set.
+
 ## Configuration overlays
 
 In addition to `docker-compose.yml`, a number of `.yml` files are present that can be
@@ -21,6 +40,17 @@ docker-compose -f docker-compose.yml -f production.yml up
 There are overlays for development, the beta and production environments and
 environments that have a fluentd running on the host. Note that more than one overlay can
 be applied if needed.
+
+### Scripts
+
+For convenience, a number of scripts have been added that make it easy to run 
+docker-compose commands for specific environments. For example:
+
+```sh
+./docker-compose-production.sh up
+```
+
+will have the same results as issuing the previous example command.
 
 ## Usage
 
