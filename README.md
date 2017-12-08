@@ -60,7 +60,7 @@ To run the VLO with some [sample data](https://gitlab.com/CLARIN-ERIC/docker-vlo
 without the need to configure anything, run the following in the `clarin` directory:
 
 ```sh
-docker-compose -f docker-compose.yml -f sample-data.yml up -d
+docker-compose -f docker-compose.yml -f sample-data.yml up [-d]
 ```
 
 Then connect to [localhost:8181](http://localhost:8181) to visit your local VLO instance.
@@ -68,7 +68,7 @@ Then connect to [localhost:8181](http://localhost:8181) to visit your local VLO 
 Make sure to use the following command to bring the services down again:
 
 ```sh
-docker-compose -f docker-compose.yml -f sample-data.yml down -v
+docker-compose -f docker-compose.yml -f sample-data.yml down [-v]
 ```
 
 ### Run the importer to ingest CMDI metadata into the VLO
@@ -105,7 +105,7 @@ docker-compose exec vlo_web /opt/importer.sh
 
 ```sh
 HOST_EXPORT_TARGET=/my/solr/data
-docker-compose down
+docker-compose stop
 docker-compose run -v $HOST_EXPORT_TARGET:/solr-export -e SOLR_DATA_EXPORT_TARGET=/solr-export vlo_solr
 ```
 
@@ -120,7 +120,7 @@ by following the instructions above) by mounting this data directory to
 
 ```sh
 HOST_DATA_DIR=/my/solr/data
-docker-compose down -v
+docker-compose down -v # This removes all data!
 docker-compose run -v $HOST_DATA_DIR:/docker-entrypoint-initsolr.d/solr_data vlo_solr
 ```
 
