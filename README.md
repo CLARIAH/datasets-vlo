@@ -41,7 +41,7 @@ There are overlays for development, the beta and production environments and
 environments that have a fluentd running on the host. Note that more than one overlay can
 be applied if needed.
 
-### Scripts
+## Scripts
 
 For convenience, a number of scripts have been added that make it easy to run 
 docker-compose commands for specific environments. For example:
@@ -51,6 +51,24 @@ docker-compose commands for specific environments. For example:
 ```
 
 will have the same results as issuing the previous example command.
+
+## Solr configuration initialisation
+
+The configuration uses a shared volume (`solr-home-provisioning`) to provision the Solr
+container with the VLO specific configuration (i.e. the contents of the `SOLR_HOME`
+directory). As the content of this volume only gets initialised if the volume is empty,
+it is **necessary to erase this volume before starting the services** (unless the version
+of the VLO and therefore the bundled Solr configuration has not changed). Unfortunately
+this cannot be automated through docker-compose; instead, run the following command:
+
+```sh
+docker volume rm ${PROJECT}_solr-home-provisioning
+```
+
+`${PROJECT}` defaults to `clarin`.
+Depending on the environment, the volume may have a different name or prefix. 
+Note that this will **NOT** remove any indexed data assuming that separate `SOLR_DATA_HOME`
+location is configured.
 
 ## Usage
 
