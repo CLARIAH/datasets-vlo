@@ -11,7 +11,7 @@ services:
   vlo_web:
     environment:
       - VLO_MAPPING_DEFINITIONS_DIST_URL=https://github.com/clarin-eric/VLO-mapping/archive/development.tar.gz
-      - VLO_DOCKER_PUBLIC_HOME_URL=https://alpha-vlo.clarin.eu
+      - VLO_DOCKER_PUBLIC_HOME_URL=http://alpha-vlo.clarin.eu/vlo
       - VLO_DOCKER_DATAROOTS_FILE=dataroots-beta.xml
       - VLO_DOCKER_FILE_PROCESSING_THREADS=-1
       - VLO_DOCKER_SOLR_THREADS=2
