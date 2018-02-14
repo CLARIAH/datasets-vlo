@@ -10,5 +10,7 @@ if [ "$1" != "$(hostname)" ]; then
 	echo "Found: $(hostname)"
 	echo ""
 	echo -n "Continuing in "
-	for c in `seq 5 1`; do echo -n "${c}..."; sleep 1; done
+	for c in `seq 10 1`; do echo -ne "\a${c}..."; sleep 1; done
+else
+	echo "OK: Hostname matches expected ($1)"
 fi
