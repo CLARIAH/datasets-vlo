@@ -9,7 +9,10 @@ See [VLO on GitHub](https://github.com/clarin-eric/VLO).
 ## Environment
 
 A number of environment variables are required. The `.env-template` provides a template
-for a `.env` with usable defaults. A symlink `.env` to `clarin/../../.env` is included.
+for a `.env` with usable defaults. A symlink `clarin/.env` to `clarin/../../.env` 
+is included (note that this is pointing out of the repository context, adhering to common
+practice within the CLARIN central infrastructure). 
+
 Therefore the following should get you started:
 
 ```sh
