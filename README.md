@@ -9,19 +9,15 @@ See [VLO on GitHub](https://github.com/clarin-eric/VLO).
 ## Environment
 
 A number of environment variables are required. The `.env-template` provides a template
-for a `.env` with usable defaults. Doing the following should get you started:
+for a `.env` with usable defaults. A symlink `.env` to `clarin/../../.env` is included.
+Therefore the following should get you started:
 
 ```sh
-cp clarin/.env-template clarin/.env
+cp clarin/.env-template ../.env
 ```
 
-Alternatively you may want to persist a modified version of the file somewhere else on
-your host:
-
-```sh
-cp clarin/.env-template /my/configs/vlo/.env
-ln -s /my/configs/vlo/.env clarin/.env
-```
+You can then tweak or add the configuration depending for your specific environment and
+needs. Make sure to check for changes in the bundled template when updating.
 
 Note that some configuration overlays (see below) may need additional variables set.
 
@@ -40,6 +36,29 @@ docker-compose -f docker-compose.yml -f production.yml up
 There are overlays for development, the beta and production environments and
 environments that have a fluentd running on the host. Note that more than one overlay can
 be applied if needed.
+
+### Static metadata serving
+
+A nginx based container for serving the metadata records as static content can be enabled
+by including the `data.yml` overlay. The following environment variable has to be set
+to the location of these files on disk in order to make this work:
+
+* `HOST_METADATA_DIR`
+
+The files will then become available (by default) at `http://localhost:8184/data/`.
+
+See [.env-template](.env-template) for an example.
+
+### JMX
+
+JMX reporting of the Solr server can be enabled by including the `jmx.yml` overlay and
+setting the following environment variables: 
+
+* `JMXTRANS_HOST_ALIAS`
+* `JMXTRANS_STATSD_HOST`
+* `JMXTRANS_STATSD_PORT`
+
+See [.env-template](.env-template) for details and examples.
 
 ## Scripts
 
