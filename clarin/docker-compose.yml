@@ -1,13 +1,5 @@
 version: '2'
 services:
-  vlo_solr_init:
-    image: &vlo_web_image registry.gitlab.com/clarin-eric/docker-vlo-beta:1.3.6-beta1
-    entrypoint: ["sleep", "1"]
-    user: solr
-    volumes:
-      # this copies data for Solr home directory provisioning
-      - solr-home-provisioning:/opt/vlo/solr/vlo-solr-home
-    restart: "no"
   vlo_solr:
     image: registry.gitlab.com/clarin-eric/docker-solr:1.1.0-beta1
     environment:
@@ -23,7 +15,7 @@ services:
     networks:
         - network_vlo
   vlo_web:
-    image: *vlo_web_image
+    image: &vlo_web_image registry.gitlab.com/clarin-eric/docker-vlo-beta:1.3.6-beta1
     environment:
       - VLO_DOCKER_SOLR_URL=http://vlo_solr:8983/solr/vlo-index/
       - VLO_DOCKER_PUBLIC_HOME_URL=http://localhost:8080
@@ -33,6 +25,14 @@ services:
     restart: unless-stopped
     networks:
         - network_vlo
+  vlo_solr_init:
+    image: *vlo_web_image
+    entrypoint: ["sleep", "1"]
+    user: solr
+    volumes:
+      # this copies data for Solr home directory provisioning
+      - solr-home-provisioning:/opt/vlo/solr/vlo-solr-home
+    restart: "no"
 volumes:
     solr-home-provisioning:
         external: false
