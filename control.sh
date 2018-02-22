@@ -1,9 +1,26 @@
 #!/usr/bin/env bash
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+function usage() {
+	echo "Usage: 
+	$0 --help 
+	
+		Shows this message
+		
+	$0 {dev|alpha|testing|beta|production} [docker-compose-opts]
+	
+		Calls docker compose with the right overlays for the specified
+		environment and the specified compose options"
+}
+
+if [ "--help" == "$1" ]; then
+	usage
+	exit 0
+fi
+
 ENVIRONMENT=$1
 if [ -z "$ENVIRONMENT" ]; then
-	echo "Usage: $0 {dev|alpha|testing|beta|production} [docker-compose-opts]" 
+	usage
 	exit 1
 fi
 
@@ -33,6 +50,7 @@ production)
 	;;
 *)
 	echo "Not a recognised environment name: $ENVIRONMENT"
+	echo "Type '$0 --help' for help"
 	exit 2
 esac
 
