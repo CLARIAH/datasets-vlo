@@ -13,4 +13,5 @@ services:
       - VLO_DOCKER_DELETE_ALL_FIRST=false
       - VLO_DOCKER_MAX_DAYS_IN_SOLR=7
       - STATSD_PREFIX=vlo.test
+      - VLO_DOCKER_WICKET_CONFIGURATION=development
 

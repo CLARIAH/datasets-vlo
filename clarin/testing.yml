@@ -22,6 +22,7 @@ services:
       - VLO_DOCKER_PIWIK_HOST=https://stats.clarin.eu/
       - VLO_DOCKER_PIWIK_DOMAINS=*.alpha-vlo.clarin.eu
       - STATSD_PREFIX=vlo.newalpha
+      - VLO_DOCKER_WICKET_CONFIGURATION=development
     volumes:
       - /home/twagoo/vlo-data:${METADATA_DIR}
       - /home/twagoo/vlo-statsd:/opt/statsd

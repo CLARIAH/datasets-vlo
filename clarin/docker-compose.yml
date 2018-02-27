@@ -15,11 +15,12 @@ services:
     networks:
         - network_vlo
   vlo_web:
-    image: &vlo_web_image registry.gitlab.com/clarin-eric/docker-vlo-beta:1.3.6-beta1
+    image: &vlo_web_image registry.gitlab.com/clarin-eric/docker-vlo-beta:1.4.0-alpha1
     environment:
       - VLO_DOCKER_SOLR_URL=http://vlo_solr:8983/solr/vlo-index/
       - VLO_DOCKER_PUBLIC_HOME_URL=http://localhost:8080
       - VLO_DOCKER_PIWIK_ENABLE_TRACKER=false
+      - VLO_DOCKER_WICKET_CONFIGURATION=deployment
     ports:
       - 8181:8080
     restart: unless-stopped
