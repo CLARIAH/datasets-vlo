@@ -1,7 +1,7 @@
 version: '2'
 services:
   vlo_solr:
-    image: registry.gitlab.com/clarin-eric/docker-solr:1.1.0
+    image: registry.gitlab.com/clarin-eric/docker-solr:solr7.3-1.0.0-alpha1
     environment:
       - SOLR_DATA_HOME
     depends_on:
