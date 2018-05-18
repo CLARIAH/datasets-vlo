@@ -4,8 +4,6 @@ if [ $(readlink $0) ]; then
         DIR=$(dirname $(readlink $0))
 fi
 
-echo "Dir=${DIR}"
-
 function usage() {
 	echo "Usage: 
 	$0 --help 
