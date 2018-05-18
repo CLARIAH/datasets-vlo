@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DIR=$(dirname $BASH_SOURCE)
+if [ $(readlink $0) ]; then
+        DIR=$(dirname $(readlink $0))
+fi
 
 function usage() {
 	echo "Usage: 
@@ -45,7 +48,7 @@ beta)
 	COMMAND_PARAMS="-f beta.yml -f jmx.yml -f data.yml"
 	;;
 production)
-	EXPECTED_HOSTNAME="lvps92-51-161-129.dedicated.hosteurope.de"
+	EXPECTED_HOSTNAME="rs238144"
 	COMMAND_PARAMS="-f production.yml -f jmx.yml -f data.yml"
 	;;
 *)
