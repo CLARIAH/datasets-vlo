@@ -22,5 +22,4 @@ services:
       - vlo-statsd:/opt/statsd
       - vlo-sitemap:/opt/sitemap
       - ${METADATA_VOLUME}:${METADATA_DIR}
-    ports:
-      - 8080:8080
+

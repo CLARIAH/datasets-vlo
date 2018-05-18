@@ -24,7 +24,7 @@ services:
       - STATSD_PREFIX=vlo.newalpha
       - VLO_DOCKER_WICKET_CONFIGURATION=development
     volumes:
-      - /home/twagoo/vlo-data:${METADATA_DIR}
+      - ${METADATA_VOLUME}:${METADATA_DIR}
       - /home/twagoo/vlo-statsd:/opt/statsd
       - /home/twagoo/vlo-sitemap:/opt/sitemap
     ports:

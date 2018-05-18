@@ -21,7 +21,7 @@ services:
       - VLO_DOCKER_PIWIK_DOMAINS=*.beta-vlo.clarin.eu
       - STATSD_PREFIX=vlo.beta
     volumes:
-      - /srv/vlo-data:${METADATA_DIR}
+      - ${METADATA_VOLUME}:${METADATA_DIR}
       - /srv/vlo-statsd:/opt/statsd
       - /srv/vlo-sitemap:/opt/sitemap
     ports:
@@ -29,3 +29,4 @@ services:
 volumes:
   solr_temp:
     external: false
+    
