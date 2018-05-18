@@ -7,7 +7,7 @@ services:
     ports:
       - 8184:80
     volumes:
-      - ${METADATA_VOLUME}:/srv/www-static/data:ro
+      - $HOST_METADATA_DIR:/srv/www-static/data:ro
       - ./data/nginx-config/default.conf:/nginx_conf.d/default.conf:ro
       - vlo_www_data:/var/www/
     restart: unless-stopped
