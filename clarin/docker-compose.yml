@@ -39,5 +39,11 @@ volumes:
         external: false
     vlo-solr-data:
         external: false
+    vlo-statsd:
+        external: false
+    vlo-sitemap:
+        external: false
+    vlo-data: 
+        external: false
 networks:
   network_vlo:
