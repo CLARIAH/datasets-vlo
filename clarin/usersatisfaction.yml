@@ -1,0 +1,27 @@
+version: '2'
+services:
+  vlo_web:
+    environment:
+      - VLO_DOCKER_RATING_ENABLED=true
+      - VLO_DOCKER_RATING_SERVICE_NAME=VLO
+      - VLO_DOCKER_RATING_SHOW_PANEL_DELAY=120
+      - VLO_DOCKER_RATING_DISMISS_TIMEOUT=604800
+      - VLO_DOCKER_RATING_SUBMIT_TIMEOUT=2592000
+      - VLO_DOCKER_RATING_COUCHDB_URL=http://vlo_couchdb:5984/ratings
+      - VLO_DOCKER_RATING_COUCHDB_USER=vlo
+      - VLO_DOCKER_RATING_COUCHDB_PASSWORD=vlo
+  vlo_couchdb:
+    image: apache/couchdb:2.1.1
+    environment:
+      - COUCHDB_USER=vlo
+      - COUCHDB_PASSWORD=vlo
+    volumes:
+      - vlo-couchdb-data:/opt/couchdb/data
+      - vlo-couchdb-conf:/opt/couchdb/etc
+    networks:
+        - network_vlo
+volumes:
+  - vlo-couchdb-data:
+        external: false
+  - vlo-couchdb-conf:
+        external: false
