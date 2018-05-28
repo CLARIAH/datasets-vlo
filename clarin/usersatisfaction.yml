@@ -21,7 +21,7 @@ services:
     networks:
         - network_vlo
 volumes:
-  - vlo-couchdb-data:
-        external: false
-  - vlo-couchdb-conf:
-        external: false
+  vlo-couchdb-data:
+    external: false
+  vlo-couchdb-conf:
+    external: false
