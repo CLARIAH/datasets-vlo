@@ -34,22 +34,19 @@ COMMAND_PARAMS=""
 
 case $ENVIRONMENT in
 dev)
-	COMMAND_PARAMS="-f dev.yml"
-	;;
-testing)
-	COMMAND_PARAMS="-f testing.yml -f jmx.yml -f data.yml"
+	COMMAND_PARAMS="-f dev.yml -f usersatisfaction.yml"
 	;;
 alpha)
 	EXPECTED_HOSTNAME="rs236235"
-	COMMAND_PARAMS="-f testing.yml -f jmx.yml -f data.yml"
+	COMMAND_PARAMS="-f testing.yml -f jmx.yml -f data.yml -f usersatisfaction.yml"
 	;;
 beta)
 	EXPECTED_HOSTNAME="beta-vlo-clarin.esc.rzg.mpg.de"
-	COMMAND_PARAMS="-f beta.yml -f jmx.yml -f data.yml"
+	COMMAND_PARAMS="-f beta.yml -f jmx.yml -f data.yml -f usersatisfaction.yml"
 	;;
 production)
 	EXPECTED_HOSTNAME="rs238144"
-	COMMAND_PARAMS="-f production.yml -f jmx.yml -f data.yml"
+	COMMAND_PARAMS="-f production.yml -f jmx.yml -f data.yml -f usersatisfaction.yml"
 	;;
 *)
 	echo "Not a recognised environment name: $ENVIRONMENT"
