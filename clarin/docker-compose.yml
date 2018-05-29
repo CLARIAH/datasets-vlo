@@ -23,7 +23,7 @@ services:
     networks:
         - network_vlo
   vlo_web:
-    image: &vlo_web_image registry.gitlab.com/clarin-eric/docker-vlo-beta:1.6.0-alpha2c
+    image: &vlo_web_image registry.gitlab.com/clarin-eric/docker-vlo-beta:1.6.0-alpha3
     environment:
       - VLO_DOCKER_SOLR_URL=http://vlo_solr:8983/solr/vlo-index/
       - VLO_DOCKER_SOLR_USER_READ_ONLY
