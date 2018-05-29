@@ -7,6 +7,10 @@ services:
       - VLO_DOCKER_RATING_COUCHDB_URL=http://vlo_couchdb:5984/ratings
       - VLO_DOCKER_RATING_COUCHDB_USER=vlo
       - VLO_DOCKER_RATING_COUCHDB_PASSWORD=vlo
+      - VLO_DOCKER_RATING_SERVICE_NAME
+      - VLO_DOCKER_RATING_SHOW_PANEL_DELAY
+      - VLO_DOCKER_RATING_DISMISS_TIMEOUT
+      - VLO_DOCKER_RATING_SUBMIT_TIMEOUT
   vlo_couchdb:
     image: apache/couchdb:2.1.1
     environment:
