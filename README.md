@@ -20,7 +20,7 @@ cp clarin/.env-template ../.env
 ```
 
 You can then tweak or add the configuration depending for your specific environment and
-needs. Make sure to check for changes in the bundled template when updating.
+needs. Make sure to **check for changes in the bundled template when upgrading**.
 
 Note that some configuration overlays (see below) may need additional variables set.
 
@@ -62,6 +62,28 @@ setting the following environment variables:
 * `JMXTRANS_STATSD_PORT`
 
 See [.env-template](clarin/.env-template) for details and examples.
+
+### User satisfaction scores and CouchDB
+
+To configure the VLO to gather user satisfaction scores via the web app, use the
+`usersatisfaction.yml` overlay. This also defines a `vlo_couchdb` service for storing
+the submitted ratings. Set the following environment variables to override the 
+default behaviour:
+
+* `VLO_DOCKER_RATING_SERVICE_NAME`
+* `VLO_DOCKER_RATING_SHOW_PANEL_DELAY`
+* `VLO_DOCKER_RATING_DISMISS_TIMEOUT`
+* `VLO_DOCKER_RATING_SUBMIT_TIMEOUT`
+
+Note that you can also connect to an **external CouchDB instance** instead by setting the 
+following environment variables (and not using `usersatisfaction.yml`):
+
+* `VLO_DOCKER_RATING_ENABLED=true`
+* `VLO_DOCKER_RATING_COUCHDB_URL`
+* `VLO_DOCKER_RATING_COUCHDB_USER`
+* `VLO_DOCKER_RATING_COUCHDB_PASSWORD`
+
+See [.env-template](clarin/.env-template) for configuration details and examples.
 
 ## Usage
 
