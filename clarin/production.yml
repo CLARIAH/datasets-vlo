@@ -4,6 +4,8 @@ services:
   vlo_solr:
     environment:
       - SOLR_JAVA_MEM=-Xms1G -Xmx4G
+    volumes:
+      - solr_temp:/tmp
   vlo_web:
     environment:
       - VLO_MAPPING_DEFINITIONS_DIST_URL=https://github.com/clarin-eric/VLO-mapping/archive/master.tar.gz
@@ -17,9 +19,14 @@ services:
       - VLO_DOCKER_PIWIK_SITE_ID=3
       - VLO_DOCKER_PIWIK_HOST=https://stats.clarin.eu/
       - VLO_DOCKER_PIWIK_DOMAINS=*.vlo.clarin.eu
+      - VLO_DOCKER_STATSD_HOST
+      - VLO_DOCKER_STATSD_PORT
       - STATSD_PREFIX=vlo.production
+      - VLO_DOCKER_WICKET_CONFIGURATION=deployment
     volumes:
+      - ${METADATA_VOLUME}:${METADATA_DIR}
       - vlo-statsd:/opt/statsd
       - vlo-sitemap:/opt/sitemap
-      - ${METADATA_VOLUME}:${METADATA_DIR}
-
+volumes:
+  solr_temp:
+    external: false

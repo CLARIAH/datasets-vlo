@@ -1,4 +1,4 @@
-# VLO docker compose configuration overlay for production (and beta)
+# VLO docker compose configuration overlay for beta
 version: '2'
 services:
   vlo_solr:
@@ -19,7 +19,10 @@ services:
       - VLO_DOCKER_PIWIK_SITE_ID=1
       - VLO_DOCKER_PIWIK_HOST=https://stats.clarin.eu/
       - VLO_DOCKER_PIWIK_DOMAINS=*.beta-vlo.clarin.eu
+      - VLO_DOCKER_STATSD_HOST
+      - VLO_DOCKER_STATSD_PORT
       - STATSD_PREFIX=vlo.beta
+      - VLO_DOCKER_WICKET_CONFIGURATION=deployment
     volumes:
       - ${METADATA_VOLUME}:${METADATA_DIR}
       - /srv/vlo-statsd:/opt/statsd

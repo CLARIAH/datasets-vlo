@@ -4,8 +4,6 @@ services:
   vlo_solr:
     environment:
       - SOLR_JAVA_MEM=-Xms1G -Xmx4G
-    networks:
-      - network_vlo
     ports:
       - 8183:8983
   vlo_web:
@@ -21,6 +19,8 @@ services:
       - VLO_DOCKER_PIWIK_SITE_ID=1
       - VLO_DOCKER_PIWIK_HOST=https://stats.clarin.eu/
       - VLO_DOCKER_PIWIK_DOMAINS=*.alpha-vlo.clarin.eu
+      - VLO_DOCKER_STATSD_HOST
+      - VLO_DOCKER_STATSD_PORT
       - STATSD_PREFIX=vlo.newalpha
       - VLO_DOCKER_WICKET_CONFIGURATION=development
     volumes:
