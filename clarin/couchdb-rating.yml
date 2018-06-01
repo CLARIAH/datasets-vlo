@@ -1,3 +1,5 @@
+# Adds a vlo_couchdb service and configures the VLO web app to interact with it for
+# storage of user satisfaction scores (ratings)
 version: '2'
 services:
   vlo_web:
