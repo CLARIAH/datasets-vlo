@@ -63,27 +63,12 @@ setting the following environment variables:
 
 See [.env-template](clarin/.env-template) for details and examples.
 
-### User satisfaction scores and CouchDB
+### User satisfaction scores
 
 To configure the VLO to gather user satisfaction scores via the web app, use the
-`couchdb-rating.yml` overlay. This also defines a `vlo_couchdb` service for storing
-the submitted ratings. Set the following environment variables to override the 
-default behaviour:
-
-* `VLO_DOCKER_RATING_SERVICE_NAME`
-* `VLO_DOCKER_RATING_SHOW_PANEL_DELAY`
-* `VLO_DOCKER_RATING_DISMISS_TIMEOUT`
-* `VLO_DOCKER_RATING_SUBMIT_TIMEOUT`
-
-Note that you can also connect to an **external CouchDB instance** instead by setting the 
-following environment variables (and not using `couchdb-rating.yml`):
-
-* `VLO_DOCKER_RATING_ENABLED=true`
-* `VLO_DOCKER_RATING_COUCHDB_URL`
-* `VLO_DOCKER_RATING_COUCHDB_USER`
-* `VLO_DOCKER_RATING_COUCHDB_PASSWORD`
-
-See [.env-template](clarin/.env-template) for configuration details and examples.
+`mopinion.yml` overlay. This will cause a snippet to be included at the end of every
+rendered page that enables a feedback panel defined and controlled via 
+[Mopinion](https://app.mopinion.com).
 
 ## Usage
 
