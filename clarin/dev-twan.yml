@@ -8,6 +8,8 @@ services:
   vlo_web:
     environment:
       - VLO_DOCKER_DATAROOTS_FILE=/opt/vlo-local/config/dataroots-docker.xml
+      - VLO_DOCKER_WICKET_BOTTOM_SNIPPET_URL=file:///opt/vlo/snippets/bottomsnippets-test.html
     volumes:
       - /Users/twagoo/vlo/docker/config:/opt/vlo-local/config
       - /Users/twagoo/vlo/files/sample-roots:${METADATA_DIR}
+      - ./data/snippets:/opt/vlo/snippets
