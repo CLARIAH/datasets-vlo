@@ -45,5 +45,7 @@ volumes:
         external: false
     vlo-data: 
         external: false
+    vlo-resultsets:
+        external: false
 networks:
   network_vlo:
