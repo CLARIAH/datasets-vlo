@@ -34,7 +34,7 @@ COMMAND_PARAMS=""
 
 case $ENVIRONMENT in
 dev)
-	COMMAND_PARAMS="-f dev.yml -f couchdb-rating.yml"
+	COMMAND_PARAMS="-f dev.yml"
 	;;
 alpha)
 	EXPECTED_HOSTNAME="rs236235"
