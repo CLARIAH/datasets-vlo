@@ -25,8 +25,8 @@ services:
       - VLO_DOCKER_WICKET_CONFIGURATION=development
     volumes:
       - ${METADATA_VOLUME}:${METADATA_DIR}
-      - /home/twagoo/vlo-statsd:/opt/statsd
-      - /home/twagoo/vlo-sitemap:/opt/sitemap
+      - ${SITEMAP_VOLUME}:/opt/sitemap
+      - ${STATSD_VOLUME}:/opt/statsd
     ports:
       - 8182:8080
     networks:
