@@ -1,7 +1,7 @@
 version: '2'
 services:
   vlo_data:
-    image: registry.gitlab.com/clarin-eric/docker-alpine-nginx:2.0.0
+    image: registry.gitlab.com/clarin-eric/docker-alpine-nginx:2.0.1
     environment:
       - SOLR_DATA_HOME
     ports:
@@ -11,7 +11,7 @@ services:
       - ${RESULTSETS_VOLUME}:/srv/www-static/resultsets:ro
       - ${SITEMAP_VOLUME}:/srv/www-static/sitemap:ro
       - ./data/nginx-config/default.conf:/nginx_conf.d/default.conf:ro
-      - ./data/nginx-config/mime.types:/etc/nginx/mime.types:ro
+      - ./data/nginx-config/extra_mime.types:/etc/nginx/extra_mime.types:ro
       - vlo_www_data:/var/www/
     restart: unless-stopped
     networks:
