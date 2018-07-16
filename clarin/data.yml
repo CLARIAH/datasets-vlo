@@ -1,7 +1,7 @@
 version: '2'
 services:
   vlo_data:
-    image: registry.gitlab.com/clarin-eric/docker-alpine-nginx:1.0.5
+    image: registry.gitlab.com/clarin-eric/docker-alpine-nginx:2.0.0
     environment:
       - SOLR_DATA_HOME
     ports:
