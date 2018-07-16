@@ -4,4 +4,4 @@ services:
     environment:
       - VLO_DOCKER_WICKET_BOTTOM_SNIPPET_URL=file:///opt/vlo/snippets/bottomsnippets-mopinion.yml
     volumes:
-      - ./data/snippets:/opt/vlo/snippets
+      - ./vlo-web/snippets:/opt/vlo/snippets

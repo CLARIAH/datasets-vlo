@@ -12,4 +12,4 @@ services:
     volumes:
       - /Users/twagoo/vlo/docker/config:/opt/vlo-local/config
       - /Users/twagoo/vlo/files/sample-roots:${METADATA_DIR}
-      - ./data/snippets:/opt/vlo/snippets
+      - ./vlo-web/snippets:/opt/vlo/snippets
