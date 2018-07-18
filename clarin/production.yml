@@ -3,7 +3,7 @@ version: '2'
 services:
   vlo_solr:
     environment:
-      - SOLR_JAVA_MEM=-Xms1G -Xmx4G
+      - SOLR_JAVA_MEM=-Xms1G -Xmx8G
     volumes:
       - solr_temp:/tmp
   vlo_web:
@@ -21,7 +21,7 @@ services:
       - VLO_DOCKER_PIWIK_DOMAINS=*.vlo.clarin.eu
       - VLO_DOCKER_STATSD_HOST
       - VLO_DOCKER_STATSD_PORT
-      - STATSD_PREFIX=vlo.production
+      - STATSD_PREFIX
       - VLO_DOCKER_WICKET_CONFIGURATION=deployment
     volumes:
       - ${METADATA_VOLUME}:${METADATA_DIR}

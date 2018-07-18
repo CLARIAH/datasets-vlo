@@ -21,16 +21,10 @@ services:
       - VLO_DOCKER_PIWIK_DOMAINS=*.alpha-vlo.clarin.eu
       - VLO_DOCKER_STATSD_HOST
       - VLO_DOCKER_STATSD_PORT
-      - STATSD_PREFIX=vlo.newalpha
+      - STATSD_PREFIX
       - VLO_DOCKER_WICKET_CONFIGURATION=development
     volumes:
       - ${METADATA_VOLUME}:${METADATA_DIR}
       - ${SITEMAP_VOLUME}:/opt/sitemap
       - ${STATSD_VOLUME}:/opt/statsd
-    ports:
-      - 8182:8080
-    networks:
-      - network_vlo
-networks:
-  network_vlo:
   

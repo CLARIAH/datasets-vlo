@@ -47,6 +47,8 @@ services:
       # this copies data for Solr home directory provisioning
       - solr-home-provisioning:/opt/vlo/solr/vlo-solr-home
     restart: "no"
+    networks:
+        - network_vlo
 volumes:
     solr-home-provisioning:
         external: false
