@@ -42,7 +42,6 @@ services:
   vlo_solr_init:
     image: *vlo_web_image
     entrypoint: ["sleep", "1"]
-    user: solr
     volumes:
       # this copies data for Solr home directory provisioning
       - solr-home-provisioning:/opt/vlo/solr/vlo-solr-home
