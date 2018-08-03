@@ -21,6 +21,6 @@ services:
       - JMXTRANS_OPTS=-Dhost_alias=${JMXTRANS_HOST_ALIAS} -Dstatsd_host=${JMXTRANS_STATSD_HOST} -Dstatsd_port=${JMXTRANS_STATSD_PORT} -Dsolr_jmx_host=vlo_solr -Dsolr_jmx_port=18983 
     volumes:
       - ./jmxtrans:/var/lib/jmxtrans
-      - ./jmxtrans/log4j.xml:/usr/share/jmxtrans/conf/log4j.xml
+      #- ./jmxtrans/custom-log4j.xml:/usr/share/jmxtrans/conf/log4j.xml
     networks:
       - network_vlo
