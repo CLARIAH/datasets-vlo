@@ -1,10 +1,10 @@
 version: '2'
 services:
   vlo_solr:
-   environment:
-     - SOLR_HOME=/solr-home-dev
-   volumes:
-     - /Users/twagoo/git/VLO/vlo-solr/solr-home:/solr-home-dev
+#   environment:
+#     - SOLR_HOME=/solr-home-dev
+#   volumes:
+#     - /Users/twagoo/git/VLO/vlo-solr/solr-home:/solr-home-dev
   vlo_web:
     environment:
       - VLO_DOCKER_DATAROOTS_FILE=/opt/vlo-local/config/dataroots-docker.xml
