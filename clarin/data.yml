@@ -6,11 +6,12 @@ services:
       - SOLR_DATA_HOME
     ports:
       - 8184:80
+      - 8144:443
     volumes:
       - ${METADATA_VOLUME}:/srv/www-static/data:ro
       - ${RESULTSETS_VOLUME}:/srv/www-static/resultsets:ro
       - ${SITEMAP_VOLUME}:/srv/www-static/sitemap:ro
-      - ./data/nginx-config/default.conf:/nginx_conf.d/default.conf:ro
+      - ./data/nginx-config/default.conf:/etc/nginx/conf.d/default.conf:ro
       - ./data/nginx-config/mime.types:/etc/nginx/extra_mime.types:ro
       - ${WEB_STATIC_DATA_VOLUME}:/srv/www-static/root:ro
     restart: unless-stopped
