@@ -3,6 +3,7 @@ services:
   vlo_solr:
     image: registry.gitlab.com/clarin-eric/docker-solr:solr7.4-1.0.0-alpha2
     environment:
+      - SOLR_JAVA_MEM
       - SOLR_DATA_HOME
       - SOLR_HOME_PROVISIONING_PATH
       - VLO_DOCKER_SOLR_USER_READ_ONLY
@@ -26,14 +27,34 @@ services:
     image: &vlo_web_image registry.gitlab.com/clarin-eric/docker-vlo-beta:1.6.1-alpha1
     environment:
       - VLO_DOCKER_SOLR_URL=http://vlo_solr:8983/solr/vlo-index/
+      ## from .env
+      - VLO_MAPPING_DEFINITIONS_DIST_URL
+      - VLO_DOCKER_PUBLIC_HOME_URL
+      - VLO_DOCKER_DATAROOTS_FILE
+      - VLO_DOCKER_FILE_PROCESSING_THREADS
+      - VLO_DOCKER_SOLR_THREADS
+      - VLO_DOCKER_DELETE_ALL_FIRST
+      - VLO_DOCKER_MAX_DAYS_IN_SOLR
+      
       - VLO_DOCKER_SOLR_USER_READ_ONLY
       - VLO_DOCKER_SOLR_PASSWORD_READ_ONLY
       - VLO_DOCKER_SOLR_USER_READ_WRITE
       - VLO_DOCKER_SOLR_PASSWORD_READ_WRITE
       - VLO_DOCKER_SOLR_PASSWORD_ADMIN
-      - VLO_DOCKER_PUBLIC_HOME_URL=http://localhost:8080
-      - VLO_DOCKER_PIWIK_ENABLE_TRACKER=false
-      - VLO_DOCKER_WICKET_CONFIGURATION=deployment
+      
+      - VLO_DOCKER_PIWIK_ENABLE_TRACKER
+      - VLO_DOCKER_PIWIK_SITE_ID
+      - VLO_DOCKER_PIWIK_HOST
+      - VLO_DOCKER_PIWIK_DOMAINS
+      
+      - VLO_DOCKER_STATSD_HOST
+      - VLO_DOCKER_STATSD_PORT
+      - STATSD_PREFIX
+      - VLO_DOCKER_WICKET_CONFIGURATION
+    volumes:
+      - ${METADATA_VOLUME}:${METADATA_DIR}
+      - ${SITEMAP_VOLUME}:/opt/sitemap
+      - ${STATSD_VOLUME}:/opt/statsd
     ports:
       - 8181:8080
       - 8143:8443

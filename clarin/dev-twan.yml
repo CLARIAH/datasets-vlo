@@ -7,9 +7,12 @@ services:
 #     - /Users/twagoo/git/VLO/vlo-solr/solr-home:/solr-home-dev
   vlo_web:
     environment:
+      ## data roots
       - VLO_DOCKER_DATAROOTS_FILE=/opt/vlo-local/config/dataroots-docker.xml
-      - VLO_DOCKER_WICKET_BOTTOM_SNIPPET_URL=file:///opt/vlo/snippets/bottomsnippets-test.html
+      ## footer snippet
+      #- VLO_DOCKER_WICKET_BOTTOM_SNIPPET_URL=file:///opt/vlo/snippets/bottomsnippets-test.html
     volumes:
-      - /Users/twagoo/vlo/docker/config:/opt/vlo-local/config
-      - /Users/twagoo/vlo/files/sample-roots:${METADATA_DIR}
-      - ./vlo-web/snippets:/opt/vlo/snippets
+      ## data roots mount
+      - ${VLO_HOST_DATAROOTS_FILE}:/opt/vlo-local/config/dataroots-docker.xml
+      ## footer snippet
+      #- ./vlo-web/snippets:/opt/vlo/snippets

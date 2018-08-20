@@ -1,9 +1,0 @@
-# VLO docker compose configuration overlay overlay for host with fluentd
-version: '2'
-services:
-  vlo_solr:
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: docker.vlo_solr
