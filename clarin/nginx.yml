@@ -1,6 +1,6 @@
 version: '2'
 services:
-  vlo_data:
+  vlo-proxy:
     image: registry.gitlab.com/clarin-eric/docker-alpine-nginx:2.0.3
     environment:
       - SOLR_DATA_HOME
@@ -12,6 +12,7 @@ services:
       - ${RESULTSETS_VOLUME}:/srv/www-static/resultsets:ro
       - ${SITEMAP_VOLUME}:/srv/www-static/sitemap:ro
       - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/conf.d/vlo.inc:/etc/nginx/conf.d/vlo.inc:ro
       - ./nginx/conf.d/mime.types:/etc/nginx/extra_mime.types:ro
       - ${WEB_STATIC_DATA_VOLUME}:/srv/www-static/root:ro
     restart: unless-stopped
