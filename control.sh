@@ -38,15 +38,15 @@ dev)
 	;;
 alpha)
 	EXPECTED_HOSTNAME="rs236235"
-	COMMAND_PARAMS="-f testing.yml -f jmx.yml -f data.yml -f mopinion.yml"
+	COMMAND_PARAMS="-f testing.yml -f jmx.yml -f ngninx.yml -f mopinion.yml"
 	;;
 beta)
 	EXPECTED_HOSTNAME="beta-vlo-clarin.esc.rzg.mpg.de"
-	COMMAND_PARAMS="-f beta.yml -f jmx.yml -f data.yml -f mopinion.yml"
+	COMMAND_PARAMS="-f beta.yml -f jmx.yml -f ngninx.yml -f mopinion.yml"
 	;;
 production)
 	EXPECTED_HOSTNAME="rs238144"
-	COMMAND_PARAMS="-f production.yml -f jmx.yml -f data.yml -f mopinion.yml"
+	COMMAND_PARAMS="-f production.yml -f jmx.yml -f ngninx.yml -f mopinion.yml"
 	;;
 *)
 	echo "Not a recognised environment name: $ENVIRONMENT"

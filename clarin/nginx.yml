@@ -11,8 +11,8 @@ services:
       - ${METADATA_VOLUME}:/srv/www-static/data:ro
       - ${RESULTSETS_VOLUME}:/srv/www-static/resultsets:ro
       - ${SITEMAP_VOLUME}:/srv/www-static/sitemap:ro
-      - ./data/nginx-config/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./data/nginx-config/mime.types:/etc/nginx/extra_mime.types:ro
+      - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/conf.d/mime.types:/etc/nginx/extra_mime.types:ro
       - ${WEB_STATIC_DATA_VOLUME}:/srv/www-static/root:ro
     restart: unless-stopped
     networks:
