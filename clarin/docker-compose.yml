@@ -1,6 +1,6 @@
 version: '2'
 services:
-  vlo_solr:
+  vlo-solr:
     image: registry.gitlab.com/clarin-eric/docker-solr:solr7.4-1.0.0-alpha2
     environment:
       - SOLR_JAVA_MEM
@@ -12,7 +12,7 @@ services:
       - VLO_DOCKER_SOLR_PASSWORD_READ_WRITE
       - VLO_DOCKER_SOLR_PASSWORD_ADMIN
     depends_on:
-      - vlo_solr_init # to ensure Solr home directory content
+      - vlo-solr-init # to ensure Solr home directory content
     entrypoint: ["bash", "-c", "[ -f ${SOLR_HOME_PROVISIONING_PATH}/solr.xml ]
                         && /opt/solr-init/filter-solr-security.sh
                         && /usr/bin/entrypoint.sh"]
@@ -23,10 +23,10 @@ services:
     restart: on-failure
     networks:
         - network_vlo
-  vlo_web:
+  vlo-web:
     image: &vlo_web_image registry.gitlab.com/clarin-eric/docker-vlo-beta:1.6.1-alpha2
     environment:
-      - VLO_DOCKER_SOLR_URL=http://vlo_solr:8983/solr/vlo-index/
+      - VLO_DOCKER_SOLR_URL=http://vlo-solr:8983/solr/vlo-index/
       ## from .env
       - VLO_MAPPING_DEFINITIONS_DIST_URL
       - VLO_DOCKER_PUBLIC_HOME_URL
@@ -58,13 +58,10 @@ services:
       - ${METADATA_VOLUME}:${METADATA_DIR}
       - ${SITEMAP_VOLUME}:/opt/sitemap
       - ${STATSD_VOLUME}:/opt/statsd
-    ports:
-      - 8181:8080
-      - 8143:8443
     restart: on-failure
     networks:
         - network_vlo
-  vlo_solr_init:
+  vlo-solr-init:
     image: *vlo_web_image
     entrypoint: ["sleep", "1"]
     volumes:

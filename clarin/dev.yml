@@ -1,9 +1,9 @@
 version: '2'
 services:
-  vlo_solr:
+  vlo-solr:
     ports:
       - 8983:8983
-  vlo_web:
+  vlo-web:
     environment:
       - VLO_MAPPING_DEFINITIONS_DIST_URL=https://github.com/clarin-eric/VLO-mapping/archive/development.tar.gz
       - VLO_DOCKER_PUBLIC_HOME_URL=https://localhost:8080

@@ -1,17 +1,17 @@
 # VLO docker compose configuration overlay to initialise with sample data
 version: '2'
 services:
-  vlo_sample_data:
+  vlo-sample-data:
     image: registry.gitlab.com/clarin-eric/docker-vlo-sample-data:1.1.0
     volumes:
       # volume for CMDI records shared with vlo_web (see volumes below)
       - sample_data:/vlo-data
       # volume for Solr data (index) with vlo_solr (see docker-compose.yml)
       - vlo-solr-sample-data:/solr-data
-  vlo_web:
+  vlo-web:
     volumes:
       - sample_data:/vlo-data/sample
-  vlo_solr:
+  vlo-solr:
     volumes:
       - vlo-solr-sample-data:${SOLR_DATA_PROVISIONING_PATH}
 volumes:

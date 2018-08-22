@@ -1,10 +1,10 @@
 # VLO docker compose configuration overlay for beta
 version: '2'
 services:
-  vlo_solr:
+  vlo-solr:
     volumes:
       - solr_temp:/tmp
-  vlo_web:
+  vlo-web:
     ports:
       - 80:8080
 volumes:
