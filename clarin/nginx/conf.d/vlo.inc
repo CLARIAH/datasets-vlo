@@ -6,23 +6,8 @@ location / {
 	proxy_pass              https://vlo-web:8443;
 }
 
-location /data/ {
-	alias   /srv/www-static/data/;
-	autoindex on;
-}
-
-location /root/ {
-	alias   /srv/www-static/root/;
-	autoindex on;
-}
-
-location /resultsets/ {
-	alias   /srv/www-static/resultsets/;
-	autoindex on;
-}
-
-location /sitemap/ {
-	alias   /srv/www-static/sitemap/;
+location ~ ^/(data|root|resultsets|sitemap)/(.*) {
+	alias   /srv/www-static/$1/$2;
 	autoindex on;
 }
 
