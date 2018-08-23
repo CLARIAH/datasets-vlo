@@ -6,6 +6,9 @@ BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 BACKUP_DIR_RELATIVE_PATH="../../vlo-index-backup" #relative to compose dir
 BACKUP_FILE_PREFIX="vlo-backup"
 
+VLO_WEB_SERVICE="vlo-web"
+VLO_IMAGE_IMPORT_COMMAND="/opt/importer.sh"
+
 ARG_COUNT=$#
 
 STOP=0
@@ -130,6 +133,9 @@ execute_control_commands() {
 		if [ ${RESTORE} -eq 1 ]; then
 			vlo_restore
 		fi
+		if [ ${IMPORT} -eq 1 ]; then
+			vlo_import
+		fi
 	fi
 }
 
@@ -143,6 +149,10 @@ vlo_start() {
 
 vlo_stop() {
 	_docker-compose ${COMPOSE_OPTS} down ${COMPOSE_CMD_ARGS}
+}
+
+vlo_import() {
+	_docker-compose ${COMPOSE_OPTS} exec -T ${VLO_WEB_SERVICE} nice -n10 ${VLO_IMAGE_IMPORT_COMMAND}
 }
 
 # vlo_backup() {
