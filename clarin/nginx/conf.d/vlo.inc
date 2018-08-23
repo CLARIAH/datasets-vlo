@@ -2,8 +2,8 @@ location / {
 	proxy_set_header        Host $host;
 	proxy_set_header        X-Real-IP $remote_addr;
 	proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
-	proxy_set_header        X-Forwarded-Proto https;
-	proxy_pass              https://vlo-web:8443;
+	proxy_set_header        X-Forwarded-Proto http;
+	proxy_pass              http://vlo-web:8080;
 }
 
 location ~ ^/(data|root|resultsets|sitemap)/(.*) {
