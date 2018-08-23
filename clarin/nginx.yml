@@ -4,12 +4,15 @@ services:
     volumes:
       # override server conf to support proxy
       - ./tomcat/conf/server.xml:/srv/tomcat8/conf/server.xml:ro
+    ports:
+      # expose locally on 8188
+      - 127.0.0.1:8188:8080
   vlo-proxy:
     image: registry.gitlab.com/clarin-eric/docker-alpine-nginx:2.0.3
     environment:
       - SOLR_DATA_HOME
     ports:
-      - 8181:80
+      - 8181:81
       - 8143:443
       #to support legacy proxy conf (deprecated)
       - 8184:80
