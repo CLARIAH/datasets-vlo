@@ -23,7 +23,7 @@ VERBOSE=0
 
 print_usage() {
     echo ""
-    echo "control.sh [start|stop|restart|backup|restore] [-hd]"
+    echo "control.sh [start|stop|restart|run-import|backup|restore|status] [-hd]"
     echo ""
     echo "  start       Start VLO services"
     echo "  stop        Stop VLO services"
