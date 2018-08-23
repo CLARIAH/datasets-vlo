@@ -12,5 +12,4 @@ solr-temp-volume
 ### Development/testing overlays
 #expose-solr
 #expose-tomcat
-#dev
 #sample-data
