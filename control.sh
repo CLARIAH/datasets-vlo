@@ -1,63 +1,285 @@
-#!/usr/bin/env bash
-DIR=$(dirname $BASH_SOURCE)
-if [ $(readlink $0) ]; then
-        DIR=$(dirname $(readlink $0))
-fi
+#!/bin/bash
+source "$(dirname $0)/script/_inc.sh"
 
-function usage() {
-	echo "Usage: 
-	$0 --help 
-	
-		Shows this message
-		
-	$0 {dev|alpha|testing|beta|production} [docker-compose-opts]
-	
-		Calls docker compose with the right overlays for the specified
-		environment and the specified compose options"
+set -e
+
+ELASTICSEARCH_SERVICE="elasticsearch"
+KIBANA_SERVICE="kibana"
+BACKUP_DIR_RELATIVE_PATH="../../elasticsearch-index-backup" #relative to compose dir
+BACKUP_FILE_PREFIX="elasticsearch-backup"
+
+ARG_COUNT=$#
+
+STOP=0
+START=0
+IMPORT=0
+STATUS=0
+BACKUP=0
+RESTORE=0
+HELP=0
+VERBOSE=0
+NOPROXY=0
+
+print_usage() {
+    echo ""
+    echo "control.sh [start|stop|restart|backup|restore] [-hd]"
+    echo ""
+    echo "  start       Start VLO services"
+    echo "  stop        Stop VLO services"
+    echo "  run-import  Run a VLO import"
+    echo "  restart     Restart VLO services"
+    echo "  status      Show status of VLO service containers"
+    echo "  backup      Create a backup of the VLO Solr index"
+    echo "                This will create a new backup archive (${BACKUP_FILE_PREFIX}...tgz)"
+    echo "                in the backup directory (a sibling to the script directory)"
+    echo "  restore     Restore a backup of the VLO Solr index into the current container"
+    echo "                This will extract and apply the most recent backup archive"
+    echo "                (${BACKUP_FILE_PREFIX}...tgz) in the backup directory  (a sibling to"
+    echo "                the script directory)"
+    echo ""
+    echo "  -d, --debug Run this script in verbose mode"
+    echo ""
+    echo "  -h, --help  Show help"
+    echo ""
+    echo "  --no-proxy  Disable Kibana proxy"
+    echo "                Kibana will be exposed to the localhost without an nginx proxy,"
+    echo "                NOT to be used in production"
 }
 
-if [ "--help" == "$1" ]; then
-	usage
-	exit 0
-fi
+main() {
+	process_args $@
+	execute_control_commands 
+}
 
-ENVIRONMENT=$1
-if [ -z "$ENVIRONMENT" ]; then
-	usage
-	exit 1
-fi
-
-shift
-
-EXPECTED_HOSTNAME=""
-COMMAND_PARAMS=""
-
-case $ENVIRONMENT in
-dev)
-	COMMAND_PARAMS="-f dev.yml"
-	;;
-alpha)
-	EXPECTED_HOSTNAME="rs236235"
-	COMMAND_PARAMS="-f testing.yml -f jmx.yml -f nginx.yml -f mopinion.yml"
-	;;
-beta)
-	EXPECTED_HOSTNAME="beta-vlo-clarin.esc.rzg.mpg.de"
-	COMMAND_PARAMS="-f beta.yml -f jmx.yml -f nginx.yml -f mopinion.yml"
-	;;
-production)
-	EXPECTED_HOSTNAME="rs238144"
-	COMMAND_PARAMS="-f production.yml -f jmx.yml -f nginx.yml -f mopinion.yml"
-	;;
-*)
-	echo "Not a recognised environment name: $ENVIRONMENT"
-	echo "Type '$0 --help' for help"
-	exit 2
-esac
-
-if ! [ -z "${EXPECTED_HOSTNAME}" ]; then
-	if ! bash "${DIR}/check-hostname.sh" "${EXPECTED_HOSTNAME}"; then
-		exit 3
+process_args() {
+	#
+	# Process script arguments
+	#
+	while [[ $# -gt 0 ]]
+	do
+	key="$1"
+	case $key in
+		'stop')
+			STOP=1
+			;;
+		'start')
+			START=1
+			;;
+		'restart')
+			STOP=1
+			START=1
+			;;
+		'status')
+			STATUS=1
+			;;
+		'backup')
+			BACKUP=1
+			;;
+		'restore')
+			RESTORE=1
+			;;
+		'-h'|'--help')
+			HELP=1
+		   ;;
+		'-d'|'--debug')
+			VERBOSE=1
+			;;
+		'--no-proxy')
+			NOPROXY=1
+			;;
+		*)
+			echo "Unkown option: $key"
+			HELP=1
+			;;
+	esac
+	shift # past argument or value
+	done
+	
+	BASH_OPTS=""
+	# Print parameters if running in verbose mode
+	if [ ${VERBOSE} -eq 1 ]; then
+		set -x
+		BASH_OPTS="${BASH_OPTS} -x"
 	fi
-fi
+}
 
-bash "${DIR}/docker-compose.sh" ${COMMAND_PARAMS} $@
+execute_control_commands() {
+	#
+	# Execute based on mode argument
+	#
+	if [ $ARG_COUNT -le 0 ] || [ ${HELP} -eq 1 ]; then
+		print_usage
+	    exit 0
+	else
+		COMPOSE_OPTS="-f docker-compose.yml"
+		if [ ${NOPROXY} -eq 1 ]; then
+			COMPOSE_OPTS="${COMPOSE_OPTS} -f no-proxy.yml"
+		else
+			#default: enable proxy
+			COMPOSE_OPTS="${COMPOSE_OPTS} -f proxy.yml"		
+		fi
+		if [ $VERBOSE -eq 1 ]; then
+			COMPOSE_OPTS="${COMPOSE_OPTS} --verbose"	
+		fi
+		COMPOSE_CMD_ARGS=""
+		
+		BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
+		COMPOSE_DIR="${BASE_DIR}/clarin"
+		SCRIPT_DIR="${BASE_DIR}/script"
+	
+		if [ ${STATUS} -eq 1 ]; then
+			ek_status
+			exit 0
+		fi
+
+		if [ ${STOP} -eq 1 ]; then
+			ek_stop
+		fi
+		if [ ${START} -eq 1 ]; then
+			ek_start
+		fi
+		if [ ${BACKUP} -eq 1 ]; then
+			ek_backup
+		fi
+		if [ ${RESTORE} -eq 1 ]; then
+			ek_restore
+		fi
+	fi
+}
+
+ek_status() {
+	_docker-compose ${COMPOSE_OPTS} ps
+}
+
+ek_start() {
+	if _docker-compose ${COMPOSE_OPTS} up -d ${COMPOSE_CMD_ARGS}; then
+		export_credentials
+		while ! curl -s -f -u ${ELASTICSEARCH_USERNAME}:${ELASTICSEARCH_PASSWORD} "${ELASTIC_SEARCH_URL}" > /dev/null
+		do
+			echo "Waiting for Elasticsearch..."
+			sleep 5
+		done
+	fi
+}
+
+ek_stop() {
+	_docker-compose ${COMPOSE_OPTS} down ${COMPOSE_CMD_ARGS}
+}
+
+ek_backup() {
+	if service_is_running ${ELASTICSEARCH_SERVICE}; then
+		echo -e "Elasticsearch is running. Starting backup procedure...\n"
+	else
+		echo "Elasticsearch is not running. Please start Elasticsearch and try again.."
+		exit 1
+	fi
+
+	export ELASTIC_COMPOSE_DIR="${COMPOSE_DIR}"
+
+	BACKUP_DIR="${COMPOSE_DIR}/${BACKUP_DIR_RELATIVE_PATH}" #host only dir
+	export ELASTIC_SEARCH_BACKUP_DIR="${BACKUP_DIR}/work-backup"
+	
+	export_credentials
+	
+	if ! (mkdir -p "${BACKUP_DIR}" && [ -d "${BACKUP_DIR}" ] && [ -x "${BACKUP_DIR}" ]); then
+		echo "Cannot create and/or access backup directory ${BACKUP_DIR}"
+		exit 1
+	fi
+	
+	echo "Archiving old backups..."
+	mkdir -p "${BACKUP_DIR}/archived"
+	(
+		cd "${BACKUP_DIR}"
+		mv "${BACKUP_FILE_PREFIX}"*".tgz" "archived/" && echo " Done" || echo " Nothing to do"
+	)
+	
+	if [ -d "${ELASTIC_SEARCH_BACKUP_DIR}" ]; then
+		echo "Moving old work directory out of the way ${ELASTIC_SEARCH_BACKUP_DIR}"
+		mv "${ELASTIC_SEARCH_BACKUP_DIR}" "${BACKUP_DIR}/lost+found-work-backup-$(date +%Y%m%d%H%M%S)"
+	fi
+	
+	bash ${BASH_OPTS} "${SCRIPT_DIR}/backup.sh"
+	
+	if ! [ -d "${ELASTIC_SEARCH_BACKUP_DIR}" ]; then
+		echo "Backup directory does not exist after backup. Failed backup?"
+		exit 1
+	fi
+	
+	echo "Compressing new backup..."
+	COMPRESSED_BACKUP_FILE="${BACKUP_FILE_PREFIX}-$(date +%Y%m%d%H%M%S).tgz"
+	(cd "${ELASTIC_SEARCH_BACKUP_DIR}" && \
+		tar zcf "${COMPRESSED_BACKUP_FILE}" *)
+	if mv "${ELASTIC_SEARCH_BACKUP_DIR}/${COMPRESSED_BACKUP_FILE}" "${BACKUP_DIR}/${COMPRESSED_BACKUP_FILE}"; then
+		echo "Moved to ${BACKUP_DIR}/${COMPRESSED_BACKUP_FILE}. Cleaning up uncompressed backup..."
+		_remove_dir "${ELASTIC_SEARCH_BACKUP_DIR}"
+		echo "Done!"
+	else
+		echo "Creation of backup archive failed. Target directory '${ELASTIC_SEARCH_BACKUP_DIR}' left as is."
+		exit 1
+	fi
+}
+
+ek_restore() {
+	BACKUP_DIR="${COMPOSE_DIR}/${BACKUP_DIR_RELATIVE_PATH}" #host only dir
+	if ! [ -d "${BACKUP_DIR}" ]; then
+		echo "Backup directory ${BACKUP_DIR} not found! Place a backup file in this location and try again."
+		exit 1
+	fi
+	
+	LAST_BACKUP_FILE=`find "${BACKUP_DIR}" -maxdepth 1 -name "${BACKUP_FILE_PREFIX}*.tgz" | sort | tail -n 1`	
+	if [ "${LAST_BACKUP_FILE}" = "" ] || ! [ -e "${LAST_BACKUP_FILE}" ]; then
+		echo "No backup file '${BACKUP_FILE_PREFIX}....tgz' found in ${BACKUP_DIR}. Place a backup file in this location and try again."
+		exit 1
+	fi
+	
+	if service_is_running ${ELASTICSEARCH_SERVICE}; then
+		echo -e "Elasticsearch is running. Starting procedure to restore '${LAST_BACKUP_FILE}'...\n"
+	else
+		echo "Elasticsearch is not running. Please start Elasticsearch and try again.."
+		exit 1
+	fi
+	
+	echo "Uncompressing backup..."
+	WORK_DIR="${BACKUP_DIR}/work-restore"
+	if [ -d "${WORK_DIR}" ]; then
+		echo "Moving old work directory out of the way ${WORK_DIR}"
+		mv "${WORK_DIR}" "${BACKUP_DIR}/lost+found-work-restore-$(date +%Y%m%d%H%M%S)"
+	fi
+	mkdir -p "${WORK_DIR}"
+	tar zxf "${LAST_BACKUP_FILE}" -C "${WORK_DIR}"
+	
+	export ELASTIC_COMPOSE_DIR="${COMPOSE_DIR}"
+	export ELASTIC_SEARCH_BACKUP_DIR="${WORK_DIR}/backup" #'backup' dir expected (result of extracting from /var/backup in image on backup)
+
+	export_credentials
+
+	bash ${BASH_OPTS} "${SCRIPT_DIR}/restore.sh"
+	
+	echo "Cleaning up..."
+	_remove_dir "${WORK_DIR}"
+	
+	if ! service_is_running "${ELASTICSEARCH_SERVICE}"; then
+		ek_start
+	fi
+}
+
+_docker-compose() {
+	(cd $COMPOSE_DIR && docker-compose $@)
+}
+
+service_is_running() {
+    if ! (_docker-compose ps $1 |grep -q "Up "); then
+        return 1
+    else
+        return 0
+    fi
+}
+
+export_credentials() {
+	eval "$(grep "ELASTICSEARCH_USERNAME" "${COMPOSE_DIR}/.env")"
+	eval "$(grep "ELASTICSEARCH_PASSWORD" "${COMPOSE_DIR}/.env")"
+	export ELASTICSEARCH_USERNAME ELASTICSEARCH_PASSWORD
+} 
+
+main $@
