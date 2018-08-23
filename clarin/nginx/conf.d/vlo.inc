@@ -11,6 +11,15 @@ location ~ ^/(data|root|resultsets|sitemap)/(.*) {
 	autoindex on;
 }
 
+location ~ ^/(robots.txt|google.*\.html)$ {
+	alias /srv/www-static/root/$1;
+}
+
+location = /tour {
+	return	301 " /#tour";
+}
+
+
 error_page   500 502 503 504  /50x.html;
 location = /50x.html {
 	root    /var/lib/nginx/html;
