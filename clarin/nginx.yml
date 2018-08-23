@@ -1,9 +1,17 @@
 version: '2'
 services:
   vlo-web:
+    environment:
+      - TOMCAT_PROXY_REMOTE_IP_HEADER
+      - TOMCAT_PROXY_INTERNAL_PROXIES
+      - TOMCAT_PROXY_PROXIES_HEADER
+      - TOMCAT_PROXY_PROTOCOL_HEADER
+      - TOMCAT_PROXY_HTTP_SERVER_PORT
+      - TOMCAT_PROXY_HTTPS_SERVER_PORT
     volumes:
       # override server conf to support proxy
-      - ./tomcat/conf/server.xml:/srv/tomcat8/conf/server.xml:ro
+      - ./tomcat/init/tomcat-vlo-init.sh:/init/tomcat-vlo-init.sh
+      - ./tomcat/conf/server.xml:/srv/tomcat8/conf/server.template.xml:ro
     ports:
       # expose locally on 8188
       - 127.0.0.1:8188:8080
