@@ -1,0 +1,6 @@
+version: '2'
+services:
+  vlo-web:
+    ports:
+      # expose locally on 8181
+      - 127.0.0.1:8181:8080
