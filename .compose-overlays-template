@@ -7,7 +7,7 @@ nginx
 solr-temp-volume
 #jmx
 #mopinion
-#jmxtransfer
+#jmxtrans
 
 ### Development/testing overlays
 #expose-solr
