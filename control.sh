@@ -3,6 +3,7 @@ set -e
 
 BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
+OVERLAYS_LIST_FILE=".compose-overlays"
 BACKUP_DIR_RELATIVE_PATH="../../vlo-index-backup" #relative to compose dir
 BACKUP_FILE_PREFIX="vlo-backup"
 
@@ -40,6 +41,10 @@ print_usage() {
     echo "  -d, --debug Run this script in verbose mode"
     echo ""
     echo "  -h, --help  Show help"
+    echo ""
+    echo "Additional configuration overlays will be loaded according to the list in"
+    echo "a file '${OVERLAYS_LIST_FILE}' in the control script directory if present. See"
+    echo "the bundled template file for more information."
 }
 
 main() {
@@ -272,12 +277,11 @@ export_credentials() {
 }
 
 read_compose_modules() {
-	OVERLAYS_LIST_FILE="${BASE_DIR}/.compose-overlays"
-	if [ -e "${OVERLAYS_LIST_FILE}" ]; then
-		for OVERLAY in $(grep -v -e "^#" "$OVERLAYS_LIST_FILE"); do
-			OVERLAY_FILE="${OVERLAY}.yml"
-			echo "Including compose overlay ${OVERLAY_FILE}" >&2
-			echo -n "-f ${OVERLAY_FILE} "
+	if [ -e "${BASE_DIR}/${OVERLAYS_LIST_FILE}" ]; then
+		for OVERLAY_NAME in $(grep -v -e "^#" "${BASE_DIR}/${OVERLAYS_LIST_FILE}"); do
+			OVERLAY_YML="${OVERLAY_NAME}.yml"
+			echo "Including compose overlay ${OVERLAY_YML}" >&2
+			echo -n "-f ${OVERLAY_YML} "
 		done
 	else
 		echo "No file ${OVERLAYS_LIST_FILE} found, continuing without additional overlays" >&2
