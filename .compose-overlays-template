@@ -4,11 +4,13 @@
 # unexpected behaviour if included in this file.
 
 nginx
-#no-nginx
+solr-temp-volume
 #jmx
 #mopinion
 #jmxtransfer
+
+### Development/testing overlays
+#expose-solr
+#expose-tomcat
 #dev
 #sample-data
-
-

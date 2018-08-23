@@ -1,0 +1,6 @@
+# VLO docker compose configuration overlay for exposing solr
+version: '2'
+services:
+  vlo-solr:
+    ports:
+      - 8183:8983
