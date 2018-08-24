@@ -4,6 +4,7 @@
 # unexpected behaviour if included in this file.
 
 nginx
+solr-backup
 solr-temp-volume
 #jmx
 #mopinion
