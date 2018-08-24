@@ -3,12 +3,16 @@ set -e
 
 BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
+source "${BASE_DIR}/script/_inc.sh"
+
 OVERLAYS_LIST_FILE=".compose-overlays"
 BACKUP_DIR_RELATIVE_PATH="../../vlo-index-backup" #relative to compose dir
 BACKUP_FILE_PREFIX="vlo-backup"
 
 VLO_WEB_SERVICE="vlo-web"
+VLO_SOLR_SERVICE="vlo-solr"
 VLO_IMAGE_IMPORT_COMMAND="/opt/importer.sh"
+VLO_DOCKER_SOLR_ADMIN_USER="user_admin"
 
 ARG_COUNT=$#
 
@@ -160,58 +164,58 @@ vlo_import() {
 	_docker-compose ${COMPOSE_OPTS} exec -T ${VLO_WEB_SERVICE} nice -n10 ${VLO_IMAGE_IMPORT_COMMAND}
 }
 
-# vlo_backup() {
-# 	if service_is_running ${ELASTICSEARCH_SERVICE}; then
-# 		echo -e "Elasticsearch is running. Starting backup procedure...\n"
-# 	else
-# 		echo "Elasticsearch is not running. Please start Elasticsearch and try again.."
-# 		exit 1
-# 	fi
-# 
-# 	export ELASTIC_COMPOSE_DIR="${COMPOSE_DIR}"
-# 
-# 	BACKUP_DIR="${COMPOSE_DIR}/${BACKUP_DIR_RELATIVE_PATH}" #host only dir
-# 	export ELASTIC_SEARCH_BACKUP_DIR="${BACKUP_DIR}/work-backup"
-# 	
-# 	export_credentials
-# 	
-# 	if ! (mkdir -p "${BACKUP_DIR}" && [ -d "${BACKUP_DIR}" ] && [ -x "${BACKUP_DIR}" ]); then
-# 		echo "Cannot create and/or access backup directory ${BACKUP_DIR}"
-# 		exit 1
-# 	fi
-# 	
-# 	echo "Archiving old backups..."
-# 	mkdir -p "${BACKUP_DIR}/archived"
-# 	(
-# 		cd "${BACKUP_DIR}"
-# 		mv "${BACKUP_FILE_PREFIX}"*".tgz" "archived/" && echo " Done" || echo " Nothing to do"
-# 	)
-# 	
-# 	if [ -d "${ELASTIC_SEARCH_BACKUP_DIR}" ]; then
-# 		echo "Moving old work directory out of the way ${ELASTIC_SEARCH_BACKUP_DIR}"
-# 		mv "${ELASTIC_SEARCH_BACKUP_DIR}" "${BACKUP_DIR}/lost+found-work-backup-$(date +%Y%m%d%H%M%S)"
-# 	fi
-# 	
-# 	bash ${BASH_OPTS} "${SCRIPT_DIR}/backup.sh"
-# 	
-# 	if ! [ -d "${ELASTIC_SEARCH_BACKUP_DIR}" ]; then
-# 		echo "Backup directory does not exist after backup. Failed backup?"
-# 		exit 1
-# 	fi
-# 	
-# 	echo "Compressing new backup..."
-# 	COMPRESSED_BACKUP_FILE="${BACKUP_FILE_PREFIX}-$(date +%Y%m%d%H%M%S).tgz"
-# 	(cd "${ELASTIC_SEARCH_BACKUP_DIR}" && \
-# 		tar zcf "${COMPRESSED_BACKUP_FILE}" *)
-# 	if mv "${ELASTIC_SEARCH_BACKUP_DIR}/${COMPRESSED_BACKUP_FILE}" "${BACKUP_DIR}/${COMPRESSED_BACKUP_FILE}"; then
-# 		echo "Moved to ${BACKUP_DIR}/${COMPRESSED_BACKUP_FILE}. Cleaning up uncompressed backup..."
-# 		_remove_dir "${ELASTIC_SEARCH_BACKUP_DIR}"
-# 		echo "Done!"
-# 	else
-# 		echo "Creation of backup archive failed. Target directory '${ELASTIC_SEARCH_BACKUP_DIR}' left as is."
-# 		exit 1
-# 	fi
-# }
+vlo_backup() {
+	if service_is_running ${VLO_SOLR_SERVICE}; then
+		echo -e "VLO Solr is running. Starting backup procedure...\n"
+	else
+		echo "VLO Solr does not seem to be running. Please start the service and try again.."
+		exit 1
+	fi
+
+	export VLO_COMPOSE_DIR="${COMPOSE_DIR}"
+
+	BACKUP_DIR="${COMPOSE_DIR}/${BACKUP_DIR_RELATIVE_PATH}" #host only dir
+	export VLO_SOLR_BACKUP_DIR="${BACKUP_DIR}/work-backup"
+	
+	export_credentials
+	
+	if ! (mkdir -p "${BACKUP_DIR}" && [ -d "${BACKUP_DIR}" ] && [ -x "${BACKUP_DIR}" ]); then
+		echo "Cannot create and/or access backup directory ${BACKUP_DIR}"
+		exit 1
+	fi
+	
+	echo "Archiving old backups..."
+	mkdir -p "${BACKUP_DIR}/archived"
+	(
+		cd "${BACKUP_DIR}"
+		mv "${BACKUP_FILE_PREFIX}"*".tgz" "archived/" && echo " Done" || echo " Nothing to do"
+	)
+	
+	if [ -d "${VLO_SOLR_BACKUP_DIR}" ]; then
+		echo "Moving old work directory out of the way ${VLO_SOLR_BACKUP_DIR}"
+		mv "${VLO_SOLR_BACKUP_DIR}" "${BACKUP_DIR}/lost+found-work-backup-$(date +%Y%m%d%H%M%S)"
+	fi
+	
+	bash ${BASH_OPTS} "${SCRIPT_DIR}/backup.sh"
+	
+	if ! [ -d "${VLO_SOLR_BACKUP_DIR}" ]; then
+		echo "Backup directory does not exist after backup. Failed backup?"
+		exit 1
+	fi
+	
+	echo "Compressing new backup..."
+	COMPRESSED_BACKUP_FILE="${BACKUP_FILE_PREFIX}-$(date +%Y%m%d%H%M%S).tgz"
+	(cd "${VLO_SOLR_BACKUP_DIR}" && \
+		tar zcf "${COMPRESSED_BACKUP_FILE}" *)
+	if mv "${VLO_SOLR_BACKUP_DIR}/${COMPRESSED_BACKUP_FILE}" "${BACKUP_DIR}/${COMPRESSED_BACKUP_FILE}"; then
+		echo "Moved to ${BACKUP_DIR}/${COMPRESSED_BACKUP_FILE}. Cleaning up uncompressed backup..."
+		_remove_dir "${VLO_SOLR_BACKUP_DIR}"
+		echo "Done!"
+	else
+		echo "Creation of backup archive failed. Target directory '${VLO_SOLR_BACKUP_DIR}' left as is."
+		exit 1
+	fi
+}
 
 # vlo_restore() {
 # 	BACKUP_DIR="${COMPOSE_DIR}/${BACKUP_DIR_RELATIVE_PATH}" #host only dir
@@ -273,7 +277,8 @@ service_is_running() {
 
 export_credentials() {
 	eval "$(grep "VLO_DOCKER_SOLR_PASSWORD_ADMIN" "${COMPOSE_DIR}/.env")"
-	export VLO_DOCKER_SOLR_PASSWORD_ADMIN
+	export VLO_SOLR_BACKUP_USERNAME="${VLO_DOCKER_SOLR_ADMIN_USER}"
+	export VLO_SOLR_BACKUP_PASSWORD="${VLO_DOCKER_SOLR_PASSWORD_ADMIN}"
 }
 
 read_compose_modules() {

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 source "$(dirname $0)/_inc.sh"
 
-TARGET_DIR="${VLO_INDEX_BACKUP_DIR:-/tmp/vlo-solr-backup}"
+TARGET_DIR="${VLO_SOLR_BACKUP_DIR:-/tmp/vlo-solr-backup}"
 
 set -e
 
@@ -26,8 +26,8 @@ function check_env {
 		exit 1
 	fi
 
-	if [ -z "$SOLR_USERNAME" ] || [ -z "$SOLR_PASSWORD" ]; then
-		echo "Please set environment variables SOLR_USERNAME and SOLR_PASSWORD"
+	if [ -z "$VLO_SOLR_BACKUP_USERNAME" ] || [ -z "$VLO_SOLR_BACKUP_PASSWORD" ]; then
+		echo "Please set environment variables VLO_SOLR_BACKUP_USERNAME and VLO_SOLR_BACKUP_PASSWORD"
 		exit 1
 	fi
 
@@ -43,7 +43,7 @@ function set_permissions {
 function do_backup {
 	echo -e "\nCarrying out backup...\n"
 	if ! (cd $VLO_COMPOSE_DIR && 
-		docker-compose exec vlo-solr curl -f -u ${SOLR_USERNAME}:${SOLR_PASSWORD} "${VLO_SOLR_INDEX_URL}/replication?command=backup&location=${CONTAINER_BACKUP_DIR}") > /dev/null
+		docker-compose exec vlo-solr curl -f -u ${VLO_SOLR_BACKUP_USERNAME}:${VLO_SOLR_BACKUP_PASSWORD} "${VLO_SOLR_INDEX_URL}/replication?command=backup&location=${CONTAINER_BACKUP_DIR}") > /dev/null
 	then
 		echo "Failed to create backup!"
 		cleanup_backup
