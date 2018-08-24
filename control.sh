@@ -9,8 +9,6 @@ OVERLAYS_LIST_FILE=".compose-overlays"
 BACKUP_DIR_RELATIVE_PATH="../../vlo-index-backup" #relative to compose dir
 BACKUP_FILE_PREFIX="vlo-backup"
 
-VLO_WEB_SERVICE="vlo-web"
-VLO_SOLR_SERVICE="vlo-solr"
 VLO_IMAGE_IMPORT_COMMAND="/opt/importer.sh"
 VLO_DOCKER_SOLR_ADMIN_USER="user_admin"
 

@@ -1,0 +1,7 @@
+# see ../script/restore.sh
+version: '2'
+services:
+  vlo-solr:
+    volumes:
+      # mount backup volume for restoring
+      - ${VLO_SOLR_BACKUP_LOCATION}:${CONTAINER_BACKUP_DIR}

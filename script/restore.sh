@@ -1,16 +1,14 @@
 #!/usr/bin/env bash
 source "$(dirname $0)/_inc.sh"
 
-SRC_DIR="${ELASTIC_SEARCH_BACKUP_DIR:-/tmp/esbackup/backup}" #matches default in backup script
+SRC_DIR="${VLO_RESTORE_DIR:-${HOST_BACKUP_DIR}/backup}" #matches default in backup script
 
 set -e
 
 function main {
 	check_env
 	check_service
-	prepare_repo
 	prepare_restore
-	check_snapshot
 	do_restore
 	finalize
 }
@@ -21,75 +19,69 @@ function check_env {
 		exit 2
 	fi
 
-	if [ -z "$ELASTIC_COMPOSE_DIR" ]; then
-		echo "Please set environment variable ELASTIC_COMPOSE_DIR"
+	if [ -z "$VLO_COMPOSE_DIR" ]; then
+		echo "Please set environment variable VLO_COMPOSE_DIR"
 		exit 1
 	fi
 
-	if [ -z "$ELASTIC_COMPOSE_DIR" ]; then
-		echo "Please set environment variable ELASTIC_COMPOSE_DIR"
+	if [ -z "$VLO_COMPOSE_DIR" ]; then
+		echo "Please set environment variable VLO_COMPOSE_DIR"
 		exit 1
 	fi
 
-	if [ -z "$ELASTICSEARCH_USERNAME" ]; then
-		ELASTICSEARCH_USERNAME="${ELASTICSEARCH_USERNAME_DEFAULT}"
-		echo "Using default elastic username!"
-	fi
-	if [ -z "$ELASTICSEARCH_PASSWORD" ]; then
-		ELASTICSEARCH_PASSWORD="${ELASTICSEARCH_PASSWORD_DEFAULT}"
-		echo "Using default elastic password!!"
+	if [ -z "$VLO_SOLR_BACKUP_USERNAME" ] || [ -z "$VLO_SOLR_BACKUP_PASSWORD" ]; then
+		echo "Please set environment variables VLO_SOLR_BACKUP_USERNAME and VLO_SOLR_BACKUP_PASSWORD"
+		exit 1
 	fi
 
-	if [ -z "$SNAPSHOT_NAME" ]; then
-		echo "Please set environment variable SNAPSHOT_NAME (see index-0 file for index info)"
+	if [ -z "$BACKUP_NAME" ]; then
+		echo "Please set environment variable BACKUP_NAME"
 		exit 1
 	fi
 
 	echo "Restoring from ${SRC_DIR}"
-	echo "Using repository/snapshot '${REPO_NAME}/${SNAPSHOT_NAME}'"
 }
+
+
+# ${SRC_DIR}/backup/snapshot.vlo-index
+# should go into $SOLR_DATA_HOME/vlo-index/data/index/
 
 function prepare_restore {
-	echo -e "\nRestarting with backup mounted...\n"	
-	export ELASTIC_SEARCH_BACKUP_REPOSITORY_LOCATION="${SRC_DIR}"
-	(cd $ELASTIC_COMPOSE_DIR && \
-		docker-compose down && \
-		docker-compose -f docker-compose.yml -f restore.yml up -d --force-recreate elasticsearch)	
+	INDEX_SNAPSHOT_DIR="${SRC_DIR}/snapshot.${BACKUP_NAME}"
+	if ! [ -d "${INDEX_SNAPSHOT_DIR}" ]; then
+		echo "Snapshot not found in backup dir! Expected to find it at ${INDEX_SNAPSHOT_DIR}"
+		exit 2
+	fi
 
-	while ! curl -s -f -u ${ELASTICSEARCH_USERNAME}:${ELASTICSEARCH_PASSWORD} "${ELASTIC_SEARCH_URL}" > /dev/null
+	echo -e "\nRestarting with backup mounted...\n"	
+	export VLO_SOLR_BACKUP_LOCATION="${SRC_DIR}"
+	${VLO_COMPOSE_DIR}/../control.sh stop
+	(cd $VLO_COMPOSE_DIR && \
+		docker-compose -f docker-compose.yml -f solr-restore.yml up -d --force-recreate "${VLO_SOLR_SERVICE}")	
+
+	while ! (cd $VLO_COMPOSE_DIR && docker-compose exec "${VLO_SOLR_SERVICE}" \
+		curl -f -u ${VLO_SOLR_BACKUP_USERNAME}:${VLO_SOLR_BACKUP_PASSWORD} "${VLO_SOLR_INDEX_URL}/replication") > /dev/null
 	do
-		echo "Waiting for Elasticsearch..."
+		echo "Waiting for Solr..."
 		sleep 5
 	done
-}
-
-function check_snapshot {
-	if curl -s -f -u ${ELASTICSEARCH_USERNAME}:${ELASTICSEARCH_PASSWORD} "${ELASTIC_SEARCH_URL}/_snapshot/${REPO_NAME}/${SNAPSHOT_NAME}" > /dev/null
-	then
-		echo "Snapshot found..."
-	else
-		echo -e "Snapshot to restore not found. Cannot restore. Snapshots info:\n\n"
-		echo curl -u ${ELASTICSEARCH_USERNAME}:${ELASTICSEARCH_PASSWORD} "${ELASTIC_SEARCH_URL}/_snapshot/${REPO_NAME}/*"
-		exit 5
-	fi
 }
 
 function do_restore {
 	echo -e "\nCarrying out restore...\n"
 	#close all indexes
-	curl -s -u ${ELASTICSEARCH_USERNAME}:${ELASTICSEARCH_PASSWORD} -XPOST "${ELASTIC_SEARCH_URL}/_all/_close" > /dev/null
-	#restore everything
- 	curl -s -u ${ELASTICSEARCH_USERNAME}:${ELASTICSEARCH_PASSWORD} -XPOST "${ELASTIC_SEARCH_URL}/_snapshot/${REPO_NAME}/${SNAPSHOT_NAME}/_restore?wait_for_completion=true" -H 'Content-Type: application/json' -d'
- 	{
- 	  "include_global_state": true
- 	}
- 	'
+	(cd $VLO_COMPOSE_DIR && docker-compose exec "${VLO_SOLR_SERVICE}" \
+		bash -c "
+			mv \$SOLR_DATA_HOME/vlo-index/data/index \$SOLR_DATA_HOME/vlo-index/data/index_old;
+			(cp -r ${CONTAINER_BACKUP_DIR}/snapshot.${BACKUP_NAME} \$SOLR_DATA_HOME/vlo-index/data/index && rm -rf \$SOLR_DATA_HOME/vlo-index/data/index_old) ||
+			(echo 'Failed, reverting old index' && mv \$SOLR_DATA_HOME/vlo-index/data/index_old \$SOLR_DATA_HOME/vlo-index/data/index)
+		")
 	echo -e "\nDone...\n"
 }
 
 function finalize {
 	echo "Stopping services"
-	(cd $ELASTIC_COMPOSE_DIR && \
+	(cd $VLO_COMPOSE_DIR && \
 		docker-compose down)
 }
 

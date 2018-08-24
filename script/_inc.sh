@@ -1,7 +1,11 @@
 # Common functions and variables for backup.sh and restore.sh
 
+VLO_WEB_SERVICE="vlo-web"
+VLO_SOLR_SERVICE="vlo-solr"
+
 VLO_SOLR_INDEX_URL="${VLO_SOLR_INDEX_URL:-http://localhost:8983/solr/vlo-index}"
 CONTAINER_BACKUP_DIR="${CONTAINER_BACKUP_DIR:-/var/backup}"
+HOST_BACKUP_DIR="${VLO_SOLR_BACKUP_DIR:-/tmp/vlo-solr-backup}"
 BACKUP_NAME="${VLO_SOLR_BACKUP_NAME:-vlo-index}"
 
 check_service() {	

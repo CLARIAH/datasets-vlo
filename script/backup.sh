@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 source "$(dirname $0)/_inc.sh"
 
-TARGET_DIR="${VLO_SOLR_BACKUP_DIR:-/tmp/vlo-solr-backup}"
+TARGET_DIR="${HOST_BACKUP_DIR}"
 
 set -e
 
@@ -37,13 +37,13 @@ function check_env {
 function set_permissions {
 	echo -e "Setting target permission...\n"
 	(cd $VLO_COMPOSE_DIR && \
-		docker-compose exec -u root vlo-solr chown -R solr "${CONTAINER_BACKUP_DIR}" )
+		docker-compose exec -u root "${VLO_SOLR_SERVICE}" chown -R solr "${CONTAINER_BACKUP_DIR}" )
 }
 
 function do_backup {
 	echo -e "\nCarrying out backup...\n"
 	if ! (cd $VLO_COMPOSE_DIR && 
-		docker-compose exec vlo-solr curl -f -u ${VLO_SOLR_BACKUP_USERNAME}:${VLO_SOLR_BACKUP_PASSWORD} "${VLO_SOLR_INDEX_URL}/replication?command=backup&location=${CONTAINER_BACKUP_DIR}&name=${BACKUP_NAME:-backup}") > /dev/null
+		docker-compose exec "${VLO_SOLR_SERVICE}" curl -f -u ${VLO_SOLR_BACKUP_USERNAME}:${VLO_SOLR_BACKUP_PASSWORD} "${VLO_SOLR_INDEX_URL}/replication?command=backup&location=${CONTAINER_BACKUP_DIR}&name=${BACKUP_NAME:-backup}") > /dev/null
 	then
 		echo "Failed to create backup!"
 		cleanup_backup
@@ -62,13 +62,13 @@ function extract_backup {
 
 	echo -e "Extracting to ${TARGET_DIR}...\n"
 	(cd $VLO_COMPOSE_DIR && \
-		docker cp "vlo_vlo-solr_1:${CONTAINER_BACKUP_DIR}" "${TARGET_DIR}")
+		docker cp "vlo_${VLO_SOLR_SERVICE}_1:${CONTAINER_BACKUP_DIR}" "${TARGET_DIR}")
 }
 
 function cleanup_backup {
 	echo -e "Cleaning up...\n"
 	(cd $VLO_COMPOSE_DIR && \
-		docker-compose exec vlo-solr bash -c "if [ -d '${CONTAINER_BACKUP_DIR}' ]; then rm -rf ${CONTAINER_BACKUP_DIR}/*; fi")
+		docker-compose exec "${VLO_SOLR_SERVICE}" bash -c "if [ -d '${CONTAINER_BACKUP_DIR}' ]; then rm -rf ${CONTAINER_BACKUP_DIR}/*; fi")
 }
 
 main
