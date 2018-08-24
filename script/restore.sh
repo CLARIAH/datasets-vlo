@@ -55,6 +55,7 @@ function prepare_restore {
 
 	echo -e "\nRestarting with backup mounted...\n"	
 	export VLO_SOLR_BACKUP_LOCATION="${SRC_DIR}"
+	export CONTAINER_BACKUP_DIR
 	${VLO_COMPOSE_DIR}/../control.sh stop
 	(cd $VLO_COMPOSE_DIR && \
 		docker-compose -f docker-compose.yml -f solr-restore.yml up -d --force-recreate "${VLO_SOLR_SERVICE}")	
