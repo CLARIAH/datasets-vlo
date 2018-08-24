@@ -215,50 +215,49 @@ vlo_backup() {
 	fi
 }
 
-# vlo_restore() {
-# 	BACKUP_DIR="${COMPOSE_DIR}/${BACKUP_DIR_RELATIVE_PATH}" #host only dir
-# 	if ! [ -d "${BACKUP_DIR}" ]; then
-# 		echo "Backup directory ${BACKUP_DIR} not found! Place a backup file in this location and try again."
-# 		exit 1
-# 	fi
-# 	
-# 	LAST_BACKUP_FILE=`find "${BACKUP_DIR}" -maxdepth 1 -name "${BACKUP_FILE_PREFIX}*.tgz" | sort | tail -n 1`	
-# 	if [ "${LAST_BACKUP_FILE}" = "" ] || ! [ -e "${LAST_BACKUP_FILE}" ]; then
-# 		echo "No backup file '${BACKUP_FILE_PREFIX}....tgz' found in ${BACKUP_DIR}. Place a backup file in this location and try again."
-# 		exit 1
-# 	fi
-# 	
-# 	if service_is_running ${ELASTICSEARCH_SERVICE}; then
-# 		echo -e "Elasticsearch is running. Starting procedure to restore '${LAST_BACKUP_FILE}'...\n"
-# 	else
-# 		echo "Elasticsearch is not running. Please start Elasticsearch and try again.."
-# 		exit 1
-# 	fi
-# 	
-# 	echo "Uncompressing backup..."
-# 	WORK_DIR="${BACKUP_DIR}/work-restore"
-# 	if [ -d "${WORK_DIR}" ]; then
-# 		echo "Moving old work directory out of the way ${WORK_DIR}"
-# 		mv "${WORK_DIR}" "${BACKUP_DIR}/lost+found-work-restore-$(date +%Y%m%d%H%M%S)"
-# 	fi
-# 	mkdir -p "${WORK_DIR}"
-# 	tar zxf "${LAST_BACKUP_FILE}" -C "${WORK_DIR}"
-# 	
-# 	export ELASTIC_COMPOSE_DIR="${COMPOSE_DIR}"
-# 	export ELASTIC_SEARCH_BACKUP_DIR="${WORK_DIR}/backup" #'backup' dir expected (result of extracting from /var/backup in image on backup)
-# 
-# 	export_credentials
-# 
-# 	bash ${BASH_OPTS} "${SCRIPT_DIR}/restore.sh"
-# 	
-# 	echo "Cleaning up..."
-# 	_remove_dir "${WORK_DIR}"
-# 	
-# 	if ! service_is_running "${ELASTICSEARCH_SERVICE}"; then
-# 		vlo_start
-# 	fi
-# }
+vlo_restore() {
+	BACKUP_DIR="${COMPOSE_DIR}/${BACKUP_DIR_RELATIVE_PATH}" #host only dir
+	if ! [ -d "${BACKUP_DIR}" ]; then
+		echo "Backup directory ${BACKUP_DIR} not found! Place a backup file in this location and try again."
+		exit 1
+	fi
+	
+	LAST_BACKUP_FILE=`find "${BACKUP_DIR}" -maxdepth 1 -name "${BACKUP_FILE_PREFIX}*.tgz" | sort | tail -n 1`	
+	if [ "${LAST_BACKUP_FILE}" = "" ] || ! [ -e "${LAST_BACKUP_FILE}" ]; then
+		echo "No backup file '${BACKUP_FILE_PREFIX}....tgz' found in ${BACKUP_DIR}. Place a backup file in this location and try again."
+		exit 1
+	fi
+	
+	if service_is_running ${VLO_SOLR_SERVICE}; then
+		echo -e "VLO Solr is running. Starting procedure to restore '${VLO_SOLR_SERVICE}'...\n"
+	else
+		echo "VLO Solr is not running. Please start the service and try again.."
+		exit 1
+	fi
+	
+	echo "Uncompressing backup..."
+	WORK_DIR="${BACKUP_DIR}/work-restore"
+	if [ -d "${WORK_DIR}" ]; then
+		echo "Moving old work directory out of the way ${WORK_DIR}"
+		mv "${WORK_DIR}" "${BACKUP_DIR}/lost+found-work-restore-$(date +%Y%m%d%H%M%S)"
+	fi
+	mkdir -p "${WORK_DIR}"
+	tar zxf "${LAST_BACKUP_FILE}" -C "${WORK_DIR}"
+	
+	export VLO_COMPOSE_DIR="${COMPOSE_DIR}"
+	export VLO_RESTORE_DIR="${WORK_DIR}/backup" #'backup' dir expected (result of extracting from /var/backup in image on backup)
 
+	export_credentials
+
+	bash ${BASH_OPTS} "${SCRIPT_DIR}/restore.sh"
+	
+	echo "Cleaning up..."
+	_remove_dir "${WORK_DIR}"
+	
+	if ! service_is_running "${VLO_SOLR_SERVICE}"; then
+		vlo_start
+	fi
+}
 
 
 _docker-compose() {
