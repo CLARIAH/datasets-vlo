@@ -72,11 +72,13 @@ function do_restore {
 	echo -e "\nCarrying out restore...\n"
 	#close all indexes
 	(cd $VLO_COMPOSE_DIR && docker-compose exec "${VLO_SOLR_SERVICE}" \
-		bash -c "
-			mv \$SOLR_DATA_HOME/vlo-index/data/index \$SOLR_DATA_HOME/vlo-index/data/index_old;
-			(cp -r ${CONTAINER_BACKUP_DIR}/snapshot.${BACKUP_NAME} \$SOLR_DATA_HOME/vlo-index/data/index && rm -rf \$SOLR_DATA_HOME/vlo-index/data/index_old) ||
-			(echo 'Failed, reverting old index' && mv \$SOLR_DATA_HOME/vlo-index/data/index_old \$SOLR_DATA_HOME/vlo-index/data/index)
-		")
+		curl -f -u ${VLO_SOLR_BACKUP_USERNAME}:${VLO_SOLR_BACKUP_PASSWORD} "${VLO_SOLR_INDEX_URL}/replication?command=restore&name=${BACKUP_NAME}&location=${CONTAINER_BACKUP_DIR}" )
+		
+# 		bash -c "
+# 			mv \$SOLR_DATA_HOME/vlo-index/data/index \$SOLR_DATA_HOME/vlo-index/data/index_old;
+# 			(cp -r ${CONTAINER_BACKUP_DIR}/snapshot.${BACKUP_NAME} \$SOLR_DATA_HOME/vlo-index/data/index && rm -rf \$SOLR_DATA_HOME/vlo-index/data/index_old) ||
+# 			(echo 'Failed, reverting old index' && mv \$SOLR_DATA_HOME/vlo-index/data/index_old \$SOLR_DATA_HOME/vlo-index/data/index)
+# 		")
 	echo -e "\nDone...\n"
 }
 

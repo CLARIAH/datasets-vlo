@@ -49,6 +49,8 @@ function do_backup {
 		cleanup_backup
 		exit 5
 	fi
+	
+	##TODO: WAIT FOR BACKUP TO COMPLETE!!
 
 	echo -e "\nDone...\n"
 }
