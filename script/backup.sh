@@ -43,7 +43,7 @@ function set_permissions {
 function do_backup {
 	echo -e "\nCarrying out backup...\n"
 	if ! (cd $VLO_COMPOSE_DIR && 
-		docker-compose exec vlo-solr curl -f -u ${VLO_SOLR_BACKUP_USERNAME}:${VLO_SOLR_BACKUP_PASSWORD} "${VLO_SOLR_INDEX_URL}/replication?command=backup&location=${CONTAINER_BACKUP_DIR}") > /dev/null
+		docker-compose exec vlo-solr curl -f -u ${VLO_SOLR_BACKUP_USERNAME}:${VLO_SOLR_BACKUP_PASSWORD} "${VLO_SOLR_INDEX_URL}/replication?command=backup&location=${CONTAINER_BACKUP_DIR}&name=${BACKUP_NAME:-backup}") > /dev/null
 	then
 		echo "Failed to create backup!"
 		cleanup_backup

@@ -2,6 +2,7 @@
 
 VLO_SOLR_INDEX_URL="${VLO_SOLR_INDEX_URL:-http://localhost:8983/solr/vlo-index}"
 CONTAINER_BACKUP_DIR="${CONTAINER_BACKUP_DIR:-/var/backup}"
+BACKUP_NAME="${VLO_SOLR_BACKUP_NAME:-vlo-index}"
 
 check_service() {	
 	if ! docker-compose exec \
