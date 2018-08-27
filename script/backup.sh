@@ -54,10 +54,17 @@ function do_backup {
 			if get_backup_status | grep "success"; then
 				SUCCESS="true"
 			else
-				echo "Not successful (yet). Status: "
-				get_backup_status
-				echo "Checking again in 5 seconds..."
-				sleep 5
+				if get_backup_status | grep "exception"; then
+					echo "Exception occurred. Terminating..."
+					remove_backup
+					cleanup_backup
+					exit 1
+				else
+					echo "Not successful (yet). Status: "
+					get_backup_status
+					echo "Checking again in 5 seconds..."
+					sleep 5
+				fi
 			fi
 		done
 	else
