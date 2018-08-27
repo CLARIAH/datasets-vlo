@@ -40,17 +40,35 @@ function set_permissions {
 		docker-compose exec -u root "${VLO_SOLR_SERVICE}" chown -R solr "${CONTAINER_BACKUP_DIR}" )
 }
 
+function get_backup_status {
+	solr_api_get "${VLO_SOLR_INDEX_URL}/replication?command=details"
+}
+
 function do_backup {
 	echo -e "\nCarrying out backup...\n"
-	if ! (cd $VLO_COMPOSE_DIR && 
-		docker-compose exec "${VLO_SOLR_SERVICE}" curl -f -u ${VLO_SOLR_BACKUP_USERNAME}:${VLO_SOLR_BACKUP_PASSWORD} "${VLO_SOLR_INDEX_URL}/replication?command=backup&location=${CONTAINER_BACKUP_DIR}&name=${BACKUP_NAME:-backup}") > /dev/null
+	if (cd $VLO_COMPOSE_DIR && 
+		solr_api_get "${VLO_SOLR_INDEX_URL}/replication?command=backup&location=${CONTAINER_BACKUP_DIR}&name=${BACKUP_NAME:-backup}") > /dev/null
 	then
+		echo "Checking status..."
+		SUCCESS="false"
+		while [ "$SUCCESS" != "true" ]; do
+			if get_backup_status | grep "success"; then
+				SUCCESS="true"
+			else
+				echo "Not successful (yet). Status: "
+				get_backup_status
+				echo "Checking again in 5 seconds..."
+				sleep 5
+			fi
+		done
+	else
 		echo "Failed to create backup!"
 		cleanup_backup
 		exit 5
 	fi
 	
-	##TODO: WAIT FOR BACKUP TO COMPLETE!!
+	echo "Final backup status: "
+	get_backup_status
 
 	echo -e "\nDone...\n"
 }

@@ -18,6 +18,12 @@ check_service() {
 	fi
 }
 
+
+solr_api_get() {
+	(cd $VLO_COMPOSE_DIR && 
+		docker-compose exec "${VLO_SOLR_SERVICE}" curl -f -u ${VLO_SOLR_BACKUP_USERNAME}:${VLO_SOLR_BACKUP_PASSWORD} $@)
+}
+
 _remove_dir() {
 	if [ -n "$1" ] && [ -d "$1" ]; then
 		(cd "$1" \
