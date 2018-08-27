@@ -12,6 +12,7 @@ function main {
 	set_permissions
 	do_backup
 	extract_backup
+	remove_backup
 	cleanup_backup
 }
 
@@ -46,9 +47,7 @@ function get_backup_status {
 
 function do_backup {
 	echo -e "\nCarrying out backup...\n"
-	if (cd $VLO_COMPOSE_DIR && 
-		solr_api_get "${VLO_SOLR_INDEX_URL}/replication?command=backup&location=${CONTAINER_BACKUP_DIR}&name=${BACKUP_NAME:-backup}")
-	then
+	if solr_api_get "${VLO_SOLR_INDEX_URL}/replication?command=backup&location=${CONTAINER_BACKUP_DIR}&name=${BACKUP_NAME:-backup}"; then
 		echo "Checking status..."
 		SUCCESS="false"
 		while [ "$SUCCESS" != "true" ]; do
@@ -85,8 +84,18 @@ function extract_backup {
 		docker cp "vlo_${VLO_SOLR_SERVICE}_1:${CONTAINER_BACKUP_DIR}" "${TARGET_DIR}")
 }
 
+function remove_backup {
+	echo -e "Deleting backup from volume...\n"
+	
+	if ! solr_api_get \
+			"${VLO_SOLR_INDEX_URL}/replication?command=deletebackup&location=${CONTAINER_BACKUP_DIR}&name=${BACKUP_NAME:-backup}"; then
+		echo "Failed to delete backup!" 
+	fi
+}
+
 function cleanup_backup {
 	echo -e "Cleaning up...\n"
+	
 	(cd $VLO_COMPOSE_DIR && \
 		docker-compose exec -T "${VLO_SOLR_SERVICE}" bash -c "if [ -d '${CONTAINER_BACKUP_DIR}' ]; then rm -rf ${CONTAINER_BACKUP_DIR}/*; fi")
 }

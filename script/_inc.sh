@@ -10,7 +10,7 @@ BACKUP_NAME="${VLO_SOLR_BACKUP_NAME:-vlo-index}"
 
 check_service() {	
 	if ! (cd $VLO_COMPOSE_DIR && docker-compose exec -T ${VLO_SOLR_SERVICE} \
-		curl -f -u ${VLO_SOLR_BACKUP_USERNAME}:${VLO_SOLR_BACKUP_PASSWORD} "${VLO_SOLR_INDEX_URL}/replication") > /dev/null
+		curl -s -f -u ${VLO_SOLR_BACKUP_USERNAME}:${VLO_SOLR_BACKUP_PASSWORD} "${VLO_SOLR_INDEX_URL}/replication") > /dev/null
 	then
 		echo -e "Fatal: could not connect to Solr's replication API! Are the services running and credentials configured correctly?\n\n"
 		(cd $VLO_COMPOSE_DIR && docker-compose ps)
@@ -21,7 +21,7 @@ check_service() {
 
 solr_api_get() {
 	(cd $VLO_COMPOSE_DIR && 
-		docker-compose exec -T "${VLO_SOLR_SERVICE}" curl -f -u ${VLO_SOLR_BACKUP_USERNAME}:${VLO_SOLR_BACKUP_PASSWORD} $@)
+		docker-compose exec -T "${VLO_SOLR_SERVICE}" curl -s -f -u ${VLO_SOLR_BACKUP_USERNAME}:${VLO_SOLR_BACKUP_PASSWORD} $@)
 }
 
 _remove_dir() {
