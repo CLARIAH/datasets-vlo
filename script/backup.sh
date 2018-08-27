@@ -31,13 +31,13 @@ function check_env {
 		exit 1
 	fi
 
-	echo "Backing up to ${TARGET_DIR}"
+	echo "Will backing up ${TARGET_DIR}"
 }
 
 function set_permissions {
 	echo -e "Setting target permission...\n"
 	(cd $VLO_COMPOSE_DIR && \
-		docker-compose exec -u root "${VLO_SOLR_SERVICE}" chown -R solr "${CONTAINER_BACKUP_DIR}" )
+		docker-compose exec -T -u root "${VLO_SOLR_SERVICE}" chown -R solr "${CONTAINER_BACKUP_DIR}" )
 }
 
 function get_backup_status {
@@ -47,7 +47,7 @@ function get_backup_status {
 function do_backup {
 	echo -e "\nCarrying out backup...\n"
 	if (cd $VLO_COMPOSE_DIR && 
-		solr_api_get "${VLO_SOLR_INDEX_URL}/replication?command=backup&location=${CONTAINER_BACKUP_DIR}&name=${BACKUP_NAME:-backup}") > /dev/null
+		solr_api_get "${VLO_SOLR_INDEX_URL}/replication?command=backup&location=${CONTAINER_BACKUP_DIR}&name=${BACKUP_NAME:-backup}")
 	then
 		echo "Checking status..."
 		SUCCESS="false"
@@ -88,7 +88,7 @@ function extract_backup {
 function cleanup_backup {
 	echo -e "Cleaning up...\n"
 	(cd $VLO_COMPOSE_DIR && \
-		docker-compose exec "${VLO_SOLR_SERVICE}" bash -c "if [ -d '${CONTAINER_BACKUP_DIR}' ]; then rm -rf ${CONTAINER_BACKUP_DIR}/*; fi")
+		docker-compose exec -T "${VLO_SOLR_SERVICE}" bash -c "if [ -d '${CONTAINER_BACKUP_DIR}' ]; then rm -rf ${CONTAINER_BACKUP_DIR}/*; fi")
 }
 
 main

@@ -60,7 +60,7 @@ function prepare_restore {
 	(cd $VLO_COMPOSE_DIR && \
 		docker-compose -f docker-compose.yml -f solr-restore.yml up -d --force-recreate "${VLO_SOLR_SERVICE}")	
 
-	while ! (cd $VLO_COMPOSE_DIR && docker-compose exec "${VLO_SOLR_SERVICE}" \
+	while ! (cd $VLO_COMPOSE_DIR && docker-compose exec -T "${VLO_SOLR_SERVICE}" \
 		curl -f -u ${VLO_SOLR_BACKUP_USERNAME}:${VLO_SOLR_BACKUP_PASSWORD} "${VLO_SOLR_INDEX_URL}/replication") > /dev/null
 	do
 		echo "Waiting for Solr..."
@@ -71,7 +71,7 @@ function prepare_restore {
 function do_restore {
 	echo -e "\nCarrying out restore...\n"
 	#close all indexes
-	(cd $VLO_COMPOSE_DIR && docker-compose exec "${VLO_SOLR_SERVICE}" \
+	(cd $VLO_COMPOSE_DIR && docker-compose exec -T "${VLO_SOLR_SERVICE}" \
 		curl -f -u ${VLO_SOLR_BACKUP_USERNAME}:${VLO_SOLR_BACKUP_PASSWORD} "${VLO_SOLR_INDEX_URL}/replication?command=restore&name=${BACKUP_NAME}&location=${CONTAINER_BACKUP_DIR}" )
 		
 # 		bash -c "
