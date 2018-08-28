@@ -1,0 +1,40 @@
+version: '2'
+services:
+  vlo-web:
+    environment:
+      - TOMCAT_PROXY_REMOTE_IP_HEADER
+      - TOMCAT_PROXY_INTERNAL_PROXIES
+      - TOMCAT_PROXY_PROXIES_HEADER
+      - TOMCAT_PROXY_PROTOCOL_HEADER
+      - TOMCAT_PROXY_HTTP_SERVER_PORT
+      - TOMCAT_PROXY_HTTPS_SERVER_PORT
+    volumes:
+      # override server conf to support proxy
+      - ./tomcat/init/tomcat-vlo-init.sh:/init/tomcat-vlo-init.sh
+      - ./tomcat/conf/server.xml:/srv/tomcat8/conf/server.template.xml:ro
+    ports:
+      # expose locally on 8188
+      - 127.0.0.1:8188:8080
+  vlo-proxy:
+    image: registry.gitlab.com/clarin-eric/docker-alpine-nginx:2.0.3
+    environment:
+      - SOLR_DATA_HOME
+    ports:
+      - 8181:81
+      - 8143:443
+      #to support legacy proxy conf (deprecated)
+      - 8184:81
+    volumes:
+      - ${METADATA_VOLUME}:/srv/www-static/data:ro
+      - ${RESULTSETS_VOLUME}:/srv/www-static/resultsets:ro
+      - ${SITEMAP_VOLUME}:/srv/www-static/sitemap:ro
+      - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/conf.d/vlo.inc:/etc/nginx/conf.d/vlo.inc:ro
+      - ./nginx/conf.d/mime.types:/etc/nginx/extra_mime.types:ro
+      - ${WEB_STATIC_DATA_VOLUME}:/srv/www-static/root:ro
+    restart: unless-stopped
+    networks:
+        - network_vlo
+volumes:
+    vlo_www_data:
+        external: false

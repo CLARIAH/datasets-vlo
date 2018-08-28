@@ -1,6 +1,6 @@
 # VLO docker compose configuration overlay for testing (Host Europe root server)
 version: '2'
 services:
-  vlo_solr:
+  vlo-solr:
     ports:
       - 8183:8983

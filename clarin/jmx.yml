@@ -5,20 +5,20 @@
 
 version: '2'
 services:
-  vlo_solr:
+  vlo-solr:
     environment:
       - ENABLE_REMOTE_JMX_OPTS=true
       - RMI_PORT=18983
-      - SOLR_OPTS=-Djava.rmi.server.hostname=vlo_solr
+      - SOLR_OPTS=-Djava.rmi.server.hostname=vlo-solr
     networks:
       - network_vlo
   jmxtrans:
     image: registry.gitlab.com/clarin-eric/docker-jmxtrans:1.0.3
     depends_on:
-      - vlo_solr
+      - vlo-solr
     environment:
       - JSON_DIR=/var/lib/jmxtrans
-      - JMXTRANS_OPTS=-Dhost_alias=${JMXTRANS_HOST_ALIAS} -Dstatsd_host=${JMXTRANS_STATSD_HOST} -Dstatsd_port=${JMXTRANS_STATSD_PORT} -Dsolr_jmx_host=vlo_solr -Dsolr_jmx_port=18983 
+      - JMXTRANS_OPTS=-Dhost_alias=${JMXTRANS_HOST_ALIAS} -Dstatsd_host=${JMXTRANS_STATSD_HOST} -Dstatsd_port=${JMXTRANS_STATSD_PORT} -Dsolr_jmx_host=vlo-solr -Dsolr_jmx_port=18983 
     volumes:
       - ./jmxtrans:/var/lib/jmxtrans
       #- ./jmxtrans/custom-log4j.xml:/usr/share/jmxtrans/conf/log4j.xml
