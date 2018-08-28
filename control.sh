@@ -114,7 +114,7 @@ execute_control_commands() {
 		print_usage
 	    exit 0
 	else
-		COMPOSE_OPTS="-f docker-compose.yml `read_compose_modules`"
+		COMPOSE_OPTS="-f docker-compose.yml $(read_compose_modules)"
 		if [ $VERBOSE -eq 1 ]; then
 			COMPOSE_OPTS="${COMPOSE_OPTS} --verbose"	
 		fi
@@ -222,7 +222,7 @@ vlo_restore() {
 		exit 1
 	fi
 	
-	LAST_BACKUP_FILE=`find "${BACKUP_DIR}" -maxdepth 1 -name "${BACKUP_FILE_PREFIX}*.tgz" | sort | tail -n 1`	
+	LAST_BACKUP_FILE=$(find "${BACKUP_DIR}" -maxdepth 1 -name "${BACKUP_FILE_PREFIX}*.tgz" | sort | tail -n 1)	
 	if [ "${LAST_BACKUP_FILE}" = "" ] || ! [ -e "${LAST_BACKUP_FILE}" ]; then
 		echo "No backup file '${BACKUP_FILE_PREFIX}....tgz' found in ${BACKUP_DIR}. Place a backup file in this location and try again."
 		exit 1
