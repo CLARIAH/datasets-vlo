@@ -60,26 +60,45 @@ function prepare_restore {
 	(cd $VLO_COMPOSE_DIR && \
 		docker-compose -f docker-compose.yml -f solr-restore.yml up -d --force-recreate "${VLO_SOLR_SERVICE}")	
 
-	while ! (cd $VLO_COMPOSE_DIR && docker-compose exec -T "${VLO_SOLR_SERVICE}" \
-		curl -f -u ${VLO_SOLR_BACKUP_USERNAME}:${VLO_SOLR_BACKUP_PASSWORD} "${VLO_SOLR_INDEX_URL}/replication") > /dev/null
+	while ! solr_api_get "${VLO_SOLR_INDEX_URL}/replication" > /dev/null
 	do
 		echo "Waiting for Solr..."
 		sleep 5
 	done
 }
 
+function get_restore_status {
+	solr_api_get "${VLO_SOLR_INDEX_URL}/replication?command=restorestatus&name=${BACKUP_NAME}&location=${CONTAINER_BACKUP_DIR}"
+}
+
 function do_restore {
 	echo -e "\nCarrying out restore...\n"
 	#close all indexes
-	(cd $VLO_COMPOSE_DIR && docker-compose exec -T "${VLO_SOLR_SERVICE}" \
-		curl -f -u ${VLO_SOLR_BACKUP_USERNAME}:${VLO_SOLR_BACKUP_PASSWORD} "${VLO_SOLR_INDEX_URL}/replication?command=restore&name=${BACKUP_NAME}&location=${CONTAINER_BACKUP_DIR}" )
-		
-# 		bash -c "
-# 			mv \$SOLR_DATA_HOME/vlo-index/data/index \$SOLR_DATA_HOME/vlo-index/data/index_old;
-# 			(cp -r ${CONTAINER_BACKUP_DIR}/snapshot.${BACKUP_NAME} \$SOLR_DATA_HOME/vlo-index/data/index && rm -rf \$SOLR_DATA_HOME/vlo-index/data/index_old) ||
-# 			(echo 'Failed, reverting old index' && mv \$SOLR_DATA_HOME/vlo-index/data/index_old \$SOLR_DATA_HOME/vlo-index/data/index)
-# 		")
-	echo -e "\nDone...\n"
+	if solr_api_get "${VLO_SOLR_INDEX_URL}/replication?command=restore&name=${BACKUP_NAME}&location=${CONTAINER_BACKUP_DIR}"; then
+		echo "Checking status..."
+		SUCCESS="false"
+		while [ "$SUCCESS" != "true" ]; do
+			if get_restore_status | grep "success"; then
+				SUCCESS="true"
+			else
+				if get_restore_status | grep "exception"; then
+					echo "Exception occurred. Terminating..."
+					finalize
+					exit 1
+				else
+					echo "Not successful (yet). Status: "
+					get_restore_status
+					echo "Checking again in 5 seconds..."
+					sleep 5
+				fi
+			fi
+		done
+		echo -e "\nDone...\n"
+	else
+		echo "Failed to restore backup!"
+		finalize
+		exit 5
+	fi
 }
 
 function finalize {
