@@ -12,9 +12,6 @@ services:
       # override server conf to support proxy
       - ./tomcat/init/tomcat-vlo-init.sh:/init/tomcat-vlo-init.sh
       - ./tomcat/conf/server.xml:/srv/tomcat8/conf/server.template.xml:ro
-    ports:
-      # expose locally on 8188
-      - 127.0.0.1:8188:8080
   vlo-proxy:
     image: registry.gitlab.com/clarin-eric/docker-alpine-nginx:2.0.3
     environment:

@@ -1,0 +1,8 @@
+version: '2'
+services:
+  vlo-solr:
+    volumes:
+      - vlo-solr-backup:/var/backup
+volumes:
+    vlo-solr-backup:
+        external: false

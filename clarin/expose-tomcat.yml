@@ -1,0 +1,6 @@
+# VLO docker compose configuration overlay for exposing Tomcat. Clashes with nginx.yml
+version: '2'
+services:
+  vlo-web:
+    ports:
+      - 8181:8080
