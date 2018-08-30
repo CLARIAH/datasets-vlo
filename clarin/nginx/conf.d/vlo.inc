@@ -4,6 +4,13 @@ location / {
 	proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
 	proxy_set_header        X-Forwarded-Proto $scheme;
 	proxy_pass              http://vlo-web:8080;
+	
+	gzip    on;
+	gzip_vary    on;
+	gzip_min_length 10240;
+	gzip_proxied no-cache no-store private expired auth;
+	gzip_types application/javascript text/javascript  text/html application/x-javascript text/css text/plain application/xml text/xml;
+	gzip_disable "MSIE [1-6]\.";
 }
 
 location ~ ^/(data|root|resultsets|sitemap)/(.*) {
