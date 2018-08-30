@@ -9,8 +9,9 @@ location / {
 	proxy_pass              http://vlo-web:8080;
 	
 	gzip_min_length 10240;
-	gzip_proxied no-cache no-store private expired auth;
 	gzip_types application/javascript text/javascript  text/html application/x-javascript text/css text/plain application/xml text/xml;
+	gzip_proxied any;
+	gzip_http_version 1.0;
 }
 
 location ~ ^/(data|root|resultsets|sitemap)/(.*) {
