@@ -29,9 +29,13 @@ services:
       - ./nginx/conf.d/vlo.inc:/etc/nginx/conf.d/vlo.inc:ro
       - ./nginx/conf.d/mime.types:/etc/nginx/extra_mime.types:ro
       - ${WEB_STATIC_DATA_VOLUME}:/srv/www-static/root:ro
+    tmpfs:
+      - /var/cache/nginx-vlo
     restart: unless-stopped
     networks:
         - network_vlo
 volumes:
     vlo_www_data:
         external: false
+    vlo_nginx_cache:
+        
