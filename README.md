@@ -40,17 +40,20 @@ There are overlays for development, the beta and production environments and
 environments that have a fluentd running on the host. Note that more than one overlay can
 be applied if needed.
 
-### Static metadata serving
+### Nginx for proxying and static metadata serving
 
-A nginx based container for serving the metadata records as static content can be enabled
-by including the `data.yml` overlay. The following environment variable has to be set
-to the location of these files on disk in order to make this work:
+A nginx based container can be enabled by including the `nginx.yml` overlay that serves
+two purposes:
 
-* `HOST_METADATA_DIR`
+1. Proxying the VLO front end, including caching, compression and a number of redirects
+to support requests on legacy URLs
+1. Serving the metadata records, result sets, sitemap and optionally some additional
+static root content
 
-The files will then become available (by default) at `http://localhost:8184/data/`.
-
-See [.env-template](clarin/.env-template) for an example.
+A number of `TOMCAT_PROXY_*` variables have to be configured, but in most cases the
+values from the `.env-template` file can be kept. The served content is taken from
+several volumes, governed by the variables `METADATA_VOLUME`, `RESULTSETS_VOLUME`,
+`SITEMAP_VOLUME` and `WEB_STATIC_DATA_VOLUME`.
 
 ### JMX
 
