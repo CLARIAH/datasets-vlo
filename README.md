@@ -54,8 +54,8 @@ See [.env-template](clarin/.env-template) for an example.
 
 ### JMX
 
-JMX reporting of the Solr server can be enabled by including the `jmx.yml` overlay and
-setting the following environment variables: 
+JMX reporting of the Solr server to a Statsd server can be enabled by including the 
+`jmxtrans.yml` overlay and setting the following environment variables: 
 
 * `JMXTRANS_HOST_ALIAS`
 * `JMXTRANS_STATSD_HOST`
@@ -75,31 +75,30 @@ rendered page that enables a feedback panel defined and controlled via
 ### Control script
 
 For convenience, a script ([control.sh](./control.sh)) has been included that make it easy
-to run  docker-compose commands for specific environments. 
-
-For example:
+to run common operations:
 
 ```sh
-./control.sh beta up -d
+./control.sh [start|stop|restart|run-import|backup|restore|status] [-hd]
 ```
 
-will do two things:
+Run `./control.sh -h` to get a more detailed description of all the options.
 
-0. The current hostname is verified against the expected hostname for the specified 
-environment, in this case `beta` (note that for some "environments" this is omitted)
-0. the `up -d` command is issued to docker-compose with the appropriate configuration
-overlays applied (which ones depend on the environment)
+Additional configuration overlays (see above) will be loaded according to the list in
+a file `.compose-overlays` in the control script directory if present. See
+the bundled template file [.compose-overlays-template](./.compose-overlays-template)
+for more information.
 
-Note that in the examples below the variable `$MY_ENV` is used as a placeholder for the
-environment id.
+In most cases you will want to enable either the `nginx` overlay or the `expose-tomcat`
+overlay, otherwise the VLO web app will not be exposed to the host.
 
 ### Run with sample data
 
 To run the VLO with some [sample data](https://gitlab.com/CLARIN-ERIC/docker-vlo-sample-data)
-without the need to configure anything, run the following in the `clarin` directory:
+without the need to configure anything, include `sample-data.yml` in your overlay file
+(see above) or run the following in the `clarin` directory:
 
 ```sh
-./control.sh $MY_ENV -f sample-data.yml up [-d]
+docker-compose -f docker-compose.yml -f expose-tomcat.yml -f sample-data.yml up [-d]
 ```
 
 Then connect to [localhost:8181](http://localhost:8181) to visit your local VLO instance.
@@ -107,7 +106,7 @@ Then connect to [localhost:8181](http://localhost:8181) to visit your local VLO 
 Make sure to use the following command to bring the services down again:
 
 ```sh
-./control.sh $MY_ENV -f sample-data.yml down [-v]
+docker-compose -f docker-compose.yml -f expose-tomcat.yml -f sample-data.yml down [-v]
 ```
 
 ### Run the importer to ingest CMDI metadata into the VLO
@@ -137,7 +136,7 @@ Make sure that the paths match your data mount!
 After having started the services, you can start the import by running:
 
 ```sh
-./control.sh $MY_ENV exec vlo_web /opt/importer.sh
+./control.sh run-import
 ```
 
 ### Solr configuration initialisation
@@ -150,10 +149,10 @@ of the VLO and therefore the bundled Solr configuration has not changed). Unfort
 this cannot be automated through docker-compose; instead, run the following command:
 
 ```sh
-docker volume rm ${PROJECT}_solr-home-provisioning
+docker volume rm ${COMPOSE_PROJECT_NAME}_solr-home-provisioning
 ```
 
-`${PROJECT}` defaults to `clarin`.
+`${COMPOSE_PROJECT_NAME}` defaults to `vlo`.
 Depending on the environment, the volume may have a different name or prefix. 
 Note that this will **NOT** remove any indexed data assuming that separate `SOLR_DATA_HOME`
 location is configured.
@@ -162,8 +161,8 @@ location is configured.
 
 ```sh
 HOST_EXPORT_TARGET=/my/solr/data
-./control.sh $MY_ENV stop
-./control.sh $MY_ENV run -v $HOST_EXPORT_TARGET:/solr-export -e SOLR_DATA_EXPORT_TARGET=/solr-export vlo_solr
+./control.sh stop
+(cd clarin && docker-compose run -v $HOST_EXPORT_TARGET:/solr-export -e SOLR_DATA_EXPORT_TARGET=/solr-export vlo-solr)
 ```
 
 This will copy the container's `SOLR_DATA_HOME` content to the specified target directory
@@ -177,8 +176,8 @@ by following the instructions above) by mounting this data directory to
 
 ```sh
 HOST_DATA_DIR=/my/solr/data
-./control.sh $MY_ENV down -v # This removes all data!
-./control.sh $MY_ENV -v $HOST_DATA_DIR:/docker-entrypoint-initsolr.d/solr_data vlo_solr
+docker-compose down -v # This removes all data!
+docker-compose run -v $HOST_DATA_DIR:/docker-entrypoint-initsolr.d/solr_data vlo-solr
 ```
 
 This will copy the content of the specified source directory to the `SOLR_DATA_HOME`
