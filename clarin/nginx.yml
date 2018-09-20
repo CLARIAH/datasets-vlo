@@ -19,8 +19,6 @@ services:
     ports:
       - 8181:81
       - 8143:443
-      #to support legacy proxy conf (deprecated)
-      - 8184:81
     volumes:
       - ${METADATA_VOLUME}:/srv/www-static/data:ro
       - ${RESULTSETS_VOLUME}:/srv/www-static/resultsets:ro
