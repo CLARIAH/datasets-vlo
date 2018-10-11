@@ -1,0 +1,8 @@
+version: '2'
+services:
+ vlo-web:
+   entrypoint: ["bash", "-c", "cp /opt/vlo/config/VloConfig.xml.patch /opt/vlo/config/VloConfig.xml
+                        && /usr/bin/entrypoint.sh"]
+   volumes:
+      - ./switchboard-url-fix/VloConfig.xml:/opt/vlo/config/VloConfig.xml.patch
+
