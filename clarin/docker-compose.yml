@@ -24,7 +24,7 @@ services:
     networks:
         - network_vlo
   vlo-web:
-    image: &vlo_web_image registry.gitlab.com/clarin-eric/docker-vlo-beta:1.6.1
+    image: &vlo_web_image registry.gitlab.com/clarin-eric/docker-vlo-beta:1.6.2-RC1
     environment:
       - VLO_DOCKER_SOLR_URL=http://vlo-solr:8983/solr/vlo-index/
       ## from .env
@@ -35,9 +35,20 @@ services:
       - VLO_DOCKER_SOLR_THREADS
       - VLO_DOCKER_DELETE_ALL_FIRST
       - VLO_DOCKER_MAX_DAYS_IN_SOLR
+      - VLO_DOCKER_VCR_MAXIMUM_ITEMS_COUNT
 
       - VLO_DOCKER_TOMCAT_JAVA_OPTS
       - VLO_DOCKER_IMPORTER_JAVA_OPTS
+
+      - VLO_DOCKER_WICKET_CONFIGURATION
+      - VLO_DOCKER_DATAROOTS_FILE
+
+      - VLO_DOCKER_CONCEPT_REGISTRY_URL
+      - VLO_DOCKER_VOCABULARY_REGISTRY_URL
+      - VLO_DOCKER_FEEDBACK_FORM_URL
+      - VLO_DOCKER_FCS_BASE_URL
+      - VLO_DOCKER_LRS_BASE_URL
+      - VLO_DOCKER_VCR_SUBMIT_ENDPOINT
       
       - VLO_DOCKER_SOLR_USER_READ_ONLY
       - VLO_DOCKER_SOLR_PASSWORD_READ_ONLY
@@ -53,7 +64,6 @@ services:
       - VLO_DOCKER_STATSD_HOST
       - VLO_DOCKER_STATSD_PORT
       - STATSD_PREFIX
-      - VLO_DOCKER_WICKET_CONFIGURATION
     volumes:
       - ${METADATA_VOLUME}:${METADATA_DIR}
       - ${SITEMAP_VOLUME}:/opt/sitemap
