@@ -17,8 +17,8 @@ services:
     environment:
       - SOLR_DATA_HOME
     ports:
-      - 8181:81
-      - 8143:443
+      - ${NGINX_PROXY_HTTP_PORT}:81
+      - ${NGINX_PROXY_HTTPS_PORT}:443
     volumes:
       - ${METADATA_VOLUME}:/srv/www-static/data:ro
       - ${RESULTSETS_VOLUME}:/srv/www-static/resultsets:ro
