@@ -1,5 +1,14 @@
 # Upgrade instructions
 
+## 1.6.2 to 1.6.3
+- The following environment variables have been added (listed here with default values
+that can be adopted):
+
+  - `NGINX_PROXY_HTTP_PORT=8181`
+  - `NGINX_PROXY_HTTPS_PORT=8143`
+  - `BOTTOM_SNIPPETS_DIR=./vlo-web/snippets`
+  - `BOTTOM_SNIPPET_FILE=bottomsnippets-mopinion.html`
+
 ## 1.6.1 to 1.6.2
 - The following environment variables have been added (listed here with default values
 that can be adopted):

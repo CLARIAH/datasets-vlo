@@ -2,6 +2,6 @@ version: '2'
 services:
   vlo-web:
     environment:
-      - VLO_DOCKER_WICKET_BOTTOM_SNIPPET_URL=file:///opt/vlo/snippets/bottomsnippets-mopinion.yml
+      - VLO_DOCKER_WICKET_BOTTOM_SNIPPET_URL=file:///opt/vlo/snippets/${BOTTOM_SNIPPET_FILE}
     volumes:
-      - ./vlo-web/snippets:/opt/vlo/snippets
+      - ${BOTTOM_SNIPPETS_DIR}:/opt/vlo/snippets
