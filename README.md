@@ -73,6 +73,9 @@ To configure the VLO to gather user satisfaction scores via the web app, use the
 rendered page that enables a feedback panel defined and controlled via 
 [Mopinion](https://app.mopinion.com).
 
+Be aware that, if adopting the `.env` template, the snippets directory is host-mounted
+into the container from a directory within the compose project.
+
 ## Usage
 
 ### Control script
