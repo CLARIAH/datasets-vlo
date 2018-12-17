@@ -9,6 +9,8 @@ OVERLAYS_LIST_FILE=".compose-overlays"
 BACKUP_DIR_RELATIVE_PATH="../../vlo-index-backup" #relative to compose dir
 BACKUP_FILE_PREFIX="vlo-backup"
 
+SOLR_HOME_PROVISIONING_VOLUME_NAME="solr-home-provisioning"
+
 VLO_IMAGE_IMPORT_COMMAND="/opt/importer.sh"
 VLO_DOCKER_SOLR_ADMIN_USER="user_admin"
 
@@ -151,6 +153,7 @@ vlo_status() {
 }
 
 vlo_start() {
+    remove_solr_home_provisioning_volume
 	_docker-compose ${COMPOSE_OPTS} up -d ${COMPOSE_CMD_ARGS}
 }
 
@@ -287,6 +290,28 @@ read_compose_modules() {
 		done
 	else
 		echo "No file ${OVERLAYS_LIST_FILE} found, continuing without additional overlays" >&2
+	fi
+}
+
+remove_solr_home_provisioning_volume() {
+	echo "Trying to remove solr home provisioning volume...."
+	eval "$(grep "COMPOSE_PROJECT_NAME" "${COMPOSE_DIR}/.env")"
+	if [ "${COMPOSE_PROJECT_NAME}" ]; then
+		VOLUME_NAME="${COMPOSE_PROJECT_NAME}_${SOLR_HOME_PROVISIONING_VOLUME_NAME}"
+		if docker volume ls | egrep "${VOLUME_NAME}$"; then
+			ACTUAL_VOLUME_NAME=$(docker volume ls | egrep -o "${VOLUME_NAME}$")
+			echo -n "Remove volume ${ACTUAL_VOLUME_NAME}... "
+			if docker volume rm "${ACTUAL_VOLUME_NAME}" > /dev/null; then
+				echo "done"
+			else
+				echo "FAILED!"
+				exit 1
+			fi
+		else
+			echo "No Solr home provisioning volume found"
+		fi
+	else
+		echo "Warning: Could not determine compose project name. Solr home provisioning will NOT be cleaned up!"	
 	fi
 }
 
