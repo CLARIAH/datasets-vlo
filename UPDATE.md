@@ -4,11 +4,18 @@
 - If using the proxy, an htpasswd file has to be created for protecting the new `/config`
 location. This can also be empty to not allow any access. This file should be placed
 in a host location defined in the PROXY_VLO_CONFIG_HTPASSWD_FILE variable. You can create
-a file with one or more users by doing
+a file with one or more users by doing:
 
-`(cd ./clarin && htpasswd -n ${USERNAME} >> ../../vlo-config-htpasswd)` and entering the
+	(cd ./clarin && htpasswd -n ${USERNAME} >> ../../vlo-config-htpasswd)
+
+and entering the
 password for ${USERNAME} twice, assuming that the templated location of 
 PROXY_VLO_CONFIG_HTPASSWD_FILE is kept.
+
+- A Solr index created with a previous version of the VLO is not compatible. Remove the
+vlo_vlo-solr-data (or possibly different depending on the project name) volume and run a
+new import; note that this may take up to several hours depending on the volume of the
+imported data.
 
 - The solr endpoint now is being proxied via vlo-proxy (at `/solr`). Most likely you
 can disable the 'expose-solr' overlay if currently enabled.

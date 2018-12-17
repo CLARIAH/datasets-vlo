@@ -43,10 +43,12 @@ be applied if needed.
 ### Nginx for proxying and static metadata serving
 
 A nginx based container can be enabled by including the `nginx.yml` overlay that serves
-two purposes:
+a number of purposes:
 
 1. Proxying the VLO front end, including caching, compression and a number of redirects
-to support requests on legacy URLs
+to support requests on legacy URLs; certain parts, specifically all paths under `/config`
+are protected via basic authentication through the proxy.
+1. Proxying Solr
 1. Serving the metadata records, result sets, sitemap and optionally some additional
 static root content
 
@@ -54,6 +56,11 @@ A number of `TOMCAT_PROXY_*` variables have to be configured, but in most cases 
 values from the `.env-template` file can be kept. The served content is taken from
 several volumes, governed by the variables `METADATA_VOLUME`, `RESULTSETS_VOLUME`,
 `SITEMAP_VOLUME` and `WEB_STATIC_DATA_VOLUME`.
+
+Set the `PROXY_VLO_CONFIG_HTPASSWD_FILE` variable to specify the location of a
+`htpassword` file to be used to protected the `/config/` path of the web app. See the
+[nginx configuration](https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/)
+for instructions on how to create such a file.
 
 ### JMX
 
@@ -72,6 +79,11 @@ To configure the VLO to gather user satisfaction scores via the web app, use the
 `mopinion.yml` overlay. This will cause a snippet to be included at the end of every
 rendered page that enables a feedback panel defined and controlled via 
 [Mopinion](https://app.mopinion.com).
+
+The following variables have to be set for this to work:
+
+* `BOTTOM_SNIPPETS_DIR`
+* `BOTTOM_SNIPPET_FILE`
 
 Be aware that, if adopting the `.env` template, the snippets directory is host-mounted
 into the container from a directory within the compose project.
