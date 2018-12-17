@@ -12,6 +12,12 @@ location / {
 	gzip_types application/javascript text/javascript  text/html application/x-javascript text/css text/plain application/xml text/xml;
 	gzip_proxied any;
 	gzip_http_version 1.0;
+	
+	location ~ ^/config/(.*) {
+		auth_basic				"Authentication required";
+		auth_basic_user_file	/etc/nginx/vlo-config-htpasswd;
+		proxy_pass              http://vlo-web:8080/config/$1;
+	}
 }
 
 location ^~ /solr/ {
@@ -34,7 +40,6 @@ location ~ ^/(robots.txt|google.*\.html)$ {
 location = /tour {
 	return	301 " /#tour";
 }
-
 
 error_page   500 502 503 504  /50x.html;
 location = /50x.html {

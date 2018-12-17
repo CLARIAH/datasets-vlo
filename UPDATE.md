@@ -1,5 +1,18 @@
 # Upgrade instructions
 
+## 1.6.3 to 1.7.0
+- If using the proxy, an htpasswd file has to be created for protecting the new `/config`
+location. This can also be empty to not allow any access. This file should be placed
+in a host location defined in the PROXY_VLO_CONFIG_HTPASSWD_FILE variable. You can create
+a file with one or more users by doing
+
+`(cd ./clarin && htpasswd -n ${USERNAME} >> ../../vlo-config-htpasswd)` and entering the
+password for ${USERNAME} twice, assuming that the templated location of 
+PROXY_VLO_CONFIG_HTPASSWD_FILE is kept.
+
+- The solr endpoint now is being proxied via vlo-proxy (at `/solr`). Most likely you
+can disable the 'expose-solr' overlay if currently enabled.
+
 ## 1.6.2 to 1.6.3
 - The following environment variables have been added (listed here with default values
 that can be adopted):

@@ -27,6 +27,7 @@ services:
       - ./nginx/conf.d/vlo.inc:/etc/nginx/conf.d/vlo.inc:ro
       - ./nginx/conf.d/mime.types:/etc/nginx/extra_mime.types:ro
       - ${WEB_STATIC_DATA_VOLUME}:/srv/www-static/root:ro
+      - ${PROXY_VLO_CONFIG_HTPASSWD_FILE}:/etc/nginx/vlo-config-htpasswd
     tmpfs:
       - /var/cache/nginx-vlo
     restart: unless-stopped
