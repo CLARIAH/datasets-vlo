@@ -22,7 +22,7 @@ services:
       - ./solr-init:/opt/solr-init
     restart: on-failure
     networks:
-        - network_vlo
+      - network_vlo
   vlo-web:
     image: &vlo_web_image registry.gitlab.com/clarin-eric/docker-vlo-beta:1.7.0-beta1
     environment:
