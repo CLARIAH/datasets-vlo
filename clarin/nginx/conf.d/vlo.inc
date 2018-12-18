@@ -13,6 +13,8 @@ location / {
 	gzip_proxied any;
 	gzip_http_version 1.0;
 	
+	add_header 'Referrer-Policy' 'origin-when-cross-origin';
+	
 	location ~ ^/config/(.*) {
 		auth_basic				"Authentication required";
 		auth_basic_user_file	/etc/nginx/vlo-config-htpasswd;
