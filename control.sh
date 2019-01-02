@@ -24,6 +24,7 @@ BACKUP=0
 RESTORE=0
 HELP=0
 VERBOSE=0
+PULL=0
 
 print_usage() {
     echo ""
@@ -71,6 +72,7 @@ process_args() {
 			START=1
 			;;
 		'restart')
+			PULL=1
 			STOP=1
 			START=1
 			;;
@@ -130,6 +132,9 @@ execute_control_commands() {
 			exit 0
 		fi
 
+		if [ ${PULL} -eq 1 ]; then
+			vlo_pull
+		fi		
 		if [ ${STOP} -eq 1 ]; then
 			vlo_stop
 		fi
@@ -160,6 +165,11 @@ vlo_start() {
 vlo_stop() {
 	_docker-compose ${COMPOSE_OPTS} down ${COMPOSE_CMD_ARGS}
 }
+
+vlo_pull() {
+	_docker-compose ${COMPOSE_OPTS} pull
+}
+
 
 vlo_import() {
 	_docker-compose ${COMPOSE_OPTS} exec -T ${VLO_WEB_SERVICE} nice -n10 ${VLO_IMAGE_IMPORT_COMMAND}
