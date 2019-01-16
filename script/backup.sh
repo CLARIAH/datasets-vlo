@@ -7,7 +7,7 @@ set -e
 
 function main {
 	check_env
-	check_service
+	check_replication_service
 	cleanup_backup
 	set_permissions
 	do_backup

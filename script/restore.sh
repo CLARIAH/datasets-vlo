@@ -7,7 +7,7 @@ set -e
 
 function main {
 	check_env
-	check_service
+	check_replication_service
 	prepare_restore
 	do_restore
 	finalize

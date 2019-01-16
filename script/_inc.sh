@@ -14,7 +14,7 @@ BACKUP_NAME="${VLO_SOLR_BACKUP_NAME:-vlo-index}"
 
 VLO_IMAGE_IMPORT_COMMAND="/opt/importer.sh"
 
-check_service() {	
+check_replication_service() {	
 	if ! (cd $VLO_COMPOSE_DIR && docker-compose exec -T ${VLO_SOLR_SERVICE} \
 		curl -s -f -u ${VLO_SOLR_BACKUP_USERNAME}:${VLO_SOLR_BACKUP_PASSWORD} "${VLO_SOLR_INDEX_URL}/replication") > /dev/null
 	then
