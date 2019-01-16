@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 SCRIPT_BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-VLO_COMPOSE_DIR="${SCRIPT_BASE_DIR}/../clarin"
+PROJECT_BASE_DIR="$SCRIPT_BASE_DIR/.."
+VLO_COMPOSE_DIR="${PROJECT_BASE_DIR}/clarin"
 
 VLO_WEB_SERVICE="vlo-web"
 VLO_SOLR_SERVICE="vlo-solr"
@@ -10,8 +11,9 @@ SOLR_HOME_PROVISIONING_VOLUME_NAME="solr-home-provisioning"
 VLO_SOLR_INDEX_URL="${VLO_SOLR_INDEX_URL:-http://localhost:8983/solr/vlo-index}"
 VLO_SOLR_INDEX_REMOTE_URL="${VLO_SOLR_INDEX_REMOTE_URL:-http://${VLO_SOLR_SERVICE}:8983/solr/vlo-index}"
 CONTAINER_BACKUP_DIR="${CONTAINER_BACKUP_DIR:-/var/backup}"
-HOST_BACKUP_DIR="${VLO_SOLR_BACKUP_DIR:-/tmp/vlo-solr-backup}"
+HOST_BACKUP_DIR="${HOST_BACKUP_DIR:-${PROJECT_BASE_DIR}/../backups}"
 BACKUP_NAME="${VLO_SOLR_BACKUP_NAME:-vlo-index}"
+BACKUP_FILE_PREFIX="vlo-backup"
 
 VLO_IMAGE_IMPORT_COMMAND="/opt/importer.sh"
 
@@ -38,6 +40,14 @@ check_replication_service() {
 	fi
 }
 
+service_is_running() {
+    if ! (_docker-compose ps $1 |grep -q "Up "); then
+        return 1
+    else
+        return 0
+    fi
+}
+
 
 solr_api_get() {
 	(cd $VLO_COMPOSE_DIR && 
@@ -57,4 +67,10 @@ _remove_dir() {
 
 _docker-compose() {
 	(cd $VLO_COMPOSE_DIR && docker-compose $@)
+}
+
+export_credentials() {
+	eval "$(grep "VLO_DOCKER_SOLR_PASSWORD_ADMIN" "${VLO_COMPOSE_DIR}/.env")"
+	export VLO_SOLR_BACKUP_USERNAME="${VLO_DOCKER_SOLR_ADMIN_USER:-user_admin}"
+	export VLO_SOLR_BACKUP_PASSWORD="${VLO_DOCKER_SOLR_PASSWORD_ADMIN}"
 }
