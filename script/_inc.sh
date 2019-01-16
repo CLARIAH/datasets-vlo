@@ -1,12 +1,18 @@
-# Common functions and variables for backup.sh and restore.sh
+#!/usr/bin/env bash
+SCRIPT_BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+VLO_COMPOSE_DIR="${SCRIPT_BASE_DIR}/../clarin"
 
 VLO_WEB_SERVICE="vlo-web"
 VLO_SOLR_SERVICE="vlo-solr"
+
+SOLR_HOME_PROVISIONING_VOLUME_NAME="solr-home-provisioning"
 
 VLO_SOLR_INDEX_URL="${VLO_SOLR_INDEX_URL:-http://localhost:8983/solr/vlo-index}"
 CONTAINER_BACKUP_DIR="${CONTAINER_BACKUP_DIR:-/var/backup}"
 HOST_BACKUP_DIR="${VLO_SOLR_BACKUP_DIR:-/tmp/vlo-solr-backup}"
 BACKUP_NAME="${VLO_SOLR_BACKUP_NAME:-vlo-index}"
+
+VLO_IMAGE_IMPORT_COMMAND="/opt/importer.sh"
 
 check_service() {	
 	if ! (cd $VLO_COMPOSE_DIR && docker-compose exec -T ${VLO_SOLR_SERVICE} \
@@ -33,4 +39,8 @@ _remove_dir() {
 		echo "Remove directory: $1 not found"
 		return 1
 	fi
+}
+
+_docker-compose() {
+	(cd $VLO_COMPOSE_DIR && docker-compose $@)
 }
