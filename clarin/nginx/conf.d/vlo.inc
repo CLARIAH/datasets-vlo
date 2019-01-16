@@ -12,6 +12,8 @@ location / {
 	gzip_types application/javascript text/javascript  text/html application/x-javascript text/css text/plain application/xml text/xml;
 	gzip_proxied any;
 	gzip_http_version 1.0;
+	
+    add_header 'Referrer-Policy' 'origin-when-cross-origin';
 }
 
 location ~ ^/(data|root|resultsets|sitemap)/(.*) {
