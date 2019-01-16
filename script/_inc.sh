@@ -8,11 +8,25 @@ VLO_SOLR_SERVICE="vlo-solr"
 SOLR_HOME_PROVISIONING_VOLUME_NAME="solr-home-provisioning"
 
 VLO_SOLR_INDEX_URL="${VLO_SOLR_INDEX_URL:-http://localhost:8983/solr/vlo-index}"
+VLO_SOLR_INDEX_REMOTE_URL="${VLO_SOLR_INDEX_REMOTE_URL:-http://${VLO_SOLR_SERVICE}:8983/solr/vlo-index}"
 CONTAINER_BACKUP_DIR="${CONTAINER_BACKUP_DIR:-/var/backup}"
 HOST_BACKUP_DIR="${VLO_SOLR_BACKUP_DIR:-/tmp/vlo-solr-backup}"
 BACKUP_NAME="${VLO_SOLR_BACKUP_NAME:-vlo-index}"
 
 VLO_IMAGE_IMPORT_COMMAND="/opt/importer.sh"
+
+check_service() {
+	#see if solr can be reached from web container (curl exit code 22 is ok, likely a 401)
+	#run in sub shell to allow for exit code analysis but prevent termination due to non-zero exit code
+	bash -c '(
+		(cd '${VLO_COMPOSE_DIR}' && docker-compose exec -T '${VLO_WEB_SERVICE}' \
+			curl -s -f "'${VLO_SOLR_INDEX_REMOTE_URL}'") > /dev/null 2>&1
+		service_status=$?
+		if [ "$service_status" -ne 0 ] && [ "$service_status" -ne 22 ]; then
+			exit 1
+		fi
+		)'
+}
 
 check_replication_service() {	
 	if ! (cd $VLO_COMPOSE_DIR && docker-compose exec -T ${VLO_SOLR_SERVICE} \

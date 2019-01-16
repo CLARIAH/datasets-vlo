@@ -15,7 +15,12 @@ sub_help(){
 
 #todo: run-import
 sub_import() {
-	_docker-compose exec -T ${VLO_WEB_SERVICE} nice -n10 ${VLO_IMAGE_IMPORT_COMMAND}
+	if check_service; then
+		_docker-compose exec -T ${VLO_WEB_SERVICE} nice -n10 ${VLO_IMAGE_IMPORT_COMMAND}
+	else
+		echo "Service not running, cannot execute import."
+		exit 1
+	fi
 }
 
 #

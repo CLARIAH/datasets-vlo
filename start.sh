@@ -6,7 +6,11 @@ COMPOSE_OPTS=$1
 COMPOSE_CMD_ARGS=$2
 
 start_vlo() {
-	remove_solr_home_provisioning_volume
+	if check_service; then
+		echo "Warning: service already appears to be running, will not try to remove home provisioning volume"
+	else
+		remove_solr_home_provisioning_volume
+	fi
 	_docker-compose $COMPOSE_OPTS up -d ${COMPOSE_CMD_ARGS}
 }
 
