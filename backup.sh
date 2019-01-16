@@ -6,6 +6,11 @@ set -e
 
 main() {
 
+	if [ "$1" != "-f" ]; then
+		echo "WARNING: Skipping backup. Run with '-f' option to force backup."
+		exit 0
+	fi
+
 	if service_is_running ${VLO_SOLR_SERVICE}; then
 		echo -e "VLO Solr is running. Starting backup procedure...\n"
 	else
@@ -155,4 +160,4 @@ cleanup_backup() {
 		docker-compose exec -T "${VLO_SOLR_SERVICE}" bash -c "if [ -d '${CONTAINER_BACKUP_DIR}' ]; then rm -rf ${CONTAINER_BACKUP_DIR}/*; fi")
 }
 
-main
+main $@
