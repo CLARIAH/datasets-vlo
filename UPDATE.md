@@ -3,14 +3,16 @@
 ## 1.6.3 to 1.7.0
 - If using the proxy, an htpasswd file has to be created for protecting the new `/config`
 location. This can also be empty to not allow any access. This file should be placed
-in a host location defined in the PROXY_VLO_CONFIG_HTPASSWD_FILE variable. You can create
+in a host location defined in the `PROXY_VLO_CONFIG_HTPASSWD_FILE` variable. You can create
 a file with one or more users by doing:
 
-	(cd ./clarin && htpasswd -n ${USERNAME} >> ../../vlo-config-htpasswd)
+```
+(cd ./clarin && htpasswd -n ${USERNAME} >> ../../vlo-config-htpasswd)
+```
 
 and entering the
-password for ${USERNAME} twice, assuming that the templated location of 
-PROXY_VLO_CONFIG_HTPASSWD_FILE is kept.
+password for `${USERNAME}` twice, assuming that the templated location of 
+`PROXY_VLO_CONFIG_HTPASSWD_FILE` is kept.
 
 - A Solr index created with a previous version of the VLO is not compatible. Remove the
 vlo_vlo-solr-data (or possibly different depending on the project name) volume and run a
@@ -20,10 +22,13 @@ imported data.
 - The solr endpoint now is being proxied via vlo-proxy (at `/solr`). Most likely you
 can disable the 'expose-solr' overlay if currently enabled.
 
+- Page and app title can be customised by setting the following variables in `.env`:
+  - `VLO_APPLICATION_TITLE=Virtual Language Observatory`
+  - `VLO_PAGE_TITLE=CLARIN VLO`
+
 ## 1.6.2 to 1.6.3
 - The following environment variables have been added (listed here with default values
 that can be adopted):
-
   - `NGINX_PROXY_HTTP_PORT=8181`
   - `NGINX_PROXY_HTTPS_PORT=8143`
   - `BOTTOM_SNIPPETS_DIR=./vlo-web/snippets`
