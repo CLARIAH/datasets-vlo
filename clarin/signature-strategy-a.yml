@@ -1,7 +1,6 @@
 version: '2'
 services:
   vlo-web:
-    image: &vlo_web_image registry.gitlab.com/clarin-eric/docker-vlo-beta:1.7.0-beta3
     environment:
       VLO_APP_TITLE: "VLO beta (variant A)"
     entrypoint: ["bash", "-c", "cp /opt/VloConfig-override.xml /opt/vlo/config/VloConfig.xml && /usr/bin/entrypoint.sh"]
