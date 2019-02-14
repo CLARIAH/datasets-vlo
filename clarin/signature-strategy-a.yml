@@ -1,9 +1,0 @@
-version: '2'
-services:
-  vlo-web:
-    environment:
-      VLO_APP_TITLE: "VLO beta (variant A)"
-    entrypoint: ["bash", "-c", "cp /opt/VloConfig-override.xml /opt/vlo/config/VloConfig.xml && /usr/bin/entrypoint.sh"]
-    volumes:
-      - ./signature-strategy/VloConfig-a.xml:/opt/VloConfig-override.xml
-
