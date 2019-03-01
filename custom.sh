@@ -6,7 +6,7 @@ sub_help(){
     echo "Usage: ${PROGRAM_NAME} <subcommand> [options]"
     echo ""
     echo "Subcommands:"
-    echo "    test           Test subcommand"
+    echo "    run-import           Start an import inside the running container"
     echo ""
     echo "For help with each subcommand run:"
     echo "${PROGRAM_NAME} <subcommand> -h|--help"
