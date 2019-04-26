@@ -1,0 +1,18 @@
+version: '2'
+services:
+  vlo-web:
+    environment:
+      - VLO_DOCKER_LINK_CHECKER_MONGO_DB_NAME
+      - VLO_DOCKER_LINK_CHECKER_MONGO_DB_CONNECTION_STRING=mongodb://vlo-linkchecker-mongo:8185
+  vlo-linkchecker-mongo:
+    image: registry.gitlab.com/clarin-eric/docker-mongodb:0.1.0
+    ports:
+      - 8185:27017
+    volumes:
+      - linkckecker_mongo_data:/data/db
+    restart: unless-stopped
+    networks:
+        - network_vlo
+volumes:
+    linkckecker_mongo_data:
+        external: false
