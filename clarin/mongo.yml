@@ -2,14 +2,17 @@ version: '2'
 services:
   vlo-web:
     environment:
-      - VLO_DOCKER_LINK_CHECKER_MONGO_DB_NAME
+      - VLO_DOCKER_LINK_CHECKER_MONGO_DB_NAME=${VLO_LINK_CHECKER_MONGO_DB_NAME}
       - VLO_DOCKER_LINK_CHECKER_MONGO_DB_CONNECTION_STRING=mongodb://vlo-linkchecker-mongo:27017
   vlo-linkchecker-mongo:
     image: registry.gitlab.com/clarin-eric/docker-mongodb:0.1.0
     volumes:
       - linkckecker_mongo_data:/data/db
-      - ${VLO_DOCKER_LINK_CHECKER_DUMP_DIR}:/data/dump
+      - ${VLO_LINK_CHECKER_MONGO_DUMP_DIR}:/data/dump
+    mem_limit: ${VLO_LINK_CHECKER_MONGO_MEM_LIMIT}
     restart: unless-stopped
+    expose:
+      - "27017"
     networks:
         - network_vlo
 volumes:
