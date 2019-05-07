@@ -3,6 +3,16 @@ source "$(dirname $0)/_inc.sh"
 DUMP_URL="${VLO_LINKCHECKER_DUMP_URL:-https://curate.acdh-dev.oeaw.ac.at/mongoDump.gz}"
 CONTAINER_NAME="vlo_vlo-linkchecker-mongo_1"
 MONGO_PRUNE_AGE_DAYS="${VLO_LINKCHECKER_PRUNE_AGE:-100}"
+DEBUG="${VLO_LINKCHECKER_DEBUG:-false}"
+MONGO_OPTS="--quiet"
+MONGO_RESTORE_OPTS="--quiet"
+CURL_OPTS="-s"
+
+if [ "${DEBUG}" = "true" ]; then
+	MONGO_OPTS="--verbose"
+	MONGO_RESTORE_OPTS="-vvv"
+	CURL_OPTS="-v"
+fi
 
 update_linkchecker_db() {
 	DUMP_HOST_DIR=$1
@@ -14,7 +24,7 @@ update_linkchecker_db() {
 	
 	echo "Downloading dump file from <${DUMP_URL}> to ${DUMP_TARGET_LOCATION}" > /dev/stderr
 	
-	if ! curl -sL "${DUMP_URL}" > "${DUMP_TARGET_LOCATION}"; then
+	if ! curl ${CURL_OPTS} -L "${DUMP_URL}" > "${DUMP_TARGET_LOCATION}"; then
 		echo "Error: failed to download dump file!" > /dev/stderr
 		exit 1
 	fi
@@ -30,7 +40,7 @@ update_linkchecker_db() {
 
 	# Carry out actual restore
 	echo "Restoring database in container"
-	if ! docker exec "${CONTAINER_NAME}" nice -n 10 mongorestore --drop --gzip --archive="${DUMP_CONTAINER_FILE}"; then
+	if ! docker exec "${CONTAINER_NAME}" nice -n 10 mongorestore ${MONGO_RESTORE_OPTS} --drop --gzip --archive="${DUMP_CONTAINER_FILE}"; then
 		echo "Error: failed to restore mongo database" > /dev/stderr
 		exit 1
 	fi
@@ -42,7 +52,7 @@ update_linkchecker_db() {
 prune() {
 	echo "Pruning database: removing documents older than ${MONGO_PRUNE_AGE_DAYS} days"
 	MONGO_CMD="oldest=new Date\(\).getTime\(\) - ${MONGO_PRUNE_AGE_DAYS} \* 86400000\; db.linksChecked.remove\(\{\'timestamp\': \{\\\$gt: oldest\}\}\)"
-	docker exec "${CONTAINER_NAME}" bash -c "echo ${MONGO_CMD}|mongo curateLinkTest"
+	docker exec "${CONTAINER_NAME}" bash -c "echo ${MONGO_CMD}|mongo ${MONGO_OPTS} curateLinkTest"
 }
 
 main() {
