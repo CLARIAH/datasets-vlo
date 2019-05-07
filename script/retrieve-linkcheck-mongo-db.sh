@@ -51,7 +51,7 @@ update_linkchecker_db() {
 
 prune() {
 	echo "Pruning database: removing documents older than ${MONGO_PRUNE_AGE_DAYS} days"
-	MONGO_CMD="oldest=new Date\(\).getTime\(\) - ${MONGO_PRUNE_AGE_DAYS} \* 86400000\; db.linksChecked.remove\(\{\'timestamp\': \{\\\$gt: oldest\}\}\)"
+	MONGO_CMD="oldest=new Date\(\).getTime\(\) - ${MONGO_PRUNE_AGE_DAYS} \* 86400000\; db.linksChecked.remove\(\{\'timestamp\': \{\\\$lt: oldest\}\}\)"
 	docker exec "${CONTAINER_NAME}" bash -c "echo ${MONGO_CMD}|mongo ${MONGO_OPTS} curateLinkTest"
 }
 
