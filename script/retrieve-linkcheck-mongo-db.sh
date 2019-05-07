@@ -2,6 +2,7 @@
 source "$(dirname $0)/_inc.sh"
 DUMP_URL="${VLO_LINKCHECKER_DUMP_URL:-https://curate.acdh-dev.oeaw.ac.at/mongoDump.gz}"
 CONTAINER_NAME="vlo_vlo-linkchecker-mongo_1"
+MONGO_PRUNE_AGE_DAYS="${VLO_LINKCHECKER_PRUNE_AGE:-100}"
 
 update_linkchecker_db() {
 	DUMP_HOST_DIR=$1
@@ -38,6 +39,12 @@ update_linkchecker_db() {
 	rm -v "${DUMP_TARGET_LOCATION}"
 }
 
+prune() {
+	echo "Pruning database: removing documents older than ${MONGO_PRUNE_AGE_DAYS} days"
+	MONGO_CMD="oldest=new Date\(\).getTime\(\) - ${MONGO_PRUNE_AGE_DAYS} \* 86400000\; db.linksChecked.remove\(\{\'timestamp\': \{\\\$gt: oldest\}\}\)"
+	docker exec "${CONTAINER_NAME}" bash -c "echo ${MONGO_CMD}|mongo curateLinkTest"
+}
+
 main() {
 	ENV_FILE="${PROJECT_BASE_DIR}/../.env"
 
@@ -71,6 +78,8 @@ main() {
 	echo "VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR: ${VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR}"
 
 	update_linkchecker_db "$VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR" "$VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR"
+	
+	prune
 }
 
 main
