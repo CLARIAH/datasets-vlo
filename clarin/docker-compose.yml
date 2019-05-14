@@ -67,10 +67,13 @@ services:
       VLO_DOCKER_STATSD_HOST:
       VLO_DOCKER_STATSD_PORT:
       STATSD_PREFIX:
+      
+      VLO_DOCKER_OTHER_PROVIDERS_MARKUP_FILE: "/opt/vlo/markup/providers/others.html"
     volumes:
       - ${METADATA_VOLUME}:${METADATA_DIR}
       - ${SITEMAP_VOLUME}:/opt/sitemap
       - ${STATSD_VOLUME}:/opt/statsd
+      - ${OTHER_PROVIDERS_MARKUP_FILE}:/opt/vlo/markup/providers/others.html
     restart: on-failure
     networks:
         - network_vlo
