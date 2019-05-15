@@ -1,5 +1,48 @@
 # Upgrade instructions
 
+## 1.7.0 to 1.80
+
+- New overlays:
+
+```
+#For a local link checker database (see new .env variables)
+mongo
+```
+
+- New .env variables:
+
+```
+### Mandatory settings for the new contributions page
+# Connection to centre registry
+VLO_DOCKER_CENTRE_REGISTRY_CENTRES_LIST_JSON_URL=https://centres.clarin.eu/api/model/Centre
+VLO_DOCKER_CENTRE_REGISTRY_OAI_PMH_ENDPOINTS_LIST_JSON_URL=https://centres.clarin.eu/api/model/OAIPMHEndpoint
+# Custom markup for list of other providers (bundled with compose project or change to customise)
+OTHER_PROVIDERS_MARKUP_FILE=./providers/others.html
+
+### Optional settings. Uncomment and/or tweak to enable link checker integration
+# VLO_LINK_CHECKER_MONGO_DB_NAME=curateLinkTest
+# VLO_LINK_CHECKER_MONGO_MEM_LIMIT=6g
+# VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR=/home/deploy/vlo/linkchecker_dump
+# VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR=/data/dump
+# VLO_LINKCHECKER_PRUNE_AGE=100
+# VLO_LINKCHECKER_DEBUG=false
+```
+
+- Link checker integration:
+  * Enable the 'mongo' overlay
+  * Enable (and optionally tweak) the VLO_LINK_CHECKER_* variables in the .env file
+  * Retrieve the database by running `control.sh vlo update-linkchecker-db`
+  * Schedule regular database retrieval
+  * Import will communicate with the mongo database and incorporate link checker 
+  information in the index
+  * In between imports a utility can be executed to update only the link checker 
+  information without carrying out a full import[TODO]
+
+- A Solr index created with a previous version of the VLO is not compatible. Remove the
+vlo_vlo-solr-data (or possibly different depending on the project name) volume and run a
+new import; note that this may take up to several hours depending on the volume of the
+imported data.
+
 ## 1.6.3 to 1.7.0
 - If using the proxy (i.e. in production), an htpasswd file has to be created for
 protecting the new `/config` location. This can also be empty to not allow any access.

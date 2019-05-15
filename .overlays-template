@@ -6,6 +6,7 @@
 nginx
 solr-backup
 solr-temp-volume
+#mongo
 #jmxtrans
 #mopinion
 
