@@ -16,6 +16,7 @@ BACKUP_NAME="${VLO_SOLR_BACKUP_NAME:-vlo-index}"
 BACKUP_FILE_PREFIX="vlo-backup"
 
 VLO_IMAGE_IMPORT_COMMAND="/opt/importer.sh"
+VLO_IMAGE_LINK_STATUS_UPDATER_COMMAND="/opt/vlo/bin/vlo_link_availability_status_updater.sh /opt/vlo/config/VloConfig.xml"
 
 check_service() {
 	#see if solr can be reached from web container (curl exit code 22 is ok, likely a 401)

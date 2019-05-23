@@ -6,21 +6,35 @@ sub_help(){
     echo "Usage: ${PROGRAM_NAME} <subcommand> [options]"
     echo ""
     echo "Subcommands:"
-    echo "    run-import           Start an import inside the running container"
+    echo "    run-import                Start an import inside the running VLO container"
+    echo "    run-link-status-update    Start an update of the indexed link status inside the running VLO container"
+    echo "    update-linkchecker-db     Start an update of the link checker database inside the running MongoDB container "
     echo ""
     echo "For help with each subcommand run:"
     echo "${PROGRAM_NAME} <subcommand> -h|--help"
     echo ""
 }
 
-#todo: run-import
-sub_import() {
+sub_run-import() {
 	if check_service; then
 		_docker-compose exec -T ${VLO_WEB_SERVICE} nice -n10 ${VLO_IMAGE_IMPORT_COMMAND}
 	else
 		echo "Service not running, cannot execute import."
 		exit 1
 	fi
+}
+
+sub_run-link-status-update() {
+	if check_service; then
+		_docker-compose exec -T ${VLO_WEB_SERVICE} nice -n10 ${VLO_IMAGE_LINK_STATUS_UPDATER_COMMAND}
+	else
+		echo "Service not running, cannot execute import."
+		exit 1
+	fi
+}
+
+sub_update-linkchecker-db() {
+	bash "${BASE_DIR}/script/retrieve-linkcheck-mongo-db.sh"
 }
 
 #
@@ -31,9 +45,6 @@ case $subcommand in
     "" | "-h" | "--help")
         sub_help
         ;;
-    "run-import")
-    	sub_import
-    	;;
     *)
         shift
         sub_${subcommand} $@
