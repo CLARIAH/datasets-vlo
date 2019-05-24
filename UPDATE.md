@@ -22,6 +22,7 @@ OTHER_PROVIDERS_MARKUP_FILE=./providers/others.html
 ### Optional settings. Uncomment and/or tweak to enable link checker integration
 # VLO_LINK_CHECKER_MONGO_DB_NAME=curateLinkTest
 # VLO_LINK_CHECKER_MONGO_MEM_LIMIT=6g
+# VLO_LINKCHECKER_DUMP_URL=https://curate.acdh-dev.oeaw.ac.at/mongoDump.gz
 # VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR=/home/deploy/vlo/linkchecker_dump
 # VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR=/data/dump
 # VLO_LINKCHECKER_PRUNE_AGE=100
