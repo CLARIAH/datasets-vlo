@@ -21,23 +21,24 @@ OTHER_PROVIDERS_MARKUP_FILE=./providers/others.html
 
 ### Optional settings. Uncomment and/or tweak to enable link checker integration
 # VLO_LINK_CHECKER_MONGO_DB_NAME=curateLinkTest
-# VLO_LINK_CHECKER_MONGO_MEM_LIMIT=6g
-# VLO_LINKCHECKER_DUMP_URL=https://curate.acdh-dev.oeaw.ac.at/mongoDump.gz
+# VLO_LINK_CHECKER_MONGO_MEM_LIMIT=4g
+# VLO_LINK_CHECKER_DUMP_URL=https://curate.acdh-dev.oeaw.ac.at/mongoDump.gz
 # VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR=/home/deploy/vlo/linkchecker_dump
 # VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR=/data/dump
-# VLO_LINKCHECKER_PRUNE_AGE=100
-# VLO_LINKCHECKER_DEBUG=false
+# VLO_LINK_CHECKER_PRUNE_AGE=100
+# VLO_LINK_CHECKER_DEBUG=false
 ```
 
 - Link checker integration:
   * Enable the 'mongo' overlay
   * Enable (and optionally tweak) the VLO_LINK_CHECKER_* variables in the .env file
   * Retrieve the database by running `control.sh vlo update-linkchecker-db`
-  * Schedule regular database retrieval
+  * Schedule regular database retrieval via the same command
   * Import will communicate with the mongo database and incorporate link checker 
   information in the index
   * In between imports a utility can be executed to update only the link checker 
-  information without carrying out a full import[TODO]
+  information without carrying out a full import. This can be triggered with the
+  `run-link-status-update` subcommand of the control script.
 
 - A Solr index created with a previous version of the VLO is not compatible. Remove the
 vlo_vlo-solr-data (or possibly different depending on the project name) volume and run a
