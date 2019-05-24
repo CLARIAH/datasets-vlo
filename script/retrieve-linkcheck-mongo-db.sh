@@ -70,21 +70,8 @@ main() {
 		exit 1
 	fi
 
-	DUMP_HOST_DIR_SET=$(egrep "^VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR" -- "${ENV_FILE}")
-	if ! [ "${DUMP_HOST_DIR_SET}" ]; then
-		echo "Error: could not find VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR in .env file (${ENV_FILE})" > /dev/stderr
-		exit 1
-	fi
-
-
-	DUMP_CONTAINER_DIR_SET=$(egrep "^VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR" -- "${ENV_FILE}")
-	if ! [ "${DUMP_HOST_DIR_SET}" ]; then
-		echo "Error: could not find VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR in .env file (${ENV_FILE})" > /dev/stderr
-		exit 1
-	fi
-
-	eval $DUMP_HOST_DIR_SET
-	eval $DUMP_CONTAINER_DIR_SET
+	VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR=$(read_env_var "${ENV_FILE}" "VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR")
+	VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR=$(read_env_var "${ENV_FILE}" "VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR")
 
 	if ! [ "${VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR}" ] || ! [ "${VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR}" ]; then
 		echo "Error: failed to read VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR and/or VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR from .env file (${ENV_FILE})"

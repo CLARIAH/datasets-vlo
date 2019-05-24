@@ -75,3 +75,27 @@ export_credentials() {
 	export VLO_SOLR_BACKUP_USERNAME="${VLO_DOCKER_SOLR_ADMIN_USER:-user_admin}"
 	export VLO_SOLR_BACKUP_PASSWORD="${VLO_DOCKER_SOLR_PASSWORD_ADMIN}"
 }
+
+read_env_var() {
+	ENV_VAR_FILE=$1
+	ENV_VAR_NAME=$2
+	
+	if ! ( [ "${ENV_VAR_FILE}" ] && [ "${ENV_VAR_NAME}" ] ); then
+		echo "Error: provide file name and variable name" > /dev/stderr
+		return
+	fi
+	
+	if ! [ -e "${ENV_VAR_FILE}" ]; then
+		echo "Error: cannot find .env file at expected location (${ENV_VAR_FILE})" > /dev/stderr
+		return
+	fi
+	
+	ENV_VAR_LINE=$(egrep "^${ENV_VAR_NAME}=" -- "${ENV_VAR_FILE}")
+	
+	if ! [ "${ENV_VAR_LINE}" ]; then
+		echo "Warning: variable not found: ${ENV_VAR_NAME}" > /dev/stderr
+		return
+	fi
+	
+	echo "${ENV_VAR_LINE/${ENV_VAR_NAME}=/}"
+}
