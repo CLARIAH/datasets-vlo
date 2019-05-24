@@ -5,6 +5,7 @@ CONTAINER_NAME="vlo_vlo-linkchecker-mongo_1"
 MONGO_DB_NAME="curateLinkTest"
 MONGO_PRUNE_AGE_DAYS="${VLO_LINKCHECKER_PRUNE_AGE:-100}"
 DEBUG="${VLO_LINKCHECKER_DEBUG:-false}"
+DRY_RUN="${VLO_LINKCHECKER_DRY_RUN:-false}"
 MONGO_OPTS="--quiet"
 MONGO_RESTORE_OPTS="--quiet"
 CURL_OPTS="-s"
@@ -25,41 +26,61 @@ update_linkchecker_db() {
 	
 	echo "Downloading dump file from <${DUMP_URL}> to ${DUMP_TARGET_LOCATION}" > /dev/stderr
 	
-	if ! curl ${CURL_OPTS} -L "${DUMP_URL}" > "${DUMP_TARGET_LOCATION}"; then
-		echo "Error: failed to download dump file!" > /dev/stderr
-		exit 1
+	if [ "${DRY_RUN}" = "true" ]; then
+		echo "Dry run - skipping retrieval of ${DUMP_URL} to ${DUMP_TARGET_LOCATION}"
+	else
+		if ! curl ${CURL_OPTS} -L "${DUMP_URL}" > "${DUMP_TARGET_LOCATION}"; then
+			echo "Error: failed to download dump file!" > /dev/stderr
+			exit 1
+		fi
 	fi
 
 	# Find and process file in container	
 	DUMP_CONTAINER_FILE="${DUMP_CONTAINER_DIR}/${DUMP_FILENAME}"
 
-	# Check if file is found in container
-	if ! docker exec "${CONTAINER_NAME}" bash -c "[ -e ${DUMP_CONTAINER_FILE} ]"; then
-		echo "Error: file not found in container ${DUMP_CONTAINER_FILE}" > /dev/stderr
-		exit 1
-	fi
+	if [ "${DRY_RUN}" = "true" ]; then
+		echo "Dry run - skipping restore of ${DUMP_CONTAINER_FILE} in ${CONTAINER_NAME}"
+	else
+		# Check if file is found in container
+		if ! docker exec "${CONTAINER_NAME}" bash -c "[ -e ${DUMP_CONTAINER_FILE} ]"; then
+			echo "Error: file not found in container ${DUMP_CONTAINER_FILE}" > /dev/stderr
+			exit 1
+		fi
 
-	# Carry out actual restore
-	echo "Restoring database in container"
-	if ! docker exec "${CONTAINER_NAME}" nice -n 10 mongorestore ${MONGO_RESTORE_OPTS} --drop --gzip --archive="${DUMP_CONTAINER_FILE}"; then
-		echo "Error: failed to restore mongo database" > /dev/stderr
-		exit 1
+		# Carry out actual restore
+		echo "Restoring database in container"
+		if ! docker exec "${CONTAINER_NAME}" nice -n 10 mongorestore ${MONGO_RESTORE_OPTS} --drop --gzip --archive="${DUMP_CONTAINER_FILE}"; then
+			echo "Error: failed to restore mongo database" > /dev/stderr
+			exit 1
+		fi
 	fi
 	
 	echo -n "Removing "
-	rm -v "${DUMP_TARGET_LOCATION}"
+	if [ "${DRY_RUN}" = "true" ]; then
+		echo "(Dry run)"
+	else
+		rm -v "${DUMP_TARGET_LOCATION}"
+	fi
 }
 
 connect() {
 	echo "Connecting and disconnecting"
-	MONGO_CMD="db.linksChecked.count\(\)"
-	docker exec "${CONTAINER_NAME}" bash -c "echo ${MONGO_CMD}|mongo ${MONGO_OPTS} ${MONGO_DB_NAME}"
+	if [ "${DRY_RUN}" = "true" ]; then
+		echo "(Dry run)"
+	else
+		MONGO_CMD="db.linksChecked.count\(\)"
+		docker exec "${CONTAINER_NAME}" bash -c "echo ${MONGO_CMD}|mongo ${MONGO_OPTS} ${MONGO_DB_NAME}"
+	fi
 }
 
 prune() {
 	echo "Pruning database: removing documents older than ${MONGO_PRUNE_AGE_DAYS} days"
-	MONGO_CMD="oldest=new Date\(\).getTime\(\) - ${MONGO_PRUNE_AGE_DAYS} \* 86400000\; db.linksChecked.remove\(\{\'timestamp\': \{\\\$lt: oldest\}\}\)"
-	docker exec "${CONTAINER_NAME}" bash -c "echo ${MONGO_CMD}|mongo ${MONGO_OPTS} ${MONGO_DB_NAME}"
+	if [ "${DRY_RUN}" = "true" ]; then
+		echo "Dry run - skipping pruning of ${MONGO_DB_NAME} in ${CONTAINER_NAME}"
+	else
+		MONGO_CMD="oldest=new Date\(\).getTime\(\) - ${MONGO_PRUNE_AGE_DAYS} \* 86400000\; db.linksChecked.remove\(\{\'timestamp\': \{\\\$lt: oldest\}\}\)"
+		docker exec "${CONTAINER_NAME}" bash -c "echo ${MONGO_CMD}|mongo ${MONGO_OPTS} ${MONGO_DB_NAME}"
+	fi
 }
 
 main() {
@@ -72,20 +93,28 @@ main() {
 
 	VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR=$(read_env_var "${ENV_FILE}" "VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR")
 	VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR=$(read_env_var "${ENV_FILE}" "VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR")
+	VLO_LINKCHECKER_PRUNE_AGE=$(read_env_var "${ENV_FILE}" "VLO_LINKCHECKER_PRUNE_AGE")
 
 	if ! [ "${VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR}" ] || ! [ "${VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR}" ]; then
 		echo "Error: failed to read VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR and/or VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR from .env file (${ENV_FILE})"
 		exit 1
 	fi
 
+	if [ "${VLO_LINKCHECKER_PRUNE_AGE}" ]; then
+		MONGO_PRUNE_AGE_DAYS="${VLO_LINKCHECKER_PRUNE_AGE}"
+	fi
+
 	echo "VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR: ${VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR}"
 	echo "VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR: ${VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR}"
+	echo "MONGO_PRUNE_AGE_DAYS: ${MONGO_PRUNE_AGE_DAYS}"
 	
 	connect
 	update_linkchecker_db "$VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR" "$VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR"
 
+	echo "Waiting..."
 	sleep 120
 	connect
+	echo "Waiting..."
 	sleep 120
 
 	connect
