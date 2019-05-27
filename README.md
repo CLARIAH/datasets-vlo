@@ -6,7 +6,11 @@ directory* to the Solr server container.
 
 See [VLO on GitHub](https://github.com/clarin-eric/VLO).
 
-## Environment
+## Using the compose project
+
+{TODO: Use general CLARIN control.sh script, see "Running the VLO"}
+
+### Environment
 
 A number of environment variables are required. The `.env-template` provides a template
 for a `.env` with usable defaults. A symlink `clarin/.env` to `clarin/../../.env` 
@@ -24,7 +28,7 @@ needs. Make sure to **check for changes in the bundled template when upgrading**
 
 Note that some configuration overlays (see below) may need additional variables set.
 
-## Configuration overlays
+### Configuration overlays
 
 In addition to `docker-compose.yml`, a number of `.yml` files are present that can be
 used as configuration overlays. They apply to different environments and/or usage
@@ -40,7 +44,7 @@ There are overlays for development, the beta and production environments and
 environments that have a fluentd running on the host. Note that more than one overlay can
 be applied if needed.
 
-### Nginx for proxying and static metadata serving
+#### Nginx for proxying and static metadata serving
 
 A nginx based container can be enabled by including the `nginx.yml` overlay that serves
 a number of purposes:
@@ -62,7 +66,9 @@ Set the `PROXY_VLO_CONFIG_HTPASSWD_FILE` variable to specify the location of a
 [nginx configuration](https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/)
 for instructions on how to create such a file.
 
-### JMX
+{TODO: Alternatively expose Tomcat and Solr without proxy}
+
+#### JMX
 
 JMX reporting of the Solr server to a Statsd server can be enabled by including the 
 `jmxtrans.yml` overlay and setting the following environment variables: 
@@ -73,7 +79,7 @@ JMX reporting of the Solr server to a Statsd server can be enabled by including 
 
 See [.env-template](clarin/.env-template) for details and examples.
 
-### User satisfaction scores
+#### User satisfaction scores
 
 To configure the VLO to gather user satisfaction scores via the web app, use the
 `mopinion.yml` overlay. This will cause a snippet to be included at the end of every
@@ -88,16 +94,18 @@ The following variables have to be set for this to work:
 Be aware that, if adopting the `.env` template, the snippets directory is host-mounted
 into the container from a directory within the compose project.
 
-## Usage
+### Running the VLO
 
-### Control script
+#### Control script
 
+{TODO Common script https://gitlab.com/CLARIN-ERIC/control-script/. Directory structure }
 For convenience, a script ([control.sh](./control.sh)) has been included that make it easy
 to run common operations:
 
 ```sh
 ./control.sh [start|stop|restart|run-import|backup|restore|status] [-hd]
 ```
+{TODO Add retrieve mongo db, update link checker info subcommands}
 
 Run `./control.sh -h` to get a more detailed description of all the options.
 
@@ -109,7 +117,7 @@ for more information.
 In most cases you will want to enable either the `nginx` overlay or the `expose-tomcat`
 overlay, otherwise the VLO web app will not be exposed to the host.
 
-### Run with sample data
+#### Run with sample data
 
 To run the VLO with some [sample data](https://gitlab.com/CLARIN-ERIC/docker-vlo-sample-data)
 without the need to configure anything, include `sample-data.yml` in your overlay file
@@ -127,7 +135,7 @@ Make sure to use the following command to bring the services down again:
 docker-compose -f docker-compose.yml -f expose-tomcat.yml -f sample-data.yml down [-v]
 ```
 
-### Run the importer to ingest CMDI metadata into the VLO
+#### Run the importer to ingest CMDI metadata into the VLO
 
 Set the following **environment variables** or a version thereof that applies to your
 environment:
@@ -157,7 +165,7 @@ After having started the services, you can start the import by running:
 ./control.sh run-import
 ```
 
-### Solr configuration initialisation
+#### Solr configuration initialisation
 
 The configuration uses a shared volume (`solr-home-provisioning`) to provision the Solr
 container with the VLO specific configuration (i.e. the contents of the `SOLR_HOME`
@@ -175,7 +183,7 @@ Depending on the environment, the volume may have a different name or prefix.
 Note that this will **NOT** remove any indexed data assuming that separate `SOLR_DATA_HOME`
 location is configured.
 
-### Export Solr data
+#### Export Solr data
 
 ```sh
 HOST_EXPORT_TARGET=/my/solr/data
@@ -186,7 +194,7 @@ HOST_EXPORT_TARGET=/my/solr/data
 This will copy the container's `SOLR_DATA_HOME` content to the specified target directory
 on the host, and then terminate, i.e. doing this will *not start Solr*.
 
-### Provide (import) existing Solr data
+#### Provide (import) existing Solr data
 
 You can provision the Solr image with existing data (in the form as it can be exported
 by following the instructions above) by mounting this data directory to
