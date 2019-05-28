@@ -171,28 +171,16 @@ More information can be found in the documentation at the
 
 Additional configuration overlays (see above) will be loaded automatically according to 
 the list in a file `.overlays` if present in the control script directory. See
-the bundled template file [.compose-overlays-template](./.compose-overlays-template)
+the bundled template file [.overlays-template](./.overlays-template)
 for more information.
 
 In most cases you will want to enable either the `nginx` overlay or the `expose-tomcat`
 overlay, otherwise the VLO web app will not be exposed to the host.
 
-#### Run with sample data
-
-To run the VLO with some [sample data](https://gitlab.com/CLARIN-ERIC/docker-vlo-sample-data)
-without the need to configure anything, include `sample-data.yml` in your overlay file
-(see above) or run the following in the `clarin` directory:
+To start all enabled services, simply run
 
 ```sh
-docker-compose -f docker-compose.yml -f expose-tomcat.yml -f sample-data.yml up [-d]
-```
-
-Then connect to [localhost:8181](http://localhost:8181) to visit your local VLO instance.
-
-Make sure to use the following command to bring the services down again:
-
-```sh
-docker-compose -f docker-compose.yml -f expose-tomcat.yml -f sample-data.yml down [-v]
+DEPLOY_USER=$(whoami) ./control.sh start
 ```
 
 #### Run the importer to ingest CMDI metadata into the VLO
@@ -219,57 +207,9 @@ to use
 [dataroots-production.xml](https://github.com/clarin-eric/VLO/blob/master/vlo-commons/src/main/resources/dataroots-production.xml).
 Make sure that the paths match your data mount!
 
-After having started the services, you can start the import by running:
+After having started the services, you can start the import by running the general
+control script (see above):
 
 ```sh
-./control.sh run-import
+./control.sh vlo run-import
 ```
-
-#### Solr configuration initialisation
-
-The configuration uses a shared volume (`solr-home-provisioning`) to provision the Solr
-container with the VLO specific configuration (i.e. the contents of the `SOLR_HOME`
-directory). As the content of this volume only gets initialised if the volume is empty,
-it is **necessary to erase this volume before starting the services** (unless the version
-of the VLO and therefore the bundled Solr configuration has not changed). Unfortunately
-this cannot be automated through docker-compose; instead, run the following command:
-
-```sh
-docker volume rm ${COMPOSE_PROJECT_NAME}_solr-home-provisioning
-```
-
-`${COMPOSE_PROJECT_NAME}` defaults to `vlo`.
-Depending on the environment, the volume may have a different name or prefix. 
-Note that this will **NOT** remove any indexed data assuming that separate `SOLR_DATA_HOME`
-location is configured.
-
-#### Export Solr data
-
-```sh
-HOST_EXPORT_TARGET=/my/solr/data
-./control.sh stop
-(cd clarin && docker-compose run -v $HOST_EXPORT_TARGET:/solr-export -e SOLR_DATA_EXPORT_TARGET=/solr-export vlo-solr)
-```
-
-This will copy the container's `SOLR_DATA_HOME` content to the specified target directory
-on the host, and then terminate, i.e. doing this will *not start Solr*.
-
-#### Provide (import) existing Solr data
-
-You can provision the Solr image with existing data (in the form as it can be exported
-by following the instructions above) by mounting this data directory to
-`/docker-entrypoint-initsolr.d/solr_data` 
-
-```sh
-HOST_DATA_DIR=/my/solr/data
-docker-compose down -v # This removes all data!
-docker-compose run -v $HOST_DATA_DIR:/docker-entrypoint-initsolr.d/solr_data vlo-solr
-```
-
-This will copy the content of the specified source directory to the `SOLR_DATA_HOME`
-directory of the container before starting Solr.
-
-You can provide you own alternative Solr _configuration_ in a similar way by mounting
-valid 'Solr home' content to `/docker-entrypoint-initsolr.d/solr_home`. This approach is
-used by default to provision the Solr image with Solr home content from the VLO image;
-normally you should not have to deviate from this.
