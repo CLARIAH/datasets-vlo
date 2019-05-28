@@ -8,7 +8,11 @@ See [VLO on GitHub](https://github.com/clarin-eric/VLO).
 
 ## Using the compose project
 
-{TODO: Use general CLARIN control.sh script, see "Running the VLO"}
+To use this project, you need to have Docker Compose installed as well as a compatible
+version of the general CLARIN control script. More details are provided in the
+[Running the VLO](#running-the-vlo) section of this document. The rest of this section
+describes the steps necessary to configure the project before running the services
+defined in this project.
 
 ### Environment
 
@@ -32,21 +36,20 @@ Note that some configuration overlays (see below) may need additional variables 
 
 In addition to `docker-compose.yml`, a number of `.yml` files are present that can be
 used as configuration overlays. They apply to different environments and/or usage
-scenarios. To use them, provide both the 'base' configuration and the overlay as input
-files to the `docker-compose` command. For example, a complete configuration ready to be
-launched in _production_ can be started by executing:
+scenarios. They can be used in two ways:
 
-```sh
-docker-compose -f docker-compose.yml -f production.yml up
-```
+1. Directly with `docker-compose` by specifying them in addition
+to the 'base' `docker-compose.yml` configuration
+2. **Preferably**: in combination with the general CLARIN control script by including them 
+uncommented in the `.overlays` file. See [control script documentation](https://gitlab.com/CLARIN-ERIC/control-script/) and 
+[.overlays-tempate](./.overlays-template) file for more information. 
 
-There are overlays for development, the beta and production environments and
-environments that have a fluentd running on the host. Note that more than one overlay can
-be applied if needed.
+Note that the `.yml` file extension should be **excluded** when specifying overlays 
+in the `.overlays` file whereas it must be included if running `docker-compose` manually.
 
 #### Nginx for proxying and static metadata serving
 
-A nginx based container can be enabled by including the `nginx.yml` overlay that serves
+A nginx based container can be enabled by including the `nginx` overlay that serves
 a number of purposes:
 
 1. Proxying the VLO front end, including caching, compression and a number of redirects
@@ -66,12 +69,23 @@ Set the `PROXY_VLO_CONFIG_HTPASSWD_FILE` variable to specify the location of a
 [nginx configuration](https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/)
 for instructions on how to create such a file.
 
-{TODO: Alternatively expose Tomcat and Solr without proxy}
+#### Direct port mapping for the Tomcat and/or Solr services (no proxy)
+
+This approach can be taken as an *alternative* to running the Nginx proxy (see above).
+The two approaches cannot be combined without altering the port mappings. Doing the
+following will map the internal ports of the Tomcat and/or Solr service to local ports:
+
+* Disable the `nginx` overlay
+* Enable the `expose-tomcat` overlay to make Tomcat available on port 8181
+* And/or enable the `expose-solr` overlay to make the Solr server available on port 8183
+
+Note that this cannot fully replace the nginx proxy as it does not serve the metadata
+and other static content.
 
 #### JMX
 
 JMX reporting of the Solr server to a Statsd server can be enabled by including the 
-`jmxtrans.yml` overlay and setting the following environment variables: 
+`jmxtrans` overlay and setting the following environment variables: 
 
 * `JMXTRANS_HOST_ALIAS`
 * `JMXTRANS_STATSD_HOST`
@@ -82,7 +96,7 @@ See [.env-template](clarin/.env-template) for details and examples.
 #### User satisfaction scores
 
 To configure the VLO to gather user satisfaction scores via the web app, use the
-`mopinion.yml` overlay. This will cause a snippet to be included at the end of every
+`mopinion` overlay. This will cause a snippet to be included at the end of every
 rendered page that enables a feedback panel defined and controlled via 
 [Mopinion](https://app.mopinion.com).
 
@@ -94,23 +108,69 @@ The following variables have to be set for this to work:
 Be aware that, if adopting the `.env` template, the snippets directory is host-mounted
 into the container from a directory within the compose project.
 
+#### Link checker database
+
+The VLO can access and process data gathered by the
+[Curation Module](http://curate.acdh.oeaw.ac.at/)'s link checker during import. For this,
+a Mongo database has to be accessible. Normally this is a local instance that gets
+populated on basis of an import or replication. Enabling the `mongo` overlay will
+include a service `vlo-linkchecker-mongo` and set up a connection from the VLO service.
+
+The following environment variables need to be set:
+
+* `VLO_LINK_CHECKER_MONGO_DB_NAME`
+* `VLO_LINK_CHECKER_MONGO_MEM_LIMIT`
+* `VLO_LINK_CHECKER_DUMP_URL`
+* `VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR`
+* `VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR`
+* `VLO_LINK_CHECKER_PRUNE_AGE`
+
+See [.env-template](clarin/.env-template) for details and examples.
+
+The control script provides a number of commands for managing the link checker database
+and updating the Solr index on basis of its information (see below).
+
 ### Running the VLO
 
 #### Control script
 
-{TODO Common script https://gitlab.com/CLARIN-ERIC/control-script/. Directory structure }
-For convenience, a script ([control.sh](./control.sh)) has been included that make it easy
-to run common operations:
+The VLO services defined in this project can be controlled with 
+[CLARIN's common control script](https://gitlab.com/CLARIN-ERIC/control-script).
+The script can easily be deployed and can be used immediately after setting up the
+required directory structure:
+```
+ ├── control.sh -> control-script/control.sh   Symlink to control-script/control.sh
+ ├── control-script/                           A clone or copy of the control-script project
+ └── vlo/                                      Project directory
+     ├── .env                                  Environment variables (initialise from compose_vlo/clarin/.env-template)
+     ├── .overlays                             Enabled overlays (initialise from compose_vlo/.overlays-template)
+     └── compose_vlo/                          A clone or copy of this project
+```
+
+Using the control script, it is easy to run common operations without manually calling
+docker-compose:
 
 ```sh
-./control.sh [start|stop|restart|run-import|backup|restore|status] [-hd]
+./control.sh vlo -h
+./control.sh [-v] vlo [start|stop|restart|status|logs]
+./control.sh [-v] vlo [run-import|run-link-status-update|update-linkchecker-db]
+./control.sh [-v] vlo [backup|restore]
+./control.sh [-v] vlo exec <name> <command>
 ```
-{TODO Add retrieve mongo db, update link checker info subcommands}
 
-Run `./control.sh -h` to get a more detailed description of all the options.
+Run `./control.sh vlo -h` to get a more detailed description of all the options. Note that
+the script checks the username against an expected the name of a predefined deploy
+user. This can be overridden by setting the `DEPLOY_USER` environment variable:
 
-Additional configuration overlays (see above) will be loaded according to the list in
-a file `.compose-overlays` in the control script directory if present. See
+```sh
+DEPLOY_USER=$(whoami) ./control.sh <arguments>
+```
+
+More information can be found in the documentation at the
+[control-script repository](https://gitlab.com/CLARIN-ERIC/control-script).
+
+Additional configuration overlays (see above) will be loaded automatically according to 
+the list in a file `.overlays` if present in the control script directory. See
 the bundled template file [.compose-overlays-template](./.compose-overlays-template)
 for more information.
 
