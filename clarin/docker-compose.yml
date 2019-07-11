@@ -24,7 +24,7 @@ services:
     networks:
       - network_vlo
   vlo-web:
-    image: &vlo_web_image registry.gitlab.com/clarin-eric/docker-vlo-beta:4.7.1-alpha1-1
+    image: &vlo_web_image registry.gitlab.com/clarin-eric/docker-vlo-beta:vlo-4.7.1-alpha1-1
     environment:
       VLO_DOCKER_IMAGE: *vlo_web_image
       VLO_DOCKER_SOLR_URL: "http://vlo-solr:8983/solr/vlo-index/"
