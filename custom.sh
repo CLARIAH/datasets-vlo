@@ -15,10 +15,8 @@ sub_help(){
     echo "    restart-proxy             Restart nginx proxy service (no container recreate) "
     echo "    restart-mongo             Restart mongo linkchecker database (no container recreate) "
     echo "    restart-jmxtrans          Restart jmxtrans (no container recreate) "
-    
-    
-    
-    
+    echo ""
+    echo "    drop-solr-data [-f]       Drop the VLO Solr index (requires confirmation unless -f is provided)"
     echo ""    
     echo "For help with each subcommand run:"
     echo "${PROGRAM_NAME} <subcommand> -h|--help"
@@ -75,6 +73,28 @@ sub_restart-proxy() {
 
 sub_update-linkchecker-db() {
 	bash "${BASE_DIR}/script/retrieve-linkcheck-mongo-db.sh"
+}
+
+sub_drop-solr-data() {
+	if [ "-f" = "$@" ]; then
+		CONFIRMATION="y"
+	else
+		echo -n "Warning: This will drop all persisted Solr data for the VLO by remove the volume '${VLO_SOLR_DATA_VOLUME}'. Continue? (y/n)"
+		read CONFIRMATION
+	fi
+	
+	if [ "y" = "${CONFIRMATION}" ]; then
+		echo "Stopping Solr service ..."
+		if _docker-compose stop "${VLO_SOLR_SERVICE}" \
+			&& _docker-compose rm -f "${VLO_SOLR_SERVICE}" \
+			&& echo -n "Removing volume " && docker volume rm "${VLO_SOLR_DATA_VOLUME}"; then
+				echo "Restarting Solr service..."
+			_docker-compose ${COMPOSE_OPTS} up -d --force-recreate "${VLO_SOLR_SERVICE}"
+		else
+			echo "Failed to remove Solr data volume '${VLO_SOLR_DATA_VOLUME}'. Service may be left in a broken state!"
+			exit 1
+		fi
+	fi
 }
 
 #

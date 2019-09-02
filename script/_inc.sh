@@ -9,6 +9,8 @@ VLO_PROXY_SERVICE="vlo-proxy"
 VLO_JMXTRANS_SERVICE="jmxtrans"
 VLO_LINKCHECKER_MONGO_SERVICE="vlo-linkchecker-mongo"
 
+VLO_SOLR_DATA_VOLUME="vlo_vlo-solr-data"
+
 SOLR_HOME_PROVISIONING_VOLUME_NAME="solr-home-provisioning"
 
 VLO_SOLR_INDEX_URL="${VLO_SOLR_INDEX_URL:-http://localhost:8983/solr/vlo-index}"
