@@ -10,6 +10,12 @@ sub_help(){
     echo "    run-link-status-update    Start an update of the indexed link status inside the running VLO container"
     echo "    update-linkchecker-db     Start an update of the link checker database inside the running MongoDB container "
     echo ""
+    echo "    restart-web-app           Restart VLO web app (no recreate) "
+    echo "    restart-solr              Restart VLO Solr instance (no recreate) "
+    echo "    restart-mongo             Restart mongo linkchecker database (no recreate) "
+    
+    
+    echo ""    
     echo "For help with each subcommand run:"
     echo "${PROGRAM_NAME} <subcommand> -h|--help"
     echo ""
@@ -31,6 +37,28 @@ sub_run-link-status-update() {
 		echo "Service not running, cannot execute import."
 		exit 1
 	fi
+}
+
+sub_restart-web-app() {
+	if check_service; then
+		_docker-compose ${COMPOSE_OPTS} restart "${VLO_WEB_SERVICE}"
+	else
+		echo "Service not running, cannot restart."
+		exit 1
+	fi
+}
+
+sub_restart-solr() {
+	if check_service; then
+		_docker-compose ${COMPOSE_OPTS} restart "${VLO_SOLR_SERVICE}"
+	else
+		echo "Service not running, cannot restart."
+		exit 1
+	fi
+}
+
+sub_restart-mongo() {
+	_docker-compose ${COMPOSE_OPTS} restart "${VLO_LINKCHECKER_MONGO_SERVICE}"
 }
 
 sub_update-linkchecker-db() {
