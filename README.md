@@ -156,6 +156,8 @@ docker-compose:
 ./control.sh [-v] vlo [run-import|run-link-status-update|update-linkchecker-db]
 ./control.sh [-v] vlo [backup|restore]
 ./control.sh [-v] vlo exec <name> <command>
+./control.sh [-v] vlo restart-[web-app|solr|proxy|mongo]
+./control.sh [-v] vlo drop-solr-data
 ```
 
 Run `./control.sh vlo -h` to get a more detailed description of all the options. Note that
