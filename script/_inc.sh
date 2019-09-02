@@ -5,6 +5,8 @@ VLO_COMPOSE_DIR="${PROJECT_BASE_DIR}/clarin"
 
 VLO_WEB_SERVICE="vlo-web"
 VLO_SOLR_SERVICE="vlo-solr"
+VLO_PROXY_SERVICE="vlo-proxy"
+VLO_JMXTRANS_SERVICE="jmxtrans"
 VLO_LINKCHECKER_MONGO_SERVICE="vlo-linkchecker-mongo"
 
 SOLR_HOME_PROVISIONING_VOLUME_NAME="solr-home-provisioning"
