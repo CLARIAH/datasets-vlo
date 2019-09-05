@@ -1,0 +1,20 @@
+version: '2'
+services:
+  vlo-web:
+    environment:
+      - VLO_DOCKER_EXPOSURE_ENABLED=true
+  exposure-db:
+    image: registry.gitlab.com/clarin-eric/docker-postgres:1.0.2
+    restart: always
+    environment:
+      - "POSTGRES_DB=${VLO_DOCKER_EXPOSURE_DB}"
+      - "POSTGRES_USER=${VLO_DOCKER_EXPOSURE_DB_USER}"
+      - "POSTGRES_PASSWORD=${VLO_DOCKER_EXPOSURE_DB_PASSWORD}"
+    volumes:
+      - exposure_pg_data:/var/lib/postgresql/data:rw
+      - ./exposure/db/dump.sql:/docker-entrypoint-initdb.d/dump.sql
+    networks:
+        - network_vlo
+volumes:
+    exposure_pg_data:
+        external: false
