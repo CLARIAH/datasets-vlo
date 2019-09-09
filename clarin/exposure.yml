@@ -3,8 +3,8 @@ services:
   vlo-web:
     environment:
       - VLO_DOCKER_EXPOSURE_ENABLED=true
-      - VLO_DOCKER_EXPOSURE_DB_NAME=vlo-exposure
-      - VLO_DOCKER_EXPOSURE_DB_USER=vlo-exposure
+      - VLO_DOCKER_EXPOSURE_DB_NAME=vlo_exposure
+      - VLO_DOCKER_EXPOSURE_DB_USER=vlo_exposure
       - VLO_DOCKER_EXPOSURE_DB_HOST=exposure-db
       - VLO_DOCKER_EXPOSURE_DB_PORT=5432
       - VLO_DOCKER_EXPOSURE_DB_PASSWORD
@@ -12,8 +12,8 @@ services:
     image: registry.gitlab.com/clarin-eric/docker-postgres:1.0.2
     restart: always
     environment:
-      - "POSTGRES_DB=vlo-exposure"
-      - "POSTGRES_USER=vlo-exposure"
+      - "POSTGRES_DB=vlo_exposure"
+      - "POSTGRES_USER=vlo_exposure"
       - "POSTGRES_PASSWORD=${VLO_DOCKER_EXPOSURE_DB_PASSWORD}"
     volumes:
       - exposure_pg_data:/var/lib/postgresql/data:rw
