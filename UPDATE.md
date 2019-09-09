@@ -1,5 +1,23 @@
 # Upgrade instructions
 
+## 1.8.0 to vlo-4.7.1-1
+
+Note that the version scheme has changed as of this release. Apart from that it's a
+maintenance release compared to 1.8.0. No configuration changes are needed. There are
+some new control.sh subcommands to be aware of:
+
+```
+restart-web-app           Restart VLO web app (no container recreate) 
+restart-solr              Restart VLO Solr instance (no container recreate) 
+restart-proxy             Restart nginx proxy service (no container recreate) 
+restart-mongo             Restart mongo linkchecker database (no container recreate) 
+restart-jmxtrans          Restart jmxtrans (no container recreate) 
+drop-solr-data [-f]       Drop the VLO Solr index (requires confirmation unless -f is provided)
+```
+
+Please also update the VLO/harvester orchestration scripts if you are using them. 
+See https://gitlab.com/CLARIN-ERIC/vlo-harvesting-orchestration/.
+
 ## 1.7.0 to 1.80
 
 - New overlays:
