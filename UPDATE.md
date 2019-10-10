@@ -1,5 +1,13 @@
 # Upgrade instructions
 
+## vlo-4.7.1-1 to vlo-4.7.2-1
+
+- New mandatory .env variable:
+
+```
+VLO_DOCKER_AVAILABILITY_STATUS_UPDATE_BATCH_SIZE=25
+```
+
 ## 1.8.0 to vlo-4.7.1-1
 
 Note that the version scheme has changed as of this release. Apart from that it's a
