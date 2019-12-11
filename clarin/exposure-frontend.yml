@@ -1,7 +1,7 @@
 version: '2'
 services:
   exposure-frontend:
-    image: docker-vlo-exposure-frontend:d9dfd08
+    image: registry.gitlab.com/clarin-eric/docker-vlo-exposure-frontend:1.0.0-alpha1
     environment:
       - VLO_DOCKER_EXPOSURE_DB_NAME=vlo_exposure
       - VLO_DOCKER_EXPOSURE_DB_USER=vlo_exposure
