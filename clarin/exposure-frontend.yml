@@ -8,7 +8,16 @@ services:
       - VLO_DOCKER_EXPOSURE_DB_HOST=exposure-db
       - VLO_DOCKER_EXPOSURE_DB_PORT=5432
       - VLO_DOCKER_EXPOSURE_DB_PASSWORD
+      - TOMCAT_PROXY_REMOTE_IP_HEADER
+      - TOMCAT_PROXY_INTERNAL_PROXIES
+      - TOMCAT_PROXY_PROXIES_HEADER
+      - TOMCAT_PROXY_PROTOCOL_HEADER
+      - TOMCAT_PROXY_HTTP_SERVER_PORT
+      - TOMCAT_PROXY_HTTPS_SERVER_PORT
+    volumes:
+    #override server conf to support proxy
+      - ./tomcat/init/tomcat-vlo-init.sh:/init/tomcat-vlo-init.sh
+      - ./tomcat/conf/server.xml:/srv/tomcat8/conf/server.template.xml:ro
     networks:
         - network_vlo
-
 
