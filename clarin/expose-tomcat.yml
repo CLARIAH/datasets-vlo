@@ -2,5 +2,8 @@
 version: '2'
 services:
   vlo-web:
+    networks:
+      - network_vlo
+      - network_internet
     ports:
       - 8181:8080

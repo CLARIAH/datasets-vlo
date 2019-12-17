@@ -2,5 +2,9 @@
 version: '2'
 services:
   vlo-solr:
+    networks:
+      - network_vlo
+      - network_internet
     ports:
       - 8183:8983
+
