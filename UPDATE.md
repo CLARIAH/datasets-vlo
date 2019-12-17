@@ -1,5 +1,47 @@
 # Upgrade instructions
 
+## vlo-4.7.* to vlo-4.8.0-*
+
+- New overlays:
+  - `exposure`
+  - `exposure-frontend`
+
+These should be added to ``.overlays` for production to enable exposure statistics 
+gathering. Furthermore, the following .env variables need to be added:
+
+```
+## --- Set the following if you are using exposure statistics gathering ---
+VLO_DOCKER_EXPOSURE_DB_PASSWORD=vlo_exposure
+
+## --- Set the following if you want to enable the exposure statistics front end ---
+## Basic auth password file - location relative to compose_vlo/clarin directory
+## initialise with e.g. htpasswd -n -B user1 > exposure-frontend/htpasswd
+VLO_EXPOSURE_FRONTEND_PASSWORD_FILE=../../exposure-frontend/htpasswd
+```
+
+Finally initialise a file `exposure-frontend/htpasswd` (relative to the parent directory
+of the compose project) in the following way:
+
+```sh
+mkdir -p ${DEPLOY_HOME}/vlo/exposure-frontend
+htpasswd -n -B ${USERNAME} >> ${DEPLOY_HOME}/vlo/exposure-frontend/htpasswd 
+# manually enter password on the CLI
+```
+
+and repeat for every user that should get access to the exposure statistics front end
+(or ask users to provide their own password hash this way and append).
+
+Note that for this release you will also need to drop the Solr database and run a fresh
+import:
+
+```sh
+cd ${DEPLOY_HOME}
+./control.sh vlo drop-solr-data
+#manually confirm
+./control.sh vlo restart
+./control.sh vlo run-import
+```
+
 ## vlo-4.7.1-1 to vlo-4.7.2-1
 
 - New mandatory .env variable:

@@ -8,6 +8,7 @@ solr-backup
 solr-temp-volume
 #mongo
 #exposure
+#exposure-frontend
 #jmxtrans
 #mopinion
 
