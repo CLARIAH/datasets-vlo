@@ -24,3 +24,4 @@ services:
       #- ./jmxtrans/custom-log4j.xml:/usr/share/jmxtrans/conf/log4j.xml
     networks:
       - network_vlo
+      - network_internet

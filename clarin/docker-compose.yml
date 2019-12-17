@@ -79,6 +79,7 @@ services:
     restart: on-failure
     networks:
         - network_vlo
+        - network_internet
   vlo-solr-init:
     image: *vlo_web_image
     entrypoint: ["sleep", "1"]
@@ -103,3 +104,8 @@ volumes:
         external: false
 networks:
   network_vlo:
+    driver: bridge
+    internal: true
+  network_internet:
+    driver: bridge
+    internal: false

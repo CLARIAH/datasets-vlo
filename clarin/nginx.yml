@@ -33,6 +33,7 @@ services:
     restart: unless-stopped
     networks:
         - network_vlo
+        - network_internet
 volumes:
     vlo_www_data:
         external: false
