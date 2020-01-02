@@ -10,6 +10,9 @@ These should be added to ``.overlays` for production to enable exposure statisti
 gathering. Furthermore, the following .env variables need to be added:
 
 ```
+# Solr init script (absolute path or else relative to compose_vlo/clarin directory)
+SOLR_INIT_SCRIPT=./solr/solr.in.sh
+
 ## --- Set the following if you are using exposure statistics gathering ---
 VLO_DOCKER_EXPOSURE_DB_PASSWORD=vlo_exposure
 

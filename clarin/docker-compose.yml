@@ -20,6 +20,7 @@ services:
       - solr-home-provisioning:${SOLR_HOME_PROVISIONING_PATH}
       - vlo-solr-data:${SOLR_DATA_HOME}
       - ./solr-init:/opt/solr-init
+      - ${SOLR_INIT_SCRIPT}:/etc/default/solr.in.sh
     restart: on-failure
     networks:
       - network_vlo
