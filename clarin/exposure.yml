@@ -19,7 +19,9 @@ services:
       - exposure_pg_data:/var/lib/postgresql/data:rw
       - ./exposure/db/dump.sql:/docker-entrypoint-initdb.d/dump.sql
     networks:
-        - network_vlo
+      - network_vlo
+    expose:
+      - 5432
 volumes:
     exposure_pg_data:
         external: false
