@@ -51,7 +51,7 @@ update_linkchecker_db() {
 
 		# Carry out actual restore
 		echo "Restoring database in container"
-		if ! docker exec "${CONTAINER_NAME}" nice -n 10 mongorestore ${MONGO_RESTORE_OPTS} --drop --gzip --archive="${DUMP_CONTAINER_FILE}"; then
+		if ! docker exec "${CONTAINER_NAME}" nice -n 10 mongorestore ${MONGO_RESTORE_OPTS} --host=127.0.0.1 --drop --gzip --archive="${DUMP_CONTAINER_FILE}"; then
 			echo "Error: failed to restore mongo database" > /dev/stderr
 			exit 1
 		fi
