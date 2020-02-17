@@ -6,7 +6,7 @@
 nginx
 solr-backup
 solr-temp-volume
-#mongo
+#linkchecker
 #exposure
 #exposure-frontend
 #jmxtrans
