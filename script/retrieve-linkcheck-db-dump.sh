@@ -2,18 +2,18 @@
 set -e
 
 source "$(dirname $0)/_inc.sh"
-DUMP_URL="${VLO_LINK_CHECKER_DUMP_URL:-https://curate.acdh.oeaw.ac.at/mysqlDump.gz}"
+DUMP_URL="${LINK_CHECKER_DUMP_URL:-https://curate.acdh.oeaw.ac.at/mysqlDump.gz}"
 SERVICE_NAME="vlo-linkchecker-db"
 MONGO_DB_NAME="curateLinkTest"
-MONGO_PRUNE_AGE_DAYS="${VLO_LINK_CHECKER_PRUNE_AGE:-100}"
-DEBUG="${VLO_LINK_CHECKER_DEBUG:-false}"
-DRY_RUN="${VLO_LINK_CHECKER_DRY_RUN:-false}"
-MONGO_OPTS="--quiet"
+DB_PRUNE_AGE_DAYS="${LINK_CHECKER_PRUNE_AGE:-100}"
+DEBUG="${LINK_CHECKER_DEBUG:-false}"
+DRY_RUN="${LINK_CHECKER_DRY_RUN:-false}"
+MYSQL_OPTS="-s"
 MONGO_RESTORE_OPTS="--quiet"
 CURL_OPTS="-s"
 
 if [ "${DEBUG}" = "true" ]; then
-	MONGO_OPTS="--verbose"
+	MYSQL_OPTS="-v"
 	MONGO_RESTORE_OPTS="-vvv"
 	CURL_OPTS="-v"
 fi
@@ -30,6 +30,10 @@ check_db_container() {
 	if [ "${DEBUG}" = "true" ]; then
 		echo "Using link checker container ${CONTAINER_ID} (service ${SERVICE_NAME})"
 	fi
+}
+
+mysql_command() {
+	echo "mysql ${MYSQL_OPTS} --user=${LINK_CHECKER_DB_USER} --password=${LINK_CHECKER_DB_PASSWORD} --database=${LINK_CHECKER_DB_NAME}"
 }
 
 update_linkchecker_db() {
@@ -87,17 +91,17 @@ connect() {
 	if [ "${DRY_RUN}" = "true" ]; then
 		echo "(Dry run)"
 	else
-		MONGO_CMD="db.linksChecked.count\(\)"
-		docker exec "${CONTAINER_ID}" bash -c "echo ${MONGO_CMD}|mongo ${MONGO_OPTS} ${MONGO_DB_NAME}"
+		DB_CMD='select * from status limit 0;'
+		docker exec "${CONTAINER_ID}" bash -c "echo '${DB_CMD}'|$(mysql_command)"
 	fi
 }
 
 prune() {
-	echo "Pruning database: removing documents older than ${MONGO_PRUNE_AGE_DAYS} days"
+	echo "Pruning database: removing documents older than ${DB_PRUNE_AGE_DAYS} days"
 	if [ "${DRY_RUN}" = "true" ]; then
 		echo "Dry run - skipping pruning of ${MONGO_DB_NAME} in ${CONTAINER_ID}"
 	else
-		MONGO_CMD="oldest=new Date\(\).getTime\(\) - ${MONGO_PRUNE_AGE_DAYS} \* 86400000\; db.linksChecked.remove\(\{\'timestamp\': \{\\\$lt: oldest\}\}\)"
+		MONGO_CMD="oldest=new Date\(\).getTime\(\) - ${DB_PRUNE_AGE_DAYS} \* 86400000\; db.linksChecked.remove\(\{\'timestamp\': \{\\\$lt: oldest\}\}\)"
 		docker exec "${CONTAINER_ID}" bash -c "echo ${MONGO_CMD}|mongo ${MONGO_OPTS} ${MONGO_DB_NAME}"
 	fi
 }
@@ -109,36 +113,33 @@ read_settings() {
 		exit 1
 	fi
 
-	VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR=$(			read_env_var "${ENV_FILE}" "VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR")
-	VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR=$(	read_env_var "${ENV_FILE}" "VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR")
-	VLO_LINK_CHECKER_PRUNE_AGE=$(					read_env_var "${ENV_FILE}" "VLO_LINK_CHECKER_PRUNE_AGE")
-	VLO_LINK_CHECKER_DUMP_URL=$(						read_env_var "${ENV_FILE}" "VLO_LINK_CHECKER_DUMP_URL")
-	VLO_LINK_CHECKER_MONGO_DB_NAME=$(				read_env_var "${ENV_FILE}" "VLO_LINK_CHECKER_MONGO_DB_NAME")
-	VLO_LINK_CHECKER_DEBUG=$(						read_env_var "${ENV_FILE}" "VLO_LINK_CHECKER_DEBUG")
-
-	if ! [ "${VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR}" ] || ! [ "${VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR}" ]; then
-		echo "Error: failed to read VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR and/or VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR from .env file (${ENV_FILE})"
-		exit 1
-	fi
+	LINK_CHECKER_DUMP_HOST_DIR=$(		read_env_var "${ENV_FILE}" "LINK_CHECKER_DUMP_HOST_DIR")
+	LINK_CHECKER_DUMP_CONTAINER_DIR=$(	read_env_var "${ENV_FILE}" "LINK_CHECKER_DUMP_CONTAINER_DIR")
+	LINK_CHECKER_PRUNE_AGE=$(			read_env_var "${ENV_FILE}" "LINK_CHECKER_PRUNE_AGE")
+	LINK_CHECKER_DUMP_URL=$(			read_env_var "${ENV_FILE}" "LINK_CHECKER_DUMP_URL")
+	LINK_CHECKER_DB_NAME=$(				read_env_var "${ENV_FILE}" "LINK_CHECKER_DB_NAME")
+	LINK_CHECKER_DB_USER=$(				read_env_var "${ENV_FILE}" "LINK_CHECKER_DB_USER")
+	LINK_CHECKER_DB_PASSWORD=$(			read_env_var "${ENV_FILE}" "LINK_CHECKER_DB_PASSWORD")
+	LINK_CHECKER_DEBUG=$(				read_env_var "${ENV_FILE}" "LINK_CHECKER_DEBUG")
 	
 	echo "Environment variables read from ${ENV_FILE}"
 
 	#override some defaults
 
-	if [ "${VLO_LINK_CHECKER_PRUNE_AGE}" ]; then
-		MONGO_PRUNE_AGE_DAYS="${VLO_LINK_CHECKER_PRUNE_AGE}"
+	if [ "${LINK_CHECKER_PRUNE_AGE}" ]; then
+		DB_PRUNE_AGE_DAYS="${LINK_CHECKER_PRUNE_AGE}"
 	fi
 	
-	if [ "${VLO_LINK_CHECKER_DUMP_URL}" ]; then
-		DUMP_URL="${VLO_LINK_CHECKER_DUMP_URL}"
+	if [ "${LINK_CHECKER_DUMP_URL}" ]; then
+		DUMP_URL="${LINK_CHECKER_DUMP_URL}"
 	fi
 	
-	if [ "${VLO_LINK_CHECKER_MONGO_DB_NAME}" ]; then
-		MONGO_DB_NAME="${VLO_LINK_CHECKER_MONGO_DB_NAME}"
+	if [ "${LINK_CHECKER_DB_NAME}" ]; then
+		MONGO_DB_NAME="${LINK_CHECKER_DB_NAME}"
 	fi
 	
-	if [ "${VLO_LINK_CHECKER_DEBUG}" ]; then
-		DEBUG="${VLO_LINK_CHECKER_DEBUG}"
+	if [ "${LINK_CHECKER_DEBUG}" ]; then
+		DEBUG="${LINK_CHECKER_DEBUG}"
 	fi	
 }
 
@@ -146,10 +147,10 @@ main() {
 	read_settings "${PROJECT_BASE_DIR}/../.env"
 
 	echo "-------"
-	echo "VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR: ${VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR}"
-	echo "VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR: ${VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR}"
+	echo "LINK_CHECKER_DUMP_HOST_DIR: ${LINK_CHECKER_DUMP_HOST_DIR}"
+	echo "LINK_CHECKER_DUMP_CONTAINER_DIR: ${LINK_CHECKER_DUMP_CONTAINER_DIR}"
 	echo "MONGO_DB_NAME: ${MONGO_DB_NAME}"
-	echo "MONGO_PRUNE_AGE_DAYS: ${MONGO_PRUNE_AGE_DAYS}"
+	echo "DB_PRUNE_AGE_DAYS: ${DB_PRUNE_AGE_DAYS}"
 	echo "DUMP_URL: ${DUMP_URL}"
 	if [ "${DEBUG}" = "true" ]; then
 		echo "DEBUG: ${DEBUG} -> output will be verbose!"
@@ -158,14 +159,14 @@ main() {
 	fi
 	echo "-------"
 	
-	if ! [ ${MONGO_PRUNE_AGE_DAYS} -ge 0 ]; then
-		echo "MONGO_PRUNE_AGE_DAYS expected to be a number >= 0"
+	if ! [ ${DB_PRUNE_AGE_DAYS} -ge 0 ]; then
+		echo "DB_PRUNE_AGE_DAYS expected to be a number >= 0"
 		exit 1
 	fi
 	
 	check_db_container
 	connect
-	update_linkchecker_db "$VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR" "$VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR"
+	update_linkchecker_db "$LINK_CHECKER_DUMP_HOST_DIR" "$LINK_CHECKER_DUMP_CONTAINER_DIR"
 
 	echo "Waiting..."
 	sleep 120
