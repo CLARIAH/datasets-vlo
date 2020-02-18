@@ -4,7 +4,8 @@ set -e
 source "$(dirname $0)/_inc.sh"
 DUMP_URL="${LINK_CHECKER_DUMP_URL:-https://curate.acdh.oeaw.ac.at/mysqlDump.gz}"
 SERVICE_NAME="vlo-linkchecker-db"
-MONGO_DB_NAME="curateLinkTest"
+DB_NAME="linkchecker"
+DB_TABLE_NAME="status"
 DB_PRUNE_AGE_DAYS="${LINK_CHECKER_PRUNE_AGE:-100}"
 DEBUG="${LINK_CHECKER_DEBUG:-false}"
 DRY_RUN="${LINK_CHECKER_DRY_RUN:-false}"
@@ -87,11 +88,15 @@ update_linkchecker_db() {
 }
 
 connect() {
+	DB_CMD='select * from '"${DB_TABLE_NAME}"' limit 0;'
+	if [ "${DEBUG}" = "true" ]; then
+		echo "Checking connection with command '${DB_CMD}' passed to $(mysql_command)"
+	fi
+
 	echo "Connecting and disconnecting"
 	if [ "${DRY_RUN}" = "true" ]; then
 		echo "(Dry run)"
 	else
-		DB_CMD='select * from status limit 0;'
 		docker exec "${CONTAINER_ID}" bash -c "echo '${DB_CMD}'|$(mysql_command)"
 	fi
 }
@@ -99,10 +104,10 @@ connect() {
 prune() {
 	echo "Pruning database: removing documents older than ${DB_PRUNE_AGE_DAYS} days"
 	if [ "${DRY_RUN}" = "true" ]; then
-		echo "Dry run - skipping pruning of ${MONGO_DB_NAME} in ${CONTAINER_ID}"
+		echo "Dry run - skipping pruning of ${DB_NAME} in ${CONTAINER_ID}"
 	else
 		MONGO_CMD="oldest=new Date\(\).getTime\(\) - ${DB_PRUNE_AGE_DAYS} \* 86400000\; db.linksChecked.remove\(\{\'timestamp\': \{\\\$lt: oldest\}\}\)"
-		docker exec "${CONTAINER_ID}" bash -c "echo ${MONGO_CMD}|mongo ${MONGO_OPTS} ${MONGO_DB_NAME}"
+		docker exec "${CONTAINER_ID}" bash -c "echo ${MONGO_CMD}|mongo ${MONGO_OPTS} ${DB_NAME}"
 	fi
 }
 
@@ -135,7 +140,7 @@ read_settings() {
 	fi
 	
 	if [ "${LINK_CHECKER_DB_NAME}" ]; then
-		MONGO_DB_NAME="${LINK_CHECKER_DB_NAME}"
+		DB_NAME="${LINK_CHECKER_DB_NAME}"
 	fi
 	
 	if [ "${LINK_CHECKER_DEBUG}" ]; then
@@ -149,9 +154,12 @@ main() {
 	echo "-------"
 	echo "LINK_CHECKER_DUMP_HOST_DIR: ${LINK_CHECKER_DUMP_HOST_DIR}"
 	echo "LINK_CHECKER_DUMP_CONTAINER_DIR: ${LINK_CHECKER_DUMP_CONTAINER_DIR}"
-	echo "MONGO_DB_NAME: ${MONGO_DB_NAME}"
+	echo "DB_NAME: ${DB_NAME}"
 	echo "DB_PRUNE_AGE_DAYS: ${DB_PRUNE_AGE_DAYS}"
 	echo "DUMP_URL: ${DUMP_URL}"
+	if [ "${DRY_RUN}" = "true" ]; then
+		echo "DRY_RUN: ${DRY_RUN} -> no changes will be made to the database!"
+	fi
 	if [ "${DEBUG}" = "true" ]; then
 		echo "DEBUG: ${DEBUG} -> output will be verbose!"
 	else		
@@ -166,13 +174,8 @@ main() {
 	
 	check_db_container
 	connect
+	exit 0
 	update_linkchecker_db "$LINK_CHECKER_DUMP_HOST_DIR" "$LINK_CHECKER_DUMP_CONTAINER_DIR"
-
-	echo "Waiting..."
-	sleep 120
-	connect
-	echo "Waiting..."
-	sleep 120
 
 	connect
 	prune
