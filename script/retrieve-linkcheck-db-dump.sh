@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
+set -e
+
 source "$(dirname $0)/_inc.sh"
-DUMP_URL="${VLO_LINK_CHECKER_DUMP_URL:-https://curate.acdh-dev.oeaw.ac.at/mongoDump.gz}"
-CONTAINER_NAME="vlo_vlo-linkchecker-mongo_1"
+DUMP_URL="${VLO_LINK_CHECKER_DUMP_URL:-https://curate.acdh.oeaw.ac.at/mysqlDump.gz}"
+SERVICE_NAME="vlo-linkchecker-db"
 MONGO_DB_NAME="curateLinkTest"
 MONGO_PRUNE_AGE_DAYS="${VLO_LINK_CHECKER_PRUNE_AGE:-100}"
 DEBUG="${VLO_LINK_CHECKER_DEBUG:-false}"
@@ -15,6 +17,20 @@ if [ "${DEBUG}" = "true" ]; then
 	MONGO_RESTORE_OPTS="-vvv"
 	CURL_OPTS="-v"
 fi
+
+
+check_db_container() {
+	echo "Looking for container..."
+	CONTAINER_ID="$(_docker-compose -f docker-compose.yml -f linkchecker.yml ps -q "${SERVICE_NAME}")"
+	if ! docker ps -f id="${CONTAINER_ID}" | grep "${SERVICE_NAME}" > /dev/null; then
+		echo "Link checker DB container not found"
+		exit 1
+	fi
+
+	if [ "${DEBUG}" = "true" ]; then
+		echo "Using link checker container ${CONTAINER_ID} (service ${SERVICE_NAME})"
+	fi
+}
 
 update_linkchecker_db() {
 	DUMP_HOST_DIR=$1
@@ -40,18 +56,18 @@ update_linkchecker_db() {
 	DUMP_CONTAINER_FILE="${DUMP_CONTAINER_DIR}/${DUMP_FILENAME}"
 
 	if [ "${DRY_RUN}" = "true" ]; then
-		echo "Dry run - skipping restore of ${DUMP_CONTAINER_FILE} in ${CONTAINER_NAME}"
+		echo "Dry run - skipping restore of ${DUMP_CONTAINER_FILE} in ${CONTAINER_ID}"
 		sleep 1
 	else
 		# Check if file is found in container
-		if ! docker exec "${CONTAINER_NAME}" bash -c "[ -e ${DUMP_CONTAINER_FILE} ]"; then
+		if ! docker exec "${CONTAINER_ID}" bash -c "[ -e ${DUMP_CONTAINER_FILE} ]"; then
 			echo "Error: file not found in container ${DUMP_CONTAINER_FILE}" > /dev/stderr
 			exit 1
 		fi
 
 		# Carry out actual restore
 		echo "Restoring database in container"
-		if ! docker exec "${CONTAINER_NAME}" nice -n 10 mongorestore ${MONGO_RESTORE_OPTS} --host=127.0.0.1 --drop --gzip --archive="${DUMP_CONTAINER_FILE}"; then
+		if ! docker exec "${CONTAINER_ID}" nice -n 10 mongorestore ${MONGO_RESTORE_OPTS} --host=127.0.0.1 --drop --gzip --archive="${DUMP_CONTAINER_FILE}"; then
 			echo "Error: failed to restore mongo database" > /dev/stderr
 			exit 1
 		fi
@@ -72,17 +88,17 @@ connect() {
 		echo "(Dry run)"
 	else
 		MONGO_CMD="db.linksChecked.count\(\)"
-		docker exec "${CONTAINER_NAME}" bash -c "echo ${MONGO_CMD}|mongo ${MONGO_OPTS} ${MONGO_DB_NAME}"
+		docker exec "${CONTAINER_ID}" bash -c "echo ${MONGO_CMD}|mongo ${MONGO_OPTS} ${MONGO_DB_NAME}"
 	fi
 }
 
 prune() {
 	echo "Pruning database: removing documents older than ${MONGO_PRUNE_AGE_DAYS} days"
 	if [ "${DRY_RUN}" = "true" ]; then
-		echo "Dry run - skipping pruning of ${MONGO_DB_NAME} in ${CONTAINER_NAME}"
+		echo "Dry run - skipping pruning of ${MONGO_DB_NAME} in ${CONTAINER_ID}"
 	else
 		MONGO_CMD="oldest=new Date\(\).getTime\(\) - ${MONGO_PRUNE_AGE_DAYS} \* 86400000\; db.linksChecked.remove\(\{\'timestamp\': \{\\\$lt: oldest\}\}\)"
-		docker exec "${CONTAINER_NAME}" bash -c "echo ${MONGO_CMD}|mongo ${MONGO_OPTS} ${MONGO_DB_NAME}"
+		docker exec "${CONTAINER_ID}" bash -c "echo ${MONGO_CMD}|mongo ${MONGO_OPTS} ${MONGO_DB_NAME}"
 	fi
 }
 
@@ -136,7 +152,7 @@ main() {
 	echo "MONGO_PRUNE_AGE_DAYS: ${MONGO_PRUNE_AGE_DAYS}"
 	echo "DUMP_URL: ${DUMP_URL}"
 	if [ "${DEBUG}" = "true" ]; then
-		echo "DEBUG: ${DEBUG} -> mongo and curl output will be verbose!"
+		echo "DEBUG: ${DEBUG} -> output will be verbose!"
 	else		
 		echo "DEBUG: ${DEBUG}"
 	fi
@@ -147,6 +163,7 @@ main() {
 		exit 1
 	fi
 	
+	check_db_container
 	connect
 	update_linkchecker_db "$VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR" "$VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR"
 

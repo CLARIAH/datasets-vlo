@@ -72,7 +72,7 @@ sub_restart-proxy() {
 }
 
 sub_update-linkchecker-db() {
-	bash "${BASE_DIR}/script/retrieve-linkcheck-mongo-db.sh"
+	bash "${BASE_DIR}/script/retrieve-linkcheck-db-dump.sh"
 }
 
 sub_drop-solr-data() {
