@@ -59,14 +59,14 @@ check_db_container() {
 }
 
 connect() {
-	DB_CMD='select * from '"${DB_TABLE_NAME}"' limit 0;'
+	DB_CMD='SHOW TABLES;'
 	log_debug "Checking connection with command '${DB_CMD}' passed to $(mysql_command)"
 
 	log_info "Connecting and disconnecting"
 	if [ "${DRY_RUN}" = "true" ]; then
 		log_info "(Dry run)"
 	else
-		docker exec "${CONTAINER_ID}" bash -c "echo '${DB_CMD}'|$(mysql_command)"
+		docker exec "${CONTAINER_ID}" bash -c "echo '${DB_CMD}'|$(mysql_command)" > /dev/null
 	fi
 }
 
@@ -105,7 +105,7 @@ update_linkchecker_db() {
 
 		# Carry out actual restore		
 		echo "Dropping current ${DB_TABLE_NAME} table"
-		DB_CMD="DROP TABLE ${DB_TABLE_NAME};"
+		DB_CMD="DROP TABLE IF EXISTS ${DB_TABLE_NAME};"
 		if docker exec "${CONTAINER_ID}" bash -c "echo '${DB_CMD}'|$(mysql_command)"; then
 			log_info "Restoring database in container"
 			if ! docker exec "${CONTAINER_ID}" bash -c "gunzip -c '${DUMP_CONTAINER_FILE}'|$(mysql_command)"; then
