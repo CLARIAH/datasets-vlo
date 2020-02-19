@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
-source "$(dirname $0)/_inc.sh"
+# shellcheck source=_inc.sh
+source "$(dirname "$0")/_inc.sh"
 DUMP_URL="${LINK_CHECKER_DUMP_URL:-https://curate.acdh.oeaw.ac.at/mysqlDump.gz}"
 SERVICE_NAME="vlo-linkchecker-db"
 DB_NAME="linkchecker"
@@ -35,7 +36,7 @@ main() {
 	fi
 	log_info "-------"
 	
-	if ! [ ${DB_PRUNE_AGE_DAYS} -ge 0 ]; then
+	if ! [ "${DB_PRUNE_AGE_DAYS}" -ge 0 ]; then
 		log_error "DB_PRUNE_AGE_DAYS expected to be a number >= 0"
 		exit 1
 	fi
@@ -180,23 +181,23 @@ mysql_command() {
 
 log_error() {
 	if [ "${DEBUG}" = "true" ]; then
-		echo "[ERROR] $@"
+		echo "[ERROR] $*"
 	else
-		echo "$@"
+		echo "$*"
 	fi		
 }
 
 log_info() {
 	if [ "${DEBUG}" = "true" ]; then
-		echo "[INFO] $@"
+		echo "[INFO] $*"
 	else
-		echo "$@"
+		echo "$*"
 	fi		
 }
 
 log_debug() {
 	if [ "${DEBUG}" = "true" ]; then
-		echo "[DEBUG] $@"
+		echo "[DEBUG] $*"
 	fi
 }
 
