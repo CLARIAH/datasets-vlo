@@ -14,7 +14,8 @@ services:
       - MYSQL_PASSWORD=${LINK_CHECKER_DB_PASSWORD}
     volumes:
       - linkckecker_mariadb_data:/var/lib/mysql
-      - ${LINK_CHECKER_DB_DUMP_HOST_DIR}:/docker-entrypoint-initdb.d
+      - ${LINK_CHECKER_DUMP_HOST_DIR}:/docker-entrypoint-initdb.d
+      - ${LINK_CHECKER_DUMP_HOST_DIR}:${LINK_CHECKER_DUMP_CONTAINER_DIR}
     restart: unless-stopped
     expose:
       - "3306"

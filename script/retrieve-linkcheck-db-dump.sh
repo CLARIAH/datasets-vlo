@@ -70,11 +70,17 @@ update_linkchecker_db() {
 			exit 1
 		fi
 
-		# Carry out actual restore
-		echo "Restoring database in container"
-		if ! docker exec "${CONTAINER_ID}" nice -n 10 mongorestore ${MONGO_RESTORE_OPTS} --host=127.0.0.1 --drop --gzip --archive="${DUMP_CONTAINER_FILE}"; then
-			echo "Error: failed to restore mongo database" > /dev/stderr
-			exit 1
+		# Carry out actual restore		
+		echo "Dropping current ${DB_TABLE_NAME} table"
+		DB_CMD="DROP TABLE ${DB_TABLE_NAME};"
+		if docker exec "${CONTAINER_ID}" bash -c "echo '${DB_CMD}'|$(mysql_command)"; then
+			echo "Restoring database in container"
+			if ! docker exec "${CONTAINER_ID}" bash -c "gunzip -c '${DUMP_CONTAINER_FILE}'|$(mysql_command)"; then
+				echo "Error: failed to restore database"
+				exit 1
+			fi
+		else
+			echo "Failed to drop old data"
 		fi
 	fi
 	
@@ -102,12 +108,16 @@ connect() {
 }
 
 prune() {
+	DB_CMD='DELETE FROM '"${DB_TABLE_NAME}"' where timestamp < DATE_SUB(NOW(), INTERVAL '"${DB_PRUNE_AGE_DAYS}"' DAY);'
+	if [ "${DEBUG}" = "true" ]; then
+		echo "Checking connection with command '${DB_CMD}' passed to $(mysql_command)"
+	fi
+
 	echo "Pruning database: removing documents older than ${DB_PRUNE_AGE_DAYS} days"
 	if [ "${DRY_RUN}" = "true" ]; then
 		echo "Dry run - skipping pruning of ${DB_NAME} in ${CONTAINER_ID}"
 	else
-		MONGO_CMD="oldest=new Date\(\).getTime\(\) - ${DB_PRUNE_AGE_DAYS} \* 86400000\; db.linksChecked.remove\(\{\'timestamp\': \{\\\$lt: oldest\}\}\)"
-		docker exec "${CONTAINER_ID}" bash -c "echo ${MONGO_CMD}|mongo ${MONGO_OPTS} ${DB_NAME}"
+		docker exec "${CONTAINER_ID}" bash -c "echo '${DB_CMD}'|$(mysql_command)"
 	fi
 }
 
@@ -174,10 +184,7 @@ main() {
 	
 	check_db_container
 	connect
-	exit 0
 	update_linkchecker_db "$LINK_CHECKER_DUMP_HOST_DIR" "$LINK_CHECKER_DUMP_CONTAINER_DIR"
-
-	connect
 	prune
 }
 
