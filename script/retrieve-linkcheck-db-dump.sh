@@ -10,12 +10,10 @@ DB_PRUNE_AGE_DAYS="${LINK_CHECKER_PRUNE_AGE:-100}"
 DEBUG="${LINK_CHECKER_DEBUG:-false}"
 DRY_RUN="${LINK_CHECKER_DRY_RUN:-false}"
 MYSQL_OPTS="-s"
-MONGO_RESTORE_OPTS="--quiet"
 CURL_OPTS="-s"
 
 if [ "${DEBUG}" = "true" ]; then
 	MYSQL_OPTS="-v"
-	MONGO_RESTORE_OPTS="-vvv"
 	CURL_OPTS="-v"
 fi
 
