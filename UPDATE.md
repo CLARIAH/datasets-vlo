@@ -1,5 +1,37 @@
 # Upgrade instructions
 
+## vlo-4.8.* to vlo-4.8.2
+
+- New overlays:
+  - `linkchecker`
+- Removed overlays:
+  - `mongo`
+  
+To use the new MariaDB based link checker database, replace the 'mongo' overlay with
+the 'linkchecker' overlay and add a number of .env variables:
+
+```sh
+DEPLOY_DIR="/home/deploy/vlo"
+LINKCHECKER_DUMPS_DIR="${DEPLOY_DIR}/linkchecker_dumps"
+mkdir -p "${LINKCHECKER_DUMPS_DIR}" && 
+echo "
+LINK_CHECKER_DB_ROOT_PASSWD=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c32)
+LINK_CHECKER_DB_DUMP_HOST_DIR=/tmp/linkchecker-dump
+LINK_CHECKER_DB_NAME=linkchecker
+LINK_CHECKER_DB_USER=linkchecker
+LINK_CHECKER_DB_PASSWORD=linkchecker
+
+LINK_CHECKER_DUMP_URL=https://curate.acdh.oeaw.ac.at/mysqlDump.gz
+LINK_CHECKER_DUMP_HOST_DIR=${LINKCHECKER_DUMPS_DIR}
+LINK_CHECKER_DUMP_CONTAINER_DIR=/data/dump
+LINK_CHECKER_PRUNE_AGE=100
+LINK_CHECKER_DEBUG=false
+
+#Don't change this if you want to use the service configured in linkchecker.yml
+LINK_CHECKER_HOST_PORT=vlo-linkchecker-db:3306
+" >> "${DEPLOY_DIR}/.env"
+```
+
 ## vlo-4.7.* to vlo-4.8.0-*
 
 - New overlays:
