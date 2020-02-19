@@ -45,6 +45,8 @@ main() {
 	connect
 	update_linkchecker_db "$LINK_CHECKER_DUMP_HOST_DIR" "$LINK_CHECKER_DUMP_CONTAINER_DIR"
 	prune
+	
+	log_info "Done"
 }
 
 check_db_container() {
@@ -181,7 +183,7 @@ mysql_command() {
 
 log_error() {
 	if [ "${DEBUG}" = "true" ]; then
-		echo "[ERROR] $*"
+		echo "$(date) [ ERROR] $*"
 	else
 		echo "$*"
 	fi		
@@ -189,7 +191,7 @@ log_error() {
 
 log_info() {
 	if [ "${DEBUG}" = "true" ]; then
-		echo "[INFO] $*"
+		echo "$(date) [ INFO ] $*"
 	else
 		echo "$*"
 	fi		
@@ -197,7 +199,7 @@ log_info() {
 
 log_debug() {
 	if [ "${DEBUG}" = "true" ]; then
-		echo "[DEBUG] $*"
+		echo "$(date) [ DEBUG] $*"
 	fi
 }
 
