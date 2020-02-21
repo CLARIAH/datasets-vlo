@@ -7,7 +7,7 @@ export VLO_WEB_SERVICE="vlo-web"
 export VLO_SOLR_SERVICE="vlo-solr"
 export VLO_PROXY_SERVICE="vlo-proxy"
 export VLO_JMXTRANS_SERVICE="jmxtrans"
-export VLO_LINKCHECKER_MONGO_SERVICE="vlo-linkchecker-mongo"
+export VLO_LINKCHECKER_DB_SERVICE="vlo-linkchecker-db"
 
 export VLO_SOLR_DATA_VOLUME="vlo_vlo-solr-data"
 
