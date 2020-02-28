@@ -104,7 +104,7 @@ set_permissions() {
 }
 
 get_backup_status() {
-	solr_api_get "${VLO_SOLR_INDEX_URL}/replication?command=details"
+	solr_api_get "${VLO_SOLR_INDEX_REMOTE_URL}/replication?command=details"
 }
 
 do_backup() {
@@ -122,10 +122,13 @@ do_backup() {
 					cleanup_backup
 					exit 1
 				else
-					echo "Not successful (yet). Status: "
-					get_backup_status
-					echo "Checking again in 5 seconds..."
-					sleep 5
+					echo -n "Not successful (yet). Status: "
+					if get_backup_status; then
+						echo "Success!"
+					else
+						echo "Checking again in 5 seconds..."
+						sleep 5
+					fi
 				fi
 			fi
 		done
