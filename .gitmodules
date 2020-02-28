@@ -1,0 +1,3 @@
+[submodule "control-script"]
+	path = control-script
+	url = https://gitlab.com/CLARIN-ERIC/control-script.git
