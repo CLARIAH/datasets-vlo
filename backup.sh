@@ -10,7 +10,7 @@ main() {
 		echo "WARNING: Skipping backup. Run with '-f' option to force backup."
 		exit 0
 	fi
-
+	
 	if service_is_running ${VLO_SOLR_SERVICE}; then
 		echo -e "VLO Solr is running. Starting backup procedure...\n"
 	else
@@ -18,7 +18,13 @@ main() {
 		exit 1
 	fi
 
-	BACKUP_DIR="${HOST_BACKUP_DIR}" #"${COMPOSE_DIR}/${BACKUP_DIR_RELATIVE_PATH}" #host only dir
+	if [ "${BACKUPS_DIR}" ]; then
+		BACKUP_DIR="$( cd "${BACKUPS_DIR}" >/dev/null && pwd )"
+	else
+		echo "FATAL: Environment variable BACKUPS_DIR not set"
+		exit 1
+	fi
+	
 	VLO_SOLR_BACKUP_DIR="${BACKUP_DIR}/work-backup"
 	export TARGET_DIR="${VLO_SOLR_BACKUP_DIR}"
 	
@@ -42,6 +48,11 @@ main() {
 # 	fi
 	
 	check_env
+
+	echo "Backups directory: ${BACKUP_DIR}"
+	echo "Backing up Solr index to ${TARGET_DIR}"
+	echo "Solr service: ${VLO_SOLR_SERVICE}"
+
 	check_replication_service
 	cleanup_backup
 	set_permissions
@@ -70,8 +81,8 @@ main() {
 }
 
 check_env() {
-	if [ -z "$VLO_COMPOSE_DIR" ]; then
-		echo "Please set environment variable VLO_COMPOSE_DIR"
+	if ! [ -f "${VLO_COMPOSE_DIR}/.env" ]; then
+		echo "Please set environment variable VLO_COMPOSE_DIR to an existing compose project directory"
 		exit 1
 	fi
 
@@ -84,8 +95,6 @@ check_env() {
 		echo "Please set environment variables VLO_SOLR_BACKUP_USERNAME and VLO_SOLR_BACKUP_PASSWORD"
 		exit 1
 	fi
-
-	echo "Will backing up ${TARGET_DIR}"
 }
 
 set_permissions() {
@@ -100,7 +109,7 @@ get_backup_status() {
 
 do_backup() {
 	echo -e "\nCarrying out backup...\n"
-	if solr_api_get "${VLO_SOLR_INDEX_URL}/replication?command=backup&location=${CONTAINER_BACKUP_DIR}&name=${BACKUP_NAME:-backup}"; then
+	if solr_api_get "${VLO_SOLR_INDEX_REMOTE_URL}/replication?command=backup&location=${CONTAINER_BACKUP_DIR}&name=${BACKUP_NAME:-backup}"; then
 		echo "Checking status..."
 		SUCCESS="false"
 		while [ "$SUCCESS" != "true" ]; do
@@ -148,7 +157,7 @@ remove_backup() {
 	echo -e "Deleting backup from volume...\n"
 	
 	if ! solr_api_get \
-			"${VLO_SOLR_INDEX_URL}/replication?command=deletebackup&location=${CONTAINER_BACKUP_DIR}&name=${BACKUP_NAME:-backup}"; then
+			"${VLO_SOLR_INDEX_REMOTE_URL}/replication?command=deletebackup&location=${CONTAINER_BACKUP_DIR}&name=${BACKUP_NAME:-backup}"; then
 		echo "Failed to delete backup!" 
 	fi
 }

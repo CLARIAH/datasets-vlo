@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 SCRIPT_BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 export PROJECT_BASE_DIR="$SCRIPT_BASE_DIR/.."
-export VLO_COMPOSE_DIR="${PROJECT_BASE_DIR}/clarin"
+if [ "${COMPOSE_DIR}" ]; then
+	export VLO_COMPOSE_DIR="${COMPOSE_DIR}/clarin"
+else
+	export VLO_COMPOSE_DIR="${PROJECT_BASE_DIR}/clarin"
+fi
 
 export VLO_WEB_SERVICE="vlo-web"
 export VLO_SOLR_SERVICE="vlo-solr"
@@ -13,7 +17,7 @@ export VLO_SOLR_DATA_VOLUME="vlo_vlo-solr-data"
 
 export SOLR_HOME_PROVISIONING_VOLUME_NAME="solr-home-provisioning"
 
-export VLO_SOLR_INDEX_URL="${VLO_SOLR_INDEX_URL:-http://localhost:8983/solr/vlo-index}"
+export VLO_SOLR_INDEX_URL="${VLO_SOLR_INDEX_URL:-http://localhost:8183/solr/vlo-index}"
 export VLO_SOLR_INDEX_REMOTE_URL="${VLO_SOLR_INDEX_REMOTE_URL:-http://${VLO_SOLR_SERVICE}:8983/solr/vlo-index}"
 export CONTAINER_BACKUP_DIR="${CONTAINER_BACKUP_DIR:-/var/backup}"
 export HOST_BACKUP_DIR="${HOST_BACKUP_DIR:-${PROJECT_BASE_DIR}/../backups}"
@@ -37,8 +41,10 @@ check_service() {
 }
 
 check_replication_service() {	
+	echo "${VLO_SOLR_INDEX_URL}/replication?command=status"
+
 	if ! (cd "${VLO_COMPOSE_DIR}" && docker-compose exec -T "${VLO_SOLR_SERVICE}" \
-		curl -s -f -u "${VLO_SOLR_BACKUP_USERNAME}":"${VLO_SOLR_BACKUP_PASSWORD}" "${VLO_SOLR_INDEX_URL}/replication") > /dev/null
+		curl -s -f -u "${VLO_SOLR_BACKUP_USERNAME}":"${VLO_SOLR_BACKUP_PASSWORD}" "${VLO_SOLR_INDEX_REMOTE_URL}/replication?command=status") > /dev/null
 	then
 		echo -e "Fatal: could not connect to Solr's replication API! Are the services running and credentials configured correctly?\n\n"
 		(cd "$VLO_COMPOSE_DIR" && docker-compose ps)
