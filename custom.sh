@@ -8,12 +8,12 @@ sub_help(){
     echo "Subcommands:"
     echo "    run-import                Start an import inside the running VLO container"
     echo "    run-link-status-update    Start an update of the indexed link status inside the running VLO container"
-    echo "    update-linkchecker-db     Start an update of the link checker database inside the running MongoDB container "
+    echo "    update-linkchecker-db     Start an update of the link checker database inside the running link checker database "
     echo ""
     echo "    restart-web-app           Restart VLO web app (no container recreate) "
     echo "    restart-solr              Restart VLO Solr instance (no container recreate) "
     echo "    restart-proxy             Restart nginx proxy service (no container recreate) "
-    echo "    restart-mongo             Restart mongo linkchecker database (no container recreate) "
+    echo "    restart-linkchecker-db    Restart linkchecker database (no container recreate) "
     echo "    restart-jmxtrans          Restart jmxtrans (no container recreate) "
     echo ""
     echo "    drop-solr-data [-f]       Drop the VLO Solr index (requires confirmation unless -f is provided)"
@@ -59,8 +59,8 @@ sub_restart-solr() {
 	fi
 }
 
-sub_restart-mongo() {
-	_docker-compose ${COMPOSE_OPTS} restart "${VLO_LINKCHECKER_MONGO_SERVICE}"
+sub_restart-linkchecker-db() {
+	_docker-compose ${COMPOSE_OPTS} restart "${VLO_LINKCHECKER_DB_SERVICE}"
 }
 
 sub_restart-jmxtrans() {
