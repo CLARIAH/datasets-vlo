@@ -16,7 +16,6 @@ LINKCHECKER_DUMPS_DIR="${DEPLOY_DIR}/linkchecker_dumps"
 mkdir -p "${LINKCHECKER_DUMPS_DIR}" && 
 echo "
 LINK_CHECKER_DB_ROOT_PASSWD=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c32)
-LINK_CHECKER_DB_DUMP_HOST_DIR=/tmp/linkchecker-dump
 LINK_CHECKER_DB_NAME=linkchecker
 LINK_CHECKER_DB_USER=linkchecker
 LINK_CHECKER_DB_PASSWORD=linkchecker
