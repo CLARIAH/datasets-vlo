@@ -6,6 +6,11 @@
   - `linkchecker`
 - Removed overlays:
   - `mongo`
+- New env variables:
+  - `VLO_DOCKER_ENABLE_FCS_LINKS`,`LINK_CHECKER_DB_ROOT_PASSWD`,`LINK_CHECKER_DB_NAME`,`
+  LINK_CHECKER_DB_USER`,`LINK_CHECKER_DB_PASSWORD`,`LINK_CHECKER_DUMP_URL`,`
+  LINK_CHECKER_DUMP_HOST_DIR`,`LINK_CHECKER_DUMP_CONTAINER_DIR`,`LINK_CHECKER_PRUNE_AGE`,`
+  LINK_CHECKER_DEBUG`,`LINK_CHECKER_HOST_PORT`
   
 To use the new MariaDB based link checker database, replace the 'mongo' overlay with
 the 'linkchecker' overlay and add a number of .env variables:
@@ -15,6 +20,8 @@ DEPLOY_DIR="/home/deploy/vlo"
 LINKCHECKER_DUMPS_DIR="${DEPLOY_DIR}/linkchecker_dumps"
 mkdir -p "${LINKCHECKER_DUMPS_DIR}" && 
 echo "
+VLO_DOCKER_ENABLE_FCS_LINKS=false
+
 LINK_CHECKER_DB_ROOT_PASSWD=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c32)
 LINK_CHECKER_DB_NAME=linkchecker
 LINK_CHECKER_DB_USER=linkchecker
