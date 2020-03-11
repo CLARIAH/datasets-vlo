@@ -13,7 +13,7 @@ services:
     networks:
       - network_vlo
   jmxtrans:
-    image: registry.gitlab.com/clarin-eric/docker-jmxtrans:1.1.1
+    image: registry.gitlab.com/clarin-eric/docker-jmxtrans:1.1.2
     depends_on:
       - vlo-solr
     environment:
