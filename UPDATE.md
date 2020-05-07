@@ -1,5 +1,18 @@
 # Upgrade instructions
 
+## vlo-4.8.* to ???????
+
+- Deprecated env variables:
+  - `OTHER_PROVIDERS_MARKUP_FILE`
+- New env variables:
+  - `OTHER_PROVIDERS_MARKUP_DIR=./providers`
+  - `OTHER_PROVIDERS_MARKUP_FILENAME=others.html`
+
+You can copy the directory `clarin/providers` to a location outside the compose project
+and adapt the new `OTHER_PROVIDERS_MARKUP_DIR` variable accordingly to allow for
+on-the-fly adaptations to the "Other contributors" list in the VLO web app
+(see <https://vlo.clarin.eu/contributors>).
+
 ## vlo-4.8.* to vlo-4.8.2
 
 - New overlays:
