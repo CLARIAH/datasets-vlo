@@ -56,12 +56,12 @@
     <Engine name="Catalina" defaultHost="localhost">
 
       <Valve className="org.apache.catalina.valves.RemoteIpValve"
-          remoteIpHeader="${TOMCAT_PROXY_REMOTE_IP_HEADER}"
-          internalProxies="${TOMCAT_PROXY_INTERNAL_PROXIES}"
-          proxiesHeader="${TOMCAT_PROXY_PROXIES_HEADER}"
-          protocolHeader="${TOMCAT_PROXY_PROTOCOL_HEADER}"
-          httpServerPort="${TOMCAT_PROXY_HTTP_SERVER_PORT}"
-          httpsServerPort="${TOMCAT_PROXY_HTTPS_SERVER_PORT}" />
+	      remoteIpHeader="{{TOMCAT_PROXY_REMOTE_IP_HEADER}}"
+	      internalProxies="{{TOMCAT_PROXY_INTERNAL_PROXIES}}"
+	      proxiesHeader="{{TOMCAT_PROXY_PROXIES_HEADER}}"
+	      protocolHeader="{{TOMCAT_PROXY_PROTOCOL_HEADER}}"
+	      httpServerPort="{{TOMCAT_PROXY_HTTP_SERVER_PORT}}"
+	      httpsServerPort="{{TOMCAT_PROXY_HTTPS_SERVER_PORT}}" />
 
 
       <Realm className="org.apache.catalina.realm.LockOutRealm">
