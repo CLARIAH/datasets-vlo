@@ -7,6 +7,8 @@
 - New env variables:
   - `OTHER_PROVIDERS_MARKUP_DIR=./providers`
   - `OTHER_PROVIDERS_MARKUP_FILENAME=others.html`
+  - `VLO_DOCKER_WEB_APP_LOCALE=en-GB`
+  - `VLO_DOCKER_DATASET_STRUCTURED_DATA_ENABLED=true`
 
 You can copy the directory `clarin/providers` to a location outside the compose project
 and adapt the new `OTHER_PROVIDERS_MARKUP_DIR` variable accordingly to allow for
