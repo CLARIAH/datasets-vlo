@@ -92,14 +92,14 @@ update_linkchecker_db() {
 		fi
 	fi
 
-	# Find and process file in container	
-	DUMP_CONTAINER_FILE="${DUMP_CONTAINER_DIR}/${DUMP_FILENAME}"
-	
 	log_info "Checking dump file integrity"
-	if ! gzip -t "${DUMP_CONTAINER_FILE}"; then
-		log_error "gzip test (gzip -t \"${DUMP_CONTAINER_FILE}\") terminated with a non-zero exit code"
+	if ! gzip -t "${DUMP_TARGET_LOCATION}"; then
+		log_error "gzip test (gzip -t \"${DUMP_TARGET_LOCATION}\") terminated with a non-zero exit code"
 		exit 1
 	fi
+
+	# Find and process file in container	
+	DUMP_CONTAINER_FILE="${DUMP_CONTAINER_DIR}/${DUMP_FILENAME}"
 
 	if [ "${DRY_RUN}" = "true" ]; then
 		log_info "Dry run - skipping restore of ${DUMP_CONTAINER_FILE} in ${CONTAINER_ID}"
