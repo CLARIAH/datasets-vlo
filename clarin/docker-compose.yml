@@ -25,7 +25,7 @@ services:
     networks:
       - network_vlo
   vlo-web:
-    image: &vlo_web_image registry.gitlab.com/clarin-eric/docker-vlo-beta:vlo-4.8.2-1
+    image: &vlo_web_image registry.gitlab.com/clarin-eric/docker-vlo-beta:vlo-4.9.0-alpha1-1
     environment:
       VLO_DOCKER_IMAGE: *vlo_web_image
       VLO_DOCKER_SOLR_URL: "http://vlo-solr:8983/solr/vlo-index/"
@@ -56,6 +56,8 @@ services:
       VLO_DOCKER_FEEDBACK_FORM_URL:
       VLO_DOCKER_FCS_BASE_URL:
       VLO_DOCKER_LRS_BASE_URL:
+      VLO_DOCKER_LRS_POPUP_SCRIPT_URL:
+      VLO_DOCKER_LRS_POPUP_STYLE_URL:
       VLO_DOCKER_VCR_SUBMIT_ENDPOINT:
       
       VLO_DOCKER_SOLR_USER_READ_ONLY:
