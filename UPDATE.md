@@ -1,6 +1,6 @@
 # Upgrade instructions
 
-## vlo-4.8.* to ???????
+## vlo-4.8.* to vlo-4.9.0
 
 - Deprecated env variables:
   - `OTHER_PROVIDERS_MARKUP_FILE`
@@ -9,6 +9,8 @@
   - `OTHER_PROVIDERS_MARKUP_FILENAME=others.html`
   - `VLO_DOCKER_WEB_APP_LOCALE=en-GB`
   - `VLO_DOCKER_DATASET_STRUCTURED_DATA_ENABLED=true`
+  - `VLO_DOCKER_LRS_POPUP_SCRIPT_URL=https://switchboard.clarin.eu/popup/switchboardpopup.js`
+  - `VLO_DOCKER_LRS_POPUP_STYLE_URL="https://switchboard.clarin.eu/popup/switchboardpopup.css`
 
 You can copy the directory `clarin/providers` to a location outside the compose project
 and adapt the new `OTHER_PROVIDERS_MARKUP_DIR` variable accordingly to allow for
