@@ -112,18 +112,22 @@ into the container from a directory within the compose project.
 
 The VLO can access and process data gathered by the
 [Curation Module](http://curate.acdh.oeaw.ac.at/)'s link checker during import. For this,
-a Mongo database has to be accessible. Normally this is a local instance that gets
-populated on basis of an import or replication. Enabling the `mongo` overlay will
-include a service `vlo-linkchecker-mongo` and set up a connection from the VLO service.
+a Postgres database has to be accessible. Normally this is a local instance that gets
+populated on basis of an import or replication. Enabling the `linkchecker` overlay will
+include a service `vlo-linkchecker-db` and set up a connection from the VLO service.
 
 The following environment variables need to be set:
 
-* `VLO_LINK_CHECKER_MONGO_DB_NAME`
-* `VLO_LINK_CHECKER_MONGO_MEM_LIMIT`
-* `VLO_LINK_CHECKER_DUMP_URL`
-* `VLO_LINK_CHECKER_MONGO_DUMP_HOST_DIR`
-* `VLO_LINK_CHECKER_MONGO_DUMP_CONTAINER_DIR`
-* `VLO_LINK_CHECKER_PRUNE_AGE`
+* `LINK_CHECKER_DB_ROOT_PASSWD`
+* `LINK_CHECKER_DB_DUMP_HOST_DIR`
+* `LINK_CHECKER_DB_NAME`
+* `LINK_CHECKER_DB_USER`
+* `LINK_CHECKER_DB_PASSWORD`
+* `LINK_CHECKER_DUMP_URL`
+* `LINK_CHECKER_DUMP_HOST_DIR`
+* `LINK_CHECKER_DUMP_CONTAINER_DIR`
+* `LINK_CHECKER_PRUNE_AGE`
+* `LINK_CHECKER_DEBUG`
 
 See [.env-template](clarin/.env-template) for details and examples.
 
@@ -156,7 +160,7 @@ docker-compose:
 ./control.sh [-v] vlo [run-import|run-link-status-update|update-linkchecker-db]
 ./control.sh [-v] vlo [backup|restore]
 ./control.sh [-v] vlo exec <name> <command>
-./control.sh [-v] vlo restart-[web-app|solr|proxy|mongo]
+./control.sh [-v] vlo restart-[web-app|solr|proxy|linkchecker-db]
 ./control.sh [-v] vlo drop-solr-data
 ```
 
