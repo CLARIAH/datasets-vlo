@@ -1,5 +1,14 @@
 # Upgrade instructions
 
+## vlo-4.9.0 to vlo-4.9.1
+
+Maintenance release. The following env variables have changed default values:
+
+- `VLO_DOCKER_VCR_MAXIMUM_ITEMS_COUNT=100`
+- `VLO_DOCKER_VCR_SUBMIT_ENDPOINT=https://collections.clarin.eu/submit/extensional`
+
+Advice is to adopt these values.
+
 ## vlo-4.8.* to vlo-4.9.0
 
 - Deprecated env variables:
