@@ -79,7 +79,7 @@ sub_drop-solr-data() {
 	if [ "-f" = "$@" ]; then
 		CONFIRMATION="y"
 	else
-		echo -n "Warning: This will drop all persisted Solr data for the VLO by remove the volume '${VLO_SOLR_DATA_VOLUME}'. Continue? (y/n)"
+		echo -n "Warning: This will drop all persisted Solr data for the VLO by removing the volume '${VLO_SOLR_DATA_VOLUME}'. Continue? (y/n)"
 		read CONFIRMATION
 	fi
 	
