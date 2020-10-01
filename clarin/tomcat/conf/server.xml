@@ -40,18 +40,17 @@
                redirectPort="8443" />
 
     <!-- HTTPS connector -->
-	<!-- 
     <Connector port="8443" protocol="HTTP/1.1" SSLEnabled="true"
        maxThreads="150" scheme="https" secure="true"
        clientAuth="false" sslProtocol="TLS"
        keystoreFile="/cert/server.jks"
        keystorePass="password" />
-	 -->
 
     <!-- AJP connector -->
-	<!--
-     <Connector port="8009" protocol="AJP/1.3" redirectPort="8443" /> 
-	-->
+<!-- AJP_CONNECTOR_DISABLED filter out lines containing 'AJP_CONNECTOR_DISABLED' to re-enable
+    <Connector port="8009" protocol="AJP/1.3" redirectPort="8443" secretRequired="true" />
+AJP_CONNECTOR_DISABLED filter out lines containing 'AJP_CONNECTOR_DISABLED' to re-enable -->
+
 
     <Engine name="Catalina" defaultHost="localhost">
 
