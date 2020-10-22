@@ -86,7 +86,7 @@ update_linkchecker_db() {
 		log_info "Dry run - skipping retrieval of ${DUMP_URL} to ${DUMP_TARGET_LOCATION}"
 		sleep 1
 	else
-		if ! curl ${CURL_OPTS} -f -L "${DUMP_URL}" > "${DUMP_TARGET_LOCATION}"; then
+		if ! curl ${CURL_OPTS} -f -L -o "${DUMP_TARGET_LOCATION}" "${DUMP_URL}"; then
 			log_error "Failed to download dump file!"
 			exit 1
 		fi
