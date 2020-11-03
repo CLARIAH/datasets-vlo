@@ -101,7 +101,7 @@ read_env_var() {
 		return
 	fi
 	
-	ENV_VAR_LINE=$(grep -E "^${ENV_VAR_NAME}=" -- "${ENV_VAR_FILE}")
+	ENV_VAR_LINE=$(grep -E "^${ENV_VAR_NAME}=" -- "${ENV_VAR_FILE}"|tail -n1)
 	
 	if ! [ "${ENV_VAR_LINE}" ]; then
 		echo "Warning: variable not found: ${ENV_VAR_NAME}" > /dev/stderr
