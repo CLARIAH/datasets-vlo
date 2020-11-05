@@ -1,5 +1,12 @@
 # Upgrade instructions
 
+## vlo-4.9.1 to vlo-4.9.2
+
+Maintenance release. No changes to the configuration of the VLO are required,
+but the resource availability status API requires an updated link checker database
+schema. Make sure to restore a recent database before running the import or the
+link status update process.
+
 ## vlo-4.9.0 to vlo-4.9.1
 
 Maintenance release. The following env variables have changed default values:
