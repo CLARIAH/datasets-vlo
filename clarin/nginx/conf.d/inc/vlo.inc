@@ -6,7 +6,7 @@ location / {
 	proxy_set_header        X-Real-IP $remote_addr;
 	proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
 	proxy_set_header        X-Forwarded-Proto $scheme;
-	proxy_pass              http://vlo-web:8080;
+	proxy_pass              https://vlo-web:8443;
 	
 	gzip_min_length 10240;
 	gzip_types application/javascript text/javascript  text/html application/x-javascript text/css text/plain application/xml text/xml;
@@ -18,7 +18,7 @@ location / {
 	location ~ ^/config/(.*) {
 		auth_basic				"Authentication required";
 		auth_basic_user_file	/etc/nginx/vlo-config-htpasswd;
-		proxy_pass              http://vlo-web:8080/config/$1;
+		proxy_pass              https://vlo-web:8443/config/$1;
 	}
 }
 
