@@ -135,7 +135,7 @@ update_linkchecker_db() {
 }
 
 prune() {
-	DB_CMD='DELETE FROM '"${DB_TABLE_NAME}"' where timestamp < DATE_SUB(NOW(), INTERVAL '"${DB_PRUNE_AGE_DAYS}"' DAY);'
+	DB_CMD='DELETE FROM '"${DB_TABLE_NAME}"' where timestamp < DATE_SUB(NOW(), INTERVAL '"${DB_PRUNE_AGE_DAYS}"' DAY); OPTIMIZE TABLE '"${DB_TABLE_NAME}"';'
 	log_debug "Checking connection with command '${DB_CMD}' passed to $(mysql_command)"
 
 	log_info "Pruning database: removing documents older than ${DB_PRUNE_AGE_DAYS} days"
