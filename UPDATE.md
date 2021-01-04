@@ -1,5 +1,16 @@
 # Upgrade instructions
 
+## vlo-4.9.* to vlo-4.10.0
+
+- New env variables:
+  - `VLO_DOCKER_LRS_POPUP_ENABLED`
+  - `VLO_DOCKER_MONITOR_RULES_FILE`
+  - `VLO_DOCKER_MONITOR_RULES_FILE_CONTAINER`
+  - `VLO_DOCKER_MONITOR_DB_PATH`
+  - `VLO_DOCKER_MONITOR_PRUNE_AFTER_DAYS`
+
+See `.env-template` for a brief description of these variables.  
+
 ## vlo-4.9.1 to vlo-4.9.2
 
 Maintenance release. No changes to the configuration of the VLO are required,

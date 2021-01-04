@@ -17,10 +17,10 @@ services:
                         && /opt/solr-init/filter-solr-security.sh
                         && /usr/bin/entrypoint.sh"]
     volumes:
-      - solr-home-provisioning:${SOLR_HOME_PROVISIONING_PATH}
-      - vlo-solr-data:${SOLR_DATA_HOME}
-      - ./solr-init:/opt/solr-init
-      - ${SOLR_INIT_SCRIPT}:/etc/default/solr.in.sh
+      - "solr-home-provisioning:${SOLR_HOME_PROVISIONING_PATH}"
+      - "vlo-solr-data:${SOLR_DATA_HOME}"
+      - "./solr-init:/opt/solr-init"
+      - "${SOLR_INIT_SCRIPT}:/etc/default/solr.in.sh"
     restart: on-failure
     networks:
       - network_vlo
@@ -58,7 +58,7 @@ services:
       VLO_DOCKER_LRS_BASE_URL:
       VLO_DOCKER_LRS_POPUP_SCRIPT_URL:
       VLO_DOCKER_LRS_POPUP_STYLE_URL:
-      VLO_DOCKER_LRS_POPUP_ENABLED:
+      VLO_DOCKER_LRS_POPUP_ENABLED: "true"
       VLO_DOCKER_VCR_SUBMIT_ENDPOINT:
       
       VLO_DOCKER_SOLR_USER_READ_ONLY:
@@ -75,13 +75,19 @@ services:
       VLO_DOCKER_STATSD_HOST:
       VLO_DOCKER_STATSD_PORT:
       STATSD_PREFIX:
+
+      VLO_DOCKER_MONITOR_RULES_FILE: "${VLO_DOCKER_MONITOR_RULES_FILE_CONTAINER:-/opt/vlo/config/vlo-monitor-rules.properties}"
+      VLO_DOCKER_MONITOR_PRUNE_AFTER_DAYS: "100"
+      VLO_DOCKER_MONITOR_DB_PATH: "${VLO_DOCKER_MONITOR_DB_PATH:-/opt/vlo-monitoring/vlo-monitoring}"
       
       VLO_DOCKER_OTHER_PROVIDERS_MARKUP_FILE: "/opt/vlo/markup/providers/${OTHER_PROVIDERS_MARKUP_FILENAME}"
     volumes:
-      - ${METADATA_VOLUME}:${METADATA_DIR}
-      - ${SITEMAP_VOLUME}:/opt/sitemap
-      - ${STATSD_VOLUME}:/opt/statsd
-      - ${OTHER_PROVIDERS_MARKUP_DIR}:/opt/vlo/markup/providers
+      - "${METADATA_VOLUME}:${METADATA_DIR}"
+      - "${SITEMAP_VOLUME}:/opt/sitemap"
+      - "${STATSD_VOLUME}:/opt/statsd"
+      - "${OTHER_PROVIDERS_MARKUP_DIR}:/opt/vlo/markup/providers"
+      - "${VLO_DOCKER_MONITOR_RULES_FILE:-./monitor/rules-file-noop.properties}:${VLO_DOCKER_MONITOR_RULES_FILE_CONTAINER:-/opt/vlo/config/vlo-monitor-rules.properties}"
+      - "${VLO_MAPPING_DATA_VOLUME:-vlo-mapping-data}:${VLO_DOCKER_MONITOR_DB_PATH:-/opt/vlo-monitoring/vlo-monitoring}"      
     restart: on-failure
     networks:
         - network_vlo
@@ -110,6 +116,8 @@ volumes:
     vlo-data: 
         external: false
     vlo-resultsets:
+        external: false
+    vlo-mapping-data:
         external: false
 networks:
   network_vlo:
