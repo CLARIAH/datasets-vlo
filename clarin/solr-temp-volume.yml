@@ -1,5 +1,5 @@
 # Fixes issues with tmp
-version: '2'
+version: '2.4'
 services:
   vlo-solr:
     volumes:

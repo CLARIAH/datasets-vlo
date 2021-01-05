@@ -1,5 +1,5 @@
 # VLO docker compose configuration overlay for exposing Tomcat. Clashes with nginx.yml
-version: '2'
+version: '2.4'
 services:
   vlo-web:
     networks:

@@ -1,4 +1,4 @@
-version: '2'
+version: '2.4'
 services:
   exposure-frontend:
     image: registry.gitlab.com/clarin-eric/docker-vlo-exposure-frontend:vlo-4.8.0-2

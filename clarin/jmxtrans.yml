@@ -3,7 +3,7 @@
 # In order to use, you will need to export the 
 # JMXTRANS_HOST_ALIAS, JMXTRANS_STATSD_HOST and JMXTRANS_STATSD_PORT variables!
 
-version: '2'
+version: '2.4'
 services:
   vlo-solr:
     environment:
