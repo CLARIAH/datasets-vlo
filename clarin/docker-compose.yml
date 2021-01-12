@@ -58,7 +58,7 @@ services:
       VLO_DOCKER_LRS_BASE_URL:
       VLO_DOCKER_LRS_POPUP_SCRIPT_URL:
       VLO_DOCKER_LRS_POPUP_STYLE_URL:
-      VLO_DOCKER_LRS_POPUP_ENABLED: "true"
+      VLO_DOCKER_LRS_POPUP_ENABLED: "${VLO_DOCKER_LRS_POPUP_ENABLED:-true}"
       VLO_DOCKER_VCR_SUBMIT_ENDPOINT:
       
       VLO_DOCKER_SOLR_USER_READ_ONLY:
@@ -87,7 +87,7 @@ services:
       - "${STATSD_VOLUME}:/opt/statsd"
       - "${OTHER_PROVIDERS_MARKUP_DIR}:/opt/vlo/markup/providers"
       - "${VLO_DOCKER_MONITOR_RULES_FILE:-./monitor/rules-file-noop.properties}:${VLO_DOCKER_MONITOR_RULES_FILE_CONTAINER:-/opt/vlo/config/vlo-monitor-rules.properties}"
-      - "${VLO_MAPPING_DATA_VOLUME:-vlo-mapping-data}:${VLO_DOCKER_MONITOR_DB_PATH:-/opt/vlo-monitoring}"      
+      - "${VLO_MONITORING_DATA_VOLUME:-vlo-monitoring-data}:${VLO_DOCKER_MONITOR_DB_PATH:-/opt/vlo-monitoring}"      
     restart: on-failure
     networks:
         - network_vlo
@@ -117,7 +117,7 @@ volumes:
         external: false
     vlo-resultsets:
         external: false
-    vlo-mapping-data:
+    vlo-monitoring-data:
         external: false
 networks:
   network_vlo:

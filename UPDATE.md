@@ -8,8 +8,11 @@
   - `VLO_DOCKER_MONITOR_RULES_FILE_CONTAINER`
   - `VLO_DOCKER_MONITOR_DB_PATH`
   - `VLO_DOCKER_MONITOR_PRUNE_AFTER_DAYS`
+  - `VLO_MONITORING_DATA_VOLUME`
+  - `VLO_DOCKER_MONITOR_DB_PATH`
 
-See `.env-template` for a brief description of these variables.  
+See `.env-template` for a brief description of these variables. Recommendation is to
+leave these set to the default values (copy)
 
 ## vlo-4.9.1 to vlo-4.9.2
 
