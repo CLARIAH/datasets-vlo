@@ -25,7 +25,7 @@ services:
     networks:
       - network_vlo
   vlo-web:
-    image: &vlo_web_image registry.gitlab.com/clarin-eric/docker-vlo-beta:vlo-4.10.0-alpha7-1
+    image: &vlo_web_image registry.gitlab.com/clarin-eric/docker-vlo-beta:vlo-4.10.0-alpha8-1
     environment:
       VLO_DOCKER_IMAGE: *vlo_web_image
       VLO_DOCKER_SOLR_URL: "http://vlo-solr:8983/solr/vlo-index/"
@@ -113,12 +113,12 @@ volumes:
         external: false
     vlo-sitemap:
         external: false
-    vlo-data: 
-        external: false
     vlo-resultsets:
         external: false
     vlo-monitoring-data:
         external: false
+    vlo-data: 
+        external: true
 networks:
   network_vlo:
     driver: bridge
