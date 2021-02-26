@@ -103,10 +103,10 @@ volumes:
         external: false
     vlo-sitemap:
         external: false
-    vlo-data: 
-        external: false
     vlo-resultsets:
         external: false
+    vlo-data: 
+        external: true
 networks:
   network_vlo:
     driver: bridge
