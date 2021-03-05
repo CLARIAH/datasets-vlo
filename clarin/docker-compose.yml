@@ -1,7 +1,7 @@
 version: '2'
 services:
   vlo-solr:
-    image: registry.gitlab.com/clarin-eric/docker-solr:solr8.4-1.3.0
+    image: registry.gitlab.com/clarin-eric/docker-solr:solr8.4-1.4.0-beta1
     environment:
        SOLR_HEAP:
        SOLR_DATA_HOME:
@@ -13,19 +13,17 @@ services:
        VLO_DOCKER_SOLR_PASSWORD_ADMIN:
     depends_on:
       - vlo-solr-init # to ensure Solr home directory content
-    entrypoint: ["bash", "-c", "[ -f ${SOLR_HOME_PROVISIONING_PATH}/solr.xml ]
-                        && /opt/solr-init/filter-solr-security.sh
-                        && /usr/bin/entrypoint.sh"]
     volumes:
       - solr-home-provisioning:${SOLR_HOME_PROVISIONING_PATH}
       - vlo-solr-data:${SOLR_DATA_HOME}
-      - ./solr-init:/opt/solr-init
+      - ./solr/0solr-provisioning-init.sh:/init/0solr-provisioning-init.sh
+      - ./solr/solr-init:/opt/solr-init
       - ${SOLR_INIT_SCRIPT}:/etc/default/solr.in.sh
     restart: on-failure
     networks:
       - network_vlo
   vlo-web:
-    image: &vlo_web_image registry.gitlab.com/clarin-eric/docker-vlo-beta:vlo-4.9.3-beta1-3
+    image: &vlo_web_image registry.gitlab.com/clarin-eric/docker-vlo-beta:vlo-4.9.3-beta1-4
     environment:
       VLO_DOCKER_IMAGE: *vlo_web_image
       VLO_DOCKER_SOLR_URL: "http://vlo-solr:8983/solr/vlo-index/"

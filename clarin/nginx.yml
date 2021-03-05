@@ -13,7 +13,7 @@ services:
       - ./tomcat/init/tomcat-vlo-init.sh:/init/tomcat-vlo-init.sh
       - ./tomcat/conf/server.xml:/srv/tomcat8/conf/server.template.xml:ro
   vlo-proxy:
-    image: registry.gitlab.com/clarin-eric/docker-alpine-nginx:2.0.14
+    image: registry.gitlab.com/clarin-eric/docker-alpine-nginx:2.0.15
     environment:
       - SOLR_DATA_HOME
     ports:
