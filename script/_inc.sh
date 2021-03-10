@@ -78,7 +78,14 @@ _remove_dir() {
 }
 
 _docker-compose() {
-	(cd "${VLO_COMPOSE_DIR}" && docker-compose "$@")
+	(
+		cd "${VLO_COMPOSE_DIR}"
+		stdbuf -oL docker-compose --no-ansi "$@" 2>&1 |
+		while IFS= read -r line
+        do
+            info "$line" "compose"
+        done
+	)
 }
 
 export_credentials() {
@@ -109,4 +116,62 @@ read_env_var() {
 	fi
 	
 	echo "${ENV_VAR_LINE/${ENV_VAR_NAME}=/}"
+}
+
+# logging util functions
+
+
+debug() {
+    if [ "${VERBOSE}" -eq 1 ]; then
+        tag="${2}"
+        if [ "${2}" == "" ]; then
+                tag="default"
+        fi
+        log "DEBUG" "${1}" "${tag}"
+    fi
+}
+
+info() {
+    tag="${2}"
+    if [ "${2}" == "" ]; then
+        tag="default"
+    fi
+    log "     " "${1}" "${tag}"
+}
+
+warn() {
+    tag="${2}"
+    if [ "${2}" == "" ]; then
+        tag="default"
+    fi
+    log "     " "${1}" "${tag}"
+}
+
+error() {
+    tag="${2}"
+    if [ "${2}" == "" ]; then
+        tag="default"
+    fi
+    log "     " "${1}" "${tag}"
+}
+
+fatal() {
+    tag="${2}"
+    if [ "${2}" == "" ]; then
+        tag="default"
+    fi
+    log "FATAL" "${1}" "${tag}"
+    exit 1
+}
+
+log() {
+    TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+    LVL="$(printf '%6s' "$1")"
+    MSG="$2"
+    TAG="$(printf '%8s' "$3")"
+    LOG_CONTEXT="${BASH_SOURCE[0]}"
+    if [ "${LOG_CONTEXT}" ]; then
+    	LOG_CONTEXT="$(printf '%15s:%03d' "${LOG_CONTEXT}" "${BASH_LINENO[0]}")"
+    fi
+    echo "[${TIMESTAMP}] [${LVL}] [${TAG}] [${LOG_CONTEXT}] ${MSG}"
 }

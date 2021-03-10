@@ -27,7 +27,7 @@ sub_run-import() {
 	if check_service; then
 		_docker-compose exec -T ${VLO_WEB_SERVICE} nice -n10 ${VLO_IMAGE_IMPORT_COMMAND}
 	else
-		echo "Service not running, cannot execute import."
+		fatal "Service not running, cannot execute import."
 		exit 1
 	fi
 }
@@ -36,7 +36,7 @@ sub_run-link-status-update() {
 	if check_service; then
 		_docker-compose exec -T ${VLO_WEB_SERVICE} nice -n10 ${VLO_IMAGE_LINK_STATUS_UPDATER_COMMAND}
 	else
-		echo "Service not running, cannot execute import."
+		fatal "Service not running, cannot execute import."
 		exit 1
 	fi
 }
@@ -45,7 +45,7 @@ sub_restart-web-app() {
 	if check_service; then
 		_docker-compose ${COMPOSE_OPTS} restart "${VLO_WEB_SERVICE}"
 	else
-		echo "Service not running, cannot restart."
+		fatal "Service not running, cannot restart."
 		exit 1
 	fi
 }
@@ -54,7 +54,7 @@ sub_restart-solr() {
 	if check_service; then
 		_docker-compose ${COMPOSE_OPTS} restart "${VLO_SOLR_SERVICE}"
 	else
-		echo "Service not running, cannot restart."
+		fatal "Service not running, cannot restart."
 		exit 1
 	fi
 }
@@ -84,34 +84,38 @@ sub_drop-solr-data() {
 	fi
 	
 	if [ "y" = "${CONFIRMATION}" ]; then
-		echo "Stopping Solr service ..."
+		info "Stopping Solr service ..."
 		if _docker-compose stop "${VLO_SOLR_SERVICE}" \
 			&& _docker-compose rm -f "${VLO_SOLR_SERVICE}" \
 			&& echo -n "Removing volume " && docker volume rm "${VLO_SOLR_DATA_VOLUME}"; then
 				echo "Restarting Solr service..."
 			_docker-compose ${COMPOSE_OPTS} up -d --force-recreate "${VLO_SOLR_SERVICE}"
 		else
-			echo "Failed to remove Solr data volume '${VLO_SOLR_DATA_VOLUME}'. Service may be left in a broken state!"
+			fatal "Failed to remove Solr data volume '${VLO_SOLR_DATA_VOLUME}'. Service may be left in a broken state!"
 			exit 1
 		fi
 	fi
 }
 
-#
-# Process subcommands
-#
-subcommand=$1
-case $subcommand in
-    "" | "-h" | "--help")
-        sub_help
-        ;;
-    *)
-        shift
-        sub_${subcommand} $@
-        if [ $? = 127 ]; then
-            echo "Error: '${subcommand}' is not a known subcommand." >&2
-            echo "       Run '${PROGRAM_NAME} --help' for a list of known subcommands." >&2
-            exit 1
-        fi
-        ;;
-esac
+main() {
+	#
+	# Process subcommands
+	#
+	subcommand=$1
+	case $subcommand in
+		"" | "-h" | "--help")
+			sub_help
+			;;
+		*)
+			shift
+			sub_${subcommand} $@
+			if [ $? = 127 ]; then
+				echo "Error: '${subcommand}' is not a known subcommand." >&2
+				echo "       Run '${PROGRAM_NAME} --help' for a list of known subcommands." >&2
+				exit 1
+			fi
+			;;
+	esac
+}
+
+main $@
