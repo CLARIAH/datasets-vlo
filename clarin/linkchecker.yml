@@ -5,22 +5,8 @@ services:
       - VLO_DOCKER_LINK_CHECKER_DB_CONNECTION_STRING=jdbc:mysql://${LINK_CHECKER_HOST_PORT}/${LINK_CHECKER_DB_NAME}
       - VLO_DOCKER_LINK_CHECKER_DB_USER=${LINK_CHECKER_DB_USER}
       - VLO_DOCKER_LINK_CHECKER_DB_PASSWORD=${LINK_CHECKER_DB_PASSWORD}
-  vlo-linkchecker-db:
-    image: registry.gitlab.com/clarin-eric/docker-mariadb:1.0.21
-    environment:
-      - MYSQL_ROOT_PASSWORD=${LINK_CHECKER_DB_ROOT_PASSWD}
-      - MYSQL_DATABASE=${LINK_CHECKER_DB_NAME}
-      - MYSQL_USER=${LINK_CHECKER_DB_USER}
-      - MYSQL_PASSWORD=${LINK_CHECKER_DB_PASSWORD}
-    volumes:
-      - linkckecker_mariadb_data:/var/lib/mysql
-      - ${LINK_CHECKER_DUMP_HOST_DIR}:/docker-entrypoint-initdb.d
-      - ${LINK_CHECKER_DUMP_HOST_DIR}:${LINK_CHECKER_DUMP_CONTAINER_DIR}
-    restart: unless-stopped
-    expose:
-      - "3306"
     networks:
-        - network_vlo
-volumes:
-    linkckecker_mariadb_data:
-        external: false
+        - network_linkchecker
+networks:
+    network_linkchecker:
+        external: true
