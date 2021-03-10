@@ -13,7 +13,7 @@ export VLO_PROXY_SERVICE="vlo-proxy"
 export VLO_JMXTRANS_SERVICE="jmxtrans"
 export VLO_LINKCHECKER_DB_SERVICE="vlo-linkchecker-db"
 
-export VLO_SOLR_DATA_VOLUME="vlo_vlo-solr-data"
+export VLO_SOLR_DATA_VOLUME="vlo-solr-data"
 
 export SOLR_HOME_PROVISIONING_VOLUME_NAME="solr-home-provisioning"
 
@@ -122,13 +122,11 @@ read_env_var() {
 
 
 debug() {
-    if [ "${VERBOSE}" -eq 1 ]; then
-        tag="${2}"
-        if [ "${2}" == "" ]; then
-                tag="default"
-        fi
-        log "DEBUG" "${1}" "${tag}"
-    fi
+	tag="${2}"
+	if [ "${2}" == "" ]; then
+			tag="default"
+	fi
+	log "DEBUG" "${1}" "${tag}"
 }
 
 info() {
