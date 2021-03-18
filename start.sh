@@ -15,14 +15,14 @@ start_vlo_main() {
 	else		
 		remove_solr_home_provisioning_volume
 	fi
-	_docker-compose $COMPOSE_OPTS up -d ${COMPOSE_CMD_ARGS}
+	_docker-compose ${COMPOSE_OPTS} up -d ${COMPOSE_CMD_ARGS}
 }
 
 create_missing_volume() {
 	VOLUME="$1"
 	shift
-	OPTIONS="$@"
-	if [ "${VOLUME}" ] && [ $(docker volume ls |grep "${VOLUME}"|wc -l)  -eq 0 ]; then	
+	OPTIONS="$*"
+	if [ "${VOLUME}" ] && [ "$(docker volume ls |grep -c "${VOLUME}")"  -eq 0 ]; then	
 		echo "Creating missing volume '${VOLUME}'"
 		if [ "${OPTIONS}" ]  && [ "${#OPTIONS[@]}" ]; then
 			docker volume create "${OPTIONS[@]}" -- "${VOLUME}"
@@ -36,8 +36,8 @@ create_missing_volume() {
 create_missing_network() {
 	NETWORK="$1"
 	shift
-	OPTIONS="$@"
-	if [ "${NETWORK}" ] && [ $(docker network ls |grep "${NETWORK}"|wc -l)  -eq 0 ]; then
+	OPTIONS="$*"
+	if [ "${NETWORK}" ] && [ "$(docker network ls |grep -c "${NETWORK}")"  -eq 0 ]; then
 		echo "Creating missing network '${NETWORK}'"
 		if [ "${OPTIONS}" ]  && [ "${#OPTIONS[@]}" ]; then
 	        docker network create "${OPTIONS[@]}" -- "${NETWORK}"
@@ -52,8 +52,8 @@ remove_solr_home_provisioning_volume() {
 	eval "$(grep "COMPOSE_PROJECT_NAME" "${VLO_COMPOSE_DIR}/.env")"
 	if [ "${COMPOSE_PROJECT_NAME}" ]; then
 		VOLUME_NAME="${COMPOSE_PROJECT_NAME}_${SOLR_HOME_PROVISIONING_VOLUME_NAME}"
-		if docker volume ls | egrep "${VOLUME_NAME}$"; then
-			ACTUAL_VOLUME_NAME=$(docker volume ls | egrep -o "${VOLUME_NAME}$")
+		if docker volume ls | grep -E "${VOLUME_NAME}$"; then
+			ACTUAL_VOLUME_NAME=$(docker volume ls | grep -E -o "${VOLUME_NAME}$")
 			echo -n "Remove volume ${ACTUAL_VOLUME_NAME}... "
 			if docker volume rm "${ACTUAL_VOLUME_NAME}" > /dev/null; then
 				echo "done"
