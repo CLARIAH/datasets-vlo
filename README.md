@@ -112,27 +112,24 @@ into the container from a directory within the compose project.
 
 The VLO can access and process data gathered by the
 [Curation Module](http://curate.acdh.oeaw.ac.at/)'s link checker during import. For this,
-a Postgres database has to be accessible. Normally this is a local instance that gets
-populated on basis of an import or replication. Enabling the `linkchecker` overlay will
-include a service `vlo-linkchecker-db` and set up a connection from the VLO service.
+a MariaDB or MySQL database has to be accessible. Enabling the `linkchecker` overlay will
+add additional configuration to enable communication between the VLO web app service
+and a link checker database instance.
 
 The following environment variables need to be set:
 
-* `LINK_CHECKER_DB_ROOT_PASSWD`
-* `LINK_CHECKER_DB_DUMP_HOST_DIR`
+* `LINK_CHECKER_HOST_PORT`
 * `LINK_CHECKER_DB_NAME`
 * `LINK_CHECKER_DB_USER`
 * `LINK_CHECKER_DB_PASSWORD`
-* `LINK_CHECKER_DUMP_URL`
-* `LINK_CHECKER_DUMP_HOST_DIR`
-* `LINK_CHECKER_DUMP_CONTAINER_DIR`
-* `LINK_CHECKER_PRUNE_AGE`
-* `LINK_CHECKER_DEBUG`
+
 
 See [.env-template](clarin/.env-template) for details and examples.
 
-The control script provides a number of commands for managing the link checker database
-and updating the Solr index on basis of its information (see below).
+The control script provide the command `run-link-status-update` for updating the Solr
+index on basis of its information (see below). The external network `network_linkchecker`
+is defined can be shared with the link checker database service to support communication.
+The creation of this network is carried out by the custom start command logic.
 
 ### Running the VLO
 
@@ -157,22 +154,17 @@ docker-compose:
 ```sh
 ./control.sh vlo -h
 ./control.sh [-v] vlo [start|stop|restart|status|logs]
-./control.sh [-v] vlo [run-import|run-link-status-update|update-linkchecker-db]
+./control.sh [-v] vlo [run-import|run-link-status-update]
 ./control.sh [-v] vlo [backup|restore]
 ./control.sh [-v] vlo exec <name> <command>
-./control.sh [-v] vlo restart-[web-app|solr|proxy|linkchecker-db]
+./control.sh [-v] vlo restart-[web-app|solr|proxy|jmxtrans]
 ./control.sh [-v] vlo drop-solr-data
 ```
 
-Run `./control.sh vlo -h` to get a more detailed description of all the options. Note that
-the script checks the username against an expected the name of a predefined deploy
-user. This can be overridden by setting the `DEPLOY_USER` environment variable:
-
-```sh
-DEPLOY_USER=$(whoami) ./control.sh <arguments>
-```
-
-More information can be found in the documentation at the
+Run `./control.sh vlo -h` to get a more detailed description of all the options. Note
+that in a local setup you will likely want to run the control script in local mode. For
+example: `./control.sh -s start` (skip the `vlo` part). More information can be found
+in the documentation at the
 [control-script repository](https://gitlab.com/CLARIN-ERIC/control-script).
 
 Additional configuration overlays (see above) will be loaded automatically according to 
@@ -186,7 +178,7 @@ overlay, otherwise the VLO web app will not be exposed to the host.
 To start all enabled services, simply run
 
 ```sh
-DEPLOY_USER=$(whoami) ./control.sh start
+./control.sh -s start
 ```
 
 #### Run the importer to ingest CMDI metadata into the VLO
