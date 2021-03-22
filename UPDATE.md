@@ -14,6 +14,33 @@
 See `.env-template` for a brief description of these variables. Recommendation is to
 leave these set to the default values (copy)
 
+## vlo-4.9.2 to vlo-4.9.3
+
+The changes in this version apply to the joint deployment of the VLO, harvester and the
+curation dashboard/link checker project. To this end, there are two major changes:
+
+- In the default situation, the link checker database is now directly accessible and
+the logic and configuration to run a local instance based restored from a dump has been
+removed. An external network `network_linkchecker` has been introduced.
+- The default metadata volume has been changed into an external volume named `vlo-data`
+that can easily and reliably be shared with the curation dashboard and the harvester
+
+Configuration changes:
+- IFF using `linkchecker.yml`, review and set the following variable in `.env`:
+  - `LINK_CHECKER_HOST_PORT=curation_mysql_1:3306` (note that the exact name of the
+  container and port of the database service can be different depending on the
+  environment)
+  - `LINK_CHECKER_DB_NAME` (align with curation module configuration)
+  - `LINK_CHECKER_DB_USER` (align with curation module configuration)
+  - `LINK_CHECKER_DB_PASSWORD` (align with curation module configuration)
+- Remove or comment out the following variables in `.env`
+  - `LINK_CHECKER_DB_ROOT_PASSWD`
+  - `LINK_CHECKER_DUMP_URL`
+  - `LINK_CHECKER_DUMP_HOST_DIR`
+  - `LINK_CHECKER_DUMP_CONTAINER_DIR`
+  - `LINK_CHECKER_PRUNE_AGE`
+  - `LINK_CHECKER_DEBUG`
+
 ## vlo-4.9.1 to vlo-4.9.2
 
 Maintenance release. No changes to the configuration of the VLO are required,
