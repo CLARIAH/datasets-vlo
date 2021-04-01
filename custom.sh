@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 source "${BASE_DIR}/script/_inc.sh"
+eval "$(egrep "^COMPOSE_PROJECT_NAME=" "${VLO_COMPOSE_DIR}/.env")"
 
 sub_help(){
     echo "Usage: ${PROGRAM_NAME} <subcommand> [options]"
@@ -66,26 +67,35 @@ sub_restart-proxy() {
 }
 
 sub_drop-solr-data() {
+	VOLUME_NAME="${COMPOSE_PROJECT_NAME}_${VLO_SOLR_DATA_VOLUME}"
+	debug "Looking for volume ${VOLUME_NAME}"
+	if docker volume ls | egrep "(\s)${VOLUME_NAME}$"; then
+		ACTUAL_VOLUME_NAME="$(docker volume ls | egrep -o "${VOLUME_NAME}$")"
+	else
+		fatal "Volume not found: ${VOLUME_NAME}"
+	fi
+	
 	if [ "-f" = "$@" ]; then
 		CONFIRMATION="y"
 	else
-		echo -n "Warning: This will drop all persisted Solr data for the VLO by removing the volume '${VLO_SOLR_DATA_VOLUME}'. Continue? (y/n)"
+		echo -n "Warning: This will drop all persisted Solr data for the VLO by removing the volume '${ACTUAL_VOLUME_NAME}'. Continue? (y/n)"
 		read CONFIRMATION
 	fi
 	
 	if [ "y" = "${CONFIRMATION}" ]; then
-		echo "Stopping Solr service ..."
+		info "Stopping Solr service ..."
 		if _docker-compose stop "${VLO_SOLR_SERVICE}" \
 			&& _docker-compose rm -f "${VLO_SOLR_SERVICE}" \
-			&& echo -n "Removing volume " && docker volume rm "${VLO_SOLR_DATA_VOLUME}"; then
+			&& echo -n "Removing volume " && docker volume rm "${ACTUAL_VOLUME_NAME}"; then
 				echo "Restarting Solr service..."
 			_docker-compose ${COMPOSE_OPTS} up -d --force-recreate "${VLO_SOLR_SERVICE}"
 		else
-			echo "Failed to remove Solr data volume '${VLO_SOLR_DATA_VOLUME}'. Service may be left in a broken state!"
+			fatal "Failed to remove Solr data volume '${ACTUAL_VOLUME_NAME}'. Service may be left in a broken state!"
 			exit 1
 		fi
 	fi
 }
+
 
 #
 # Process subcommands

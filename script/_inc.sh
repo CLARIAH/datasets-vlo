@@ -13,7 +13,7 @@ export VLO_PROXY_SERVICE="vlo-proxy"
 export VLO_JMXTRANS_SERVICE="jmxtrans"
 export VLO_LINKCHECKER_DB_SERVICE="vlo-linkchecker-db"
 
-export VLO_SOLR_DATA_VOLUME="vlo_vlo-solr-data"
+export VLO_SOLR_DATA_VOLUME="vlo-solr-data"
 
 export SOLR_HOME_PROVISIONING_VOLUME_NAME="solr-home-provisioning"
 
@@ -110,3 +110,60 @@ read_env_var() {
 	
 	echo "${ENV_VAR_LINE/${ENV_VAR_NAME}=/}"
 }
+
+# logging util functions
+
+
+debug() {
+	tag="${2}"
+	if [ "${2}" == "" ]; then
+			tag="default"
+	fi
+	log "DEBUG" "${1}" "${tag}"
+}
+
+info() {
+    tag="${2}"
+    if [ "${2}" == "" ]; then
+        tag="default"
+    fi
+    log "     " "${1}" "${tag}"
+}
+
+warn() {
+    tag="${2}"
+    if [ "${2}" == "" ]; then
+        tag="default"
+    fi
+    log "     " "${1}" "${tag}"
+}
+
+error() {
+    tag="${2}"
+    if [ "${2}" == "" ]; then
+        tag="default"
+    fi
+    log "     " "${1}" "${tag}"
+}
+
+fatal() {
+    tag="${2}"
+    if [ "${2}" == "" ]; then
+        tag="default"
+    fi
+    log "FATAL" "${1}" "${tag}"
+    exit 1
+}
+
+log() {
+    TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+    LVL="$(printf '%6s' "$1")"
+    MSG="$2"
+    TAG="$(printf '%8s' "$3")"
+    LOG_CONTEXT="${BASH_SOURCE[0]}"
+    if [ "${LOG_CONTEXT}" ]; then
+    	LOG_CONTEXT="$(printf '%15s:%03d' "${LOG_CONTEXT}" "${BASH_LINENO[0]}")"
+    fi
+    echo "[${TIMESTAMP}] [${LVL}] [${TAG}] [${LOG_CONTEXT}] ${MSG}"
+}
+
