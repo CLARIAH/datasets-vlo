@@ -167,9 +167,10 @@ log() {
     LVL="$(printf '%6s' "$1")"
     MSG="$2"
     TAG="$(printf '%8s' "$3")"
-    LOG_CONTEXT="${BASH_SOURCE[0]}"
-    if [ "${LOG_CONTEXT}" ]; then
-    	LOG_CONTEXT="$(printf '%15s:%03d' "${LOG_CONTEXT}" "${BASH_LINENO[0]}")"
-    fi
-    echo "[${TIMESTAMP}] [${LVL}] [${TAG}] [${LOG_CONTEXT}] ${MSG}"
+    echo "[${TIMESTAMP}] [${LVL}] [${TAG}] ${MSG}"
+#     LOG_CONTEXT="${BASH_SOURCE[0]}"
+#     if [ "${LOG_CONTEXT}" ]; then
+#     	LOG_CONTEXT="$(printf '%15s:%03d' "${LOG_CONTEXT}" "${BASH_LINENO[0]}")"
+#     fi
+#     echo "[${TIMESTAMP}] [${LVL}] [${TAG}] [${LOG_CONTEXT}] ${MSG}"
 }
