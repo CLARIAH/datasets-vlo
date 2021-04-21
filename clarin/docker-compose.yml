@@ -74,7 +74,7 @@ services:
       VLO_DOCKER_STATSD_PORT:
       STATSD_PREFIX:
 
-      VLO_DOCKER_MONITOR_RULES_FILE: "${VLO_DOCKER_MONITOR_RULES_FILE_CONTAINER:-/opt/vlo/config/vlo-monitor-rules.properties}"
+      VLO_DOCKER_MONITOR_RULES_FILE: "${VLO_DOCKER_MONITOR_RULES_DIR_CONTAINER:-/opt/vlo/config/monitor-rules}/${VLO_DOCKER_MONITOR_RULES_FILE_NAME:-vlo-monitor-rules.properties}"
       VLO_DOCKER_MONITOR_PRUNE_AFTER_DAYS: "${VLO_DOCKER_MONITOR_PRUNE_AFTER_DAYS:-100}"
       VLO_DOCKER_MONITOR_DB_PATH: "${VLO_DOCKER_MONITOR_DB_PATH:-/opt/vlo-monitoring/vlo-monitoring}"
       
@@ -84,7 +84,7 @@ services:
       - "${SITEMAP_VOLUME}:/opt/sitemap"
       - "${STATSD_VOLUME}:/opt/statsd"
       - "${OTHER_PROVIDERS_MARKUP_DIR}:/opt/vlo/markup/providers"
-      - "${VLO_DOCKER_MONITOR_RULES_FILE:-./monitor/rules-file-noop.properties}:${VLO_DOCKER_MONITOR_RULES_FILE_CONTAINER:-/opt/vlo/config/vlo-monitor-rules.properties}"
+      - "${VLO_DOCKER_MONITOR_RULES_FILE_DIR:-./monitor/noop}:${VLO_DOCKER_MONITOR_RULES_DIR_CONTAINER:-/opt/vlo/config/monitor-rules}"
       - "${VLO_MONITORING_DATA_VOLUME:-vlo-monitoring-data}:${VLO_DOCKER_MONITOR_DB_PATH:-/opt/vlo-monitoring}"      
     restart: on-failure
     networks:

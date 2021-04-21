@@ -4,15 +4,16 @@
 
 - New env variables:
   - `VLO_DOCKER_LRS_POPUP_ENABLED`
-  - `VLO_DOCKER_MONITOR_RULES_FILE`
-  - `VLO_DOCKER_MONITOR_RULES_FILE_CONTAINER`
+  - `VLO_DOCKER_MONITOR_RULES_FILE_DIR`
+  - `VLO_DOCKER_MONITOR_RULES_FILE_NAME`
+  - `VLO_DOCKER_MONITOR_RULES_DIR_CONTAINER`
   - `VLO_DOCKER_MONITOR_DB_PATH`
   - `VLO_DOCKER_MONITOR_PRUNE_AFTER_DAYS`
   - `VLO_MONITORING_DATA_VOLUME`
   - `VLO_DOCKER_MONITOR_DB_PATH`
 
-See `.env-template` for a brief description of these variables. Recommendation is to
-leave these set to the default values (copy)
+See `.env-template` for a brief description of these variables. All of these can be
+left to their defaults by not setting them explicitly.
 
 ## vlo-4.9.2 to vlo-4.9.3
 
