@@ -1,7 +1,7 @@
 version: '2.4'
 services:
   vlo-solr:
-    image: registry.gitlab.com/clarin-eric/docker-solr:solr8.6-2.0.0-rc1
+    image: registry.gitlab.com/clarin-eric/docker-solr:solr8.6-2.0.0-rc2
     environment:
        SOLR_HEAP:
        SOLR_DATA_HOME:
@@ -23,7 +23,7 @@ services:
     networks:
       - network_vlo
   vlo-web:
-    image: &vlo_web_image registry.gitlab.com/clarin-eric/docker-vlo-beta:vlo-4.10.0-2-RC1
+    image: &vlo_web_image registry.gitlab.com/clarin-eric/docker-vlo-beta:vlo-4.10.0-2-RC2
     environment:
       VLO_DOCKER_IMAGE: *vlo_web_image
       VLO_DOCKER_SOLR_URL: "http://vlo-solr:8983/solr/vlo-index/"
