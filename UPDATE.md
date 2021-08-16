@@ -1,5 +1,24 @@
 # Upgrade instructions
 
+## vlo-4.10.0 to vlo-4.10.1
+
+- New env variables:
+  - `LINK_CHECKER_DB_POOL_SIZE`
+  - `LINK_CHECKER_MAX_DAY_SINCE_CHECKED`
+
+See `.env-template` for a brief description of these variables. All of these can be
+left to their defaults by not setting them explicitly.
+
+For a standard deployment, add the following to `.env`:
+
+```
+## Number of connections to keep in the link checker DB pool for the VLO import
+LINK_CHECKER_DB_POOL_SIZE=20
+
+## Threshold age for link checker information
+LINK_CHECKER_MAX_DAY_SINCE_CHECKED=100
+```
+
 ## vlo-4.9.* to vlo-4.10.0
 
 - New env variables:
