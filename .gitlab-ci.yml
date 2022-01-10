@@ -1,0 +1,24 @@
+image: registry.gitlab.com/clarin-eric/build-image:1.3.0-rc3
+services:
+  - name: docker:20.10.12-dind
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+  DOCKER_DRIVER: overlay2
+  DOCKER_HOST: tcp://docker:2376
+  DOCKER_TLS_CERTDIR: "/certs"
+  DOCKER_TLS_VERIFY: 1
+  DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
+  DOCKER_CLIENT_TIMEOUT: 300
+  COMPOSE_HTTP_TIMEOUT: 300
+
+stages:
+  - test
+
+test:
+  artifacts:
+    untracked: true
+  script: timeout 1440 bash -x ./compose-test.sh
+  stage: test
+  tags:
+    - docker
