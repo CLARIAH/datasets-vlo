@@ -10,6 +10,11 @@ services:
     volumes:
       - test:/test
     restart: "no"
+  vlo-proxy:
+    command: --test
+    volumes:
+      - test:/test
+    restart: "no"  
   test:
     image: "registry.gitlab.com/clarin-eric/docker-tester:1.4.0-multiarch-rc2"
     command: http multi -v -k -T 3600
