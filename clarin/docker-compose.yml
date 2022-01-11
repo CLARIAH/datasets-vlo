@@ -3,14 +3,14 @@ services:
   vlo-solr:
     image: registry.gitlab.com/clarin-eric/docker-solr:solr8.11-1.0.0
     environment:
-       SOLR_HEAP:
+       SOLR_HEAP: "${SOLR_HEAP:-4G}"
        SOLR_DATA_HOME: "${SOLR_DATA_HOME:-/solr-data}"
        SOLR_HOME_PROVISIONING_PATH: "${SOLR_HOME_PROVISIONING_PATH:-/docker-entrypoint-initsolr.d/solr_home}"
-       VLO_DOCKER_SOLR_USER_READ_ONLY:
-       VLO_DOCKER_SOLR_PASSWORD_READ_ONLY:
-       VLO_DOCKER_SOLR_USER_READ_WRITE:
-       VLO_DOCKER_SOLR_PASSWORD_READ_WRITE:
-       VLO_DOCKER_SOLR_PASSWORD_ADMIN:
+       VLO_DOCKER_SOLR_USER_READ_ONLY: "${VLO_DOCKER_SOLR_USER_READ_ONLY:-docker_user_read}"
+       VLO_DOCKER_SOLR_USER_READ_WRITE: "${VLO_DOCKER_SOLR_USER_READ_WRITE:-docker_user_rw}"
+       VLO_DOCKER_SOLR_PASSWORD_READ_ONLY: "${VLO_DOCKER_SOLR_PASSWORD_READ_ONLY?}"
+       VLO_DOCKER_SOLR_PASSWORD_READ_WRITE: "${VLO_DOCKER_SOLR_PASSWORD_READ_WRITE?}"
+       VLO_DOCKER_SOLR_PASSWORD_ADMIN: "${VLO_DOCKER_SOLR_PASSWORD_ADMIN?}"
     depends_on:
       - vlo-solr-init # to ensure Solr home directory content
     volumes:
@@ -60,11 +60,11 @@ services:
       VLO_DOCKER_LRS_POPUP_ENABLED: "${VLO_DOCKER_LRS_POPUP_ENABLED:-true}"
       VLO_DOCKER_VCR_SUBMIT_ENDPOINT:
       
-      VLO_DOCKER_SOLR_USER_READ_ONLY:
-      VLO_DOCKER_SOLR_PASSWORD_READ_ONLY:
-      VLO_DOCKER_SOLR_USER_READ_WRITE:
-      VLO_DOCKER_SOLR_PASSWORD_READ_WRITE:
-      VLO_DOCKER_SOLR_PASSWORD_ADMIN:
+      VLO_DOCKER_SOLR_USER_READ_ONLY: "${VLO_DOCKER_SOLR_USER_READ_ONLY:-docker_user_read}"
+      VLO_DOCKER_SOLR_USER_READ_WRITE: "${VLO_DOCKER_SOLR_USER_READ_WRITE:-docker_user_rw}"
+      VLO_DOCKER_SOLR_PASSWORD_READ_ONLY: "${VLO_DOCKER_SOLR_PASSWORD_READ_ONLY?}"
+      VLO_DOCKER_SOLR_PASSWORD_READ_WRITE: "${VLO_DOCKER_SOLR_PASSWORD_READ_WRITE?}"
+      VLO_DOCKER_SOLR_PASSWORD_ADMIN: "${VLO_DOCKER_SOLR_PASSWORD_ADMIN?}"
       
       VLO_DOCKER_PIWIK_ENABLE_TRACKER: "${VLO_DOCKER_PIWIK_ENABLE_TRACKER:-false}"
       VLO_DOCKER_PIWIK_SITE_ID: "${VLO_DOCKER_PIWIK_SITE_ID:-}"
@@ -79,12 +79,12 @@ services:
       VLO_DOCKER_MONITOR_PRUNE_AFTER_DAYS: "${VLO_DOCKER_MONITOR_PRUNE_AFTER_DAYS:-100}"
       VLO_DOCKER_MONITOR_DB_PATH: "${VLO_DOCKER_MONITOR_DB_PATH:-/opt/vlo-monitoring/vlo-monitoring}"
       
-      VLO_DOCKER_OTHER_PROVIDERS_MARKUP_FILE: "/opt/vlo/markup/providers/${OTHER_PROVIDERS_MARKUP_FILENAME}"
+      VLO_DOCKER_OTHER_PROVIDERS_MARKUP_FILE: "/opt/vlo/markup/providers/${OTHER_PROVIDERS_MARKUP_FILENAME:-others.html}"
     volumes:
-      - "${METADATA_VOLUME}:${METADATA_DIR:-/srv/vlo-data}"
-      - "${SITEMAP_VOLUME}:/opt/sitemap"
-      - "${STATSD_VOLUME}:/opt/statsd"
-      - "${OTHER_PROVIDERS_MARKUP_DIR}:/opt/vlo/markup/providers"
+      - "${METADATA_VOLUME:-vlo-data}:${METADATA_DIR:-/srv/vlo-data}"
+      - "${SITEMAP_VOLUME:-vlo-sitemap}:/opt/sitemap"
+      - "${STATSD_VOLUME:-vlo-statsd}:/opt/statsd"
+      - "${OTHER_PROVIDERS_MARKUP_DIR:-./providers}:/opt/vlo/markup/providers"
       - "${VLO_DOCKER_MONITOR_RULES_FILE_DIR:-./monitor/noop}:${VLO_DOCKER_MONITOR_RULES_DIR_CONTAINER:-/opt/vlo/config/monitor-rules}"
       - "${VLO_MONITORING_DATA_VOLUME:-vlo-monitoring-data}:${VLO_DOCKER_MONITOR_DB_PATH:-/opt/vlo-monitoring}"      
     restart: on-failure
