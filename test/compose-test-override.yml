@@ -1,0 +1,35 @@
+version: '2.4'
+services:
+  vlo-solr:
+    command: --test
+    volumes:
+      - test:/test
+    restart: "no"
+  vlo-web:
+    command: --test
+    volumes:
+      - test:/test
+    restart: "no"
+  vlo-proxy:
+    command: --test
+    volumes:
+      - test:/test
+    restart: "no"  
+  test:
+    image: "registry.gitlab.com/clarin-eric/docker-tester:1.4.0-multiarch-rc2"
+    command: http multi -v -k -T 3600
+    volumes:
+      - ../test/checker.conf:/etc/checker.conf
+      - test:/test
+    restart: "no"
+    networks:
+      - network_vlo
+    logging:
+      driver: json-file
+
+  
+volumes:
+  test:
+    external: false
+  vlo-data: 
+    external: false
