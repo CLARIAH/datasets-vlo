@@ -1,7 +1,7 @@
 version: '2.4'
 services:
   vlo-solr:
-    image: registry.gitlab.com/clarin-eric/docker-solr:solr8.11-1.0.0
+    image: registry.gitlab.com/clarin-eric/docker-solr:solr8.11-1.1.0-alpha1
     environment:
        SOLR_HEAP: "${SOLR_HEAP:-4G}"
        SOLR_DATA_HOME: "${SOLR_DATA_HOME:-/solr-data}"
