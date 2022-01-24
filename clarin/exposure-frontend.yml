@@ -22,6 +22,6 @@ services:
         - network_vlo
   vlo-proxy:
     volumes:
-      - ./exposure/frontend/exposure-frontend.inc:/etc/nginx/conf.d/inc/exposure-frontend.inc:ro
+      - ./exposure/frontend/exposure-frontend.inc:/etc/nginx/http.d/inc/exposure-frontend.inc:ro
       - ${VLO_EXPOSURE_FRONTEND_PASSWORD_FILE}:/etc/nginx/exposure-frontend/htpasswd
 

@@ -13,7 +13,7 @@ services:
       - ./tomcat/init/tomcat-vlo-init.sh:/init/tomcat-vlo-init.sh
       - ./tomcat/conf/server.xml:/srv/tomcat8/conf/server.template.xml:ro
   vlo-proxy:
-    image: registry.gitlab.com/clarin-eric/docker-alpine-nginx:2.1.0
+    image: registry.gitlab.com/clarin-eric/docker-alpine-nginx:2.2.0
     environment:
       - SOLR_DATA_HOME
     ports:
@@ -23,9 +23,9 @@ services:
       - ${METADATA_VOLUME:-vlo-data}:/srv/www-static/data:ro
       - ${RESULTSETS_VOLUME:-vlo-resultsets}:/srv/www-static/resultsets:ro
       - ${SITEMAP_VOLUME:-vlo-sitemap}:/srv/www-static/sitemap:ro
-      - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./nginx/conf.d/inc/vlo.inc:/etc/nginx/conf.d/inc/vlo.inc:ro
-      - ./nginx/conf.d/mime.types:/etc/nginx/extra_mime.types:ro
+      - ./nginx/http.d/default.conf:/etc/nginx/http.d/default.conf:ro
+      - ./nginx/http.d/inc/vlo.inc:/etc/nginx/http.d/inc/vlo.inc:ro
+      - ./nginx/mime.types:/etc/nginx/extra_mime.types:ro
       - ${WEB_STATIC_DATA_VOLUME:-vlo_www_data}:/srv/www-static/root:ro
       - ${PROXY_VLO_CONFIG_HTPASSWD_FILE:-../../vlo-config-htpasswd}:/etc/nginx/vlo-config-htpasswd
     tmpfs:
