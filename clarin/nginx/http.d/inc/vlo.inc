@@ -17,7 +17,7 @@ location / {
 	
 	location ~ ^/config/(.*) {
 		auth_basic				"Authentication required";
-		auth_basic_user_file	/etc/nginx/vlo-config-htpasswd;
+		auth_basic_user_file	/etc/vlo_nginx/vlo-config-htpasswd;
 		proxy_pass              https://vlo-web:8443/config/$1;
 	}
 }

@@ -23,11 +23,11 @@ services:
       - ${METADATA_VOLUME:-vlo-data}:/srv/www-static/data:ro
       - ${RESULTSETS_VOLUME:-vlo-resultsets}:/srv/www-static/resultsets:ro
       - ${SITEMAP_VOLUME:-vlo-sitemap}:/srv/www-static/sitemap:ro
-      - ./nginx/http.d/default.conf:/etc/nginx/http.d/default.conf:ro
-      - ./nginx/http.d/inc/vlo.inc:/etc/nginx/http.d/inc/vlo.inc:ro
-      - ./nginx/mime.types:/etc/nginx/extra_mime.types:ro
+      - ./nginx/http.d/default.conf:/nginx_conf.d/default.conf:ro
+      - ./nginx/http.d/inc/vlo.inc:/etc/vlo_nginx/http.d/inc/vlo.inc:ro
+      - ./nginx/mime.types:/etc/vlo_nginx/extra_mime.types:ro
       - ${WEB_STATIC_DATA_VOLUME:-vlo_www_data}:/srv/www-static/root:ro
-      - ${PROXY_VLO_CONFIG_HTPASSWD_FILE:-../../vlo-config-htpasswd}:/etc/nginx/vlo-config-htpasswd
+      - ${PROXY_VLO_CONFIG_HTPASSWD_FILE:-../../vlo-config-htpasswd}:/etc/vlo_nginx/vlo-config-htpasswd
     tmpfs:
       - /var/cache/nginx-vlo
     restart: unless-stopped

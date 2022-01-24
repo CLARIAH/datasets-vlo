@@ -9,5 +9,5 @@ location ^~ /exposure/ {
 	proxy_pass              http://$frontend:8080/exposure/;
 
 	auth_basic   "Authentication required";
-	auth_basic_user_file  /etc/nginx/exposure-frontend/htpasswd;
+	auth_basic_user_file  /etc/vlo_nginx/http.d/inc/exposure-frontend.inc;
 }
