@@ -2,7 +2,7 @@
 
 set -e
 
-BUILD_IMAGE="registry.gitlab.com/clarin-eric/build-image:1.3.0-rc3"
+BUILD_IMAGE="registry.gitlab.com/clarin-eric/build-image:1.3.0"
 
 #
 # Set default values for parameters
