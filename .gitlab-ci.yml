@@ -1,6 +1,6 @@
 image: registry.gitlab.com/clarin-eric/build-image:1.3.1
 services:
-  - name: docker:20.10.13-dind
+  - name: docker:20.10.14-dind
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
