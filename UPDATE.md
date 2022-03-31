@@ -1,5 +1,8 @@
 # Upgrade instructions
 
+## vlo-4.10.2 to vlo-4.10.3
+Maintenance release, no configuration changes required.
+
 ## vlo-4.10.1 to vlo-4.10.2
 
 Maintenance release that addresses the log4shell vulnerabilities (CVE-2021-44228 and
