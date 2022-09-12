@@ -81,7 +81,8 @@ services:
       
       VLO_DOCKER_OTHER_PROVIDERS_MARKUP_FILE: "/opt/vlo/markup/providers/${OTHER_PROVIDERS_MARKUP_FILENAME:-others.html}"
     volumes:
-      - "${METADATA_VOLUME:-vlo-data}:${METADATA_DIR:-/srv/vlo-data}"
+    #  - "${METADATA_VOLUME:-vlo-data}:${METADATA_DIR:-/srv/vlo-data}"
+      - "/Users/menzowi/Documents/Projects/CLARIAH/Datasets/data:/srv/vlo-data"
       - "${SITEMAP_VOLUME:-vlo-sitemap}:/opt/sitemap"
       - "${STATSD_VOLUME:-vlo-statsd}:/opt/statsd"
       - "${OTHER_PROVIDERS_MARKUP_DIR:-./providers}:/opt/vlo/markup/providers"
