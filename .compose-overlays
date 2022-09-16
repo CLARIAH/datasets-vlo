@@ -1,1 +1,18 @@
-../.compose-overlays
+# Use this file to control which additional compose 'overlays' will be used when
+# controlling the services via control.sh. Uncomment a line to enable it. Any .yml file
+# present can be included, although some serve a special purpose and may lead to
+# unexpected behaviour if included in this file.
+
+nginx
+solr-backup
+solr-temp-volume
+#linkchecker
+#exposure
+#exposure-frontend
+#jmxtrans
+#mopinion
+clariah
+
+### Development/testing overlays
+#expose-solr
+#expose-tomcat
