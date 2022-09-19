@@ -59,7 +59,7 @@ services:
       VLO_DOCKER_LRS_POPUP_STYLE_URL:
       VLO_DOCKER_LRS_POPUP_ENABLED: "${VLO_DOCKER_LRS_POPUP_ENABLED:-true}"
       VLO_DOCKER_VCR_SUBMIT_ENDPOINT:
-      
+
       VLO_DOCKER_SOLR_USER_READ_ONLY: "${VLO_DOCKER_SOLR_USER_READ_ONLY:-docker_user_read}"
       VLO_DOCKER_SOLR_USER_READ_WRITE: "${VLO_DOCKER_SOLR_USER_READ_WRITE:-docker_user_rw}"
       VLO_DOCKER_SOLR_PASSWORD_READ_ONLY: "${VLO_DOCKER_SOLR_PASSWORD_READ_ONLY?}"
@@ -81,8 +81,8 @@ services:
       
       VLO_DOCKER_OTHER_PROVIDERS_MARKUP_FILE: "/opt/vlo/markup/providers/${OTHER_PROVIDERS_MARKUP_FILENAME:-others.html}"
     volumes:
-    #  - "${METADATA_VOLUME:-vlo-data}:${METADATA_DIR:-/srv/vlo-data}"
-      - "/Users/menzowi/Documents/Projects/CLARIAH/Datasets/data:/srv/vlo-data"
+      - "${METADATA_VOLUME:-vlo-data}:${METADATA_DIR:-/srv/vlo-data}"
+#      - "/Users/menzowi/Documents/Projects/CLARIAH/Datasets/data:/srv/vlo-data"
       - "${SITEMAP_VOLUME:-vlo-sitemap}:/opt/sitemap"
       - "${STATSD_VOLUME:-vlo-statsd}:/opt/statsd"
       - "${OTHER_PROVIDERS_MARKUP_DIR:-./providers}:/opt/vlo/markup/providers"

@@ -8,7 +8,7 @@ solr-backup
 solr-temp-volume
 #linkchecker
 #exposure
-exposure-frontend
+#exposure-frontend
 #jmxtrans
 #mopinion
 clariah
