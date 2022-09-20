@@ -1,0 +1,7 @@
+version: '2.4'
+services:
+  vlo-web:
+    volumes:
+      - ./clariah/pages/FacetedSearchPage.properties:/opt/vlo/war/vlo/WEB-INF/classes/eu/clarin/cmdi/vlo/wicket/pages/FacetedSearchPage.properties
+      - ./clariah/pages/VloBasePage.properties:/opt/vlo/war/vlo/WEB-INF/classes/eu/clarin/cmdi/vlo/wicket/pages/VloBasePage.properties
+      - ./clariah/images/clariah-logo.png:/opt/vlo/war/vlo/images/clarin-logo-wide.png
