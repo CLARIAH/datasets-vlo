@@ -25,6 +25,8 @@ services:
   vlo-web:
     image: &vlo_web_image registry.gitlab.com/clarin-eric/docker-vlo-beta:4.10.3_1.0.0
     environment:
+      VIRTUAL_HOST: "vlo.sd.di.huc.knaw.nl"
+      VIRTUAL_PORT: "8080"
       METADATA_DIR: "${METADATA_DIR:-/srv/vlo-data}"
       VLO_DOCKER_IMAGE: *vlo_web_image
       VLO_DOCKER_SOLR_URL: "http://vlo-solr:8983/solr/vlo-index/"
@@ -123,5 +125,8 @@ networks:
     driver: bridge
     internal: true
   network_internet:
-    driver: bridge
-    internal: false
+    external:
+      name: nginxproxynetwork
+#  network_internet:
+#    driver: bridge
+#    internal: false
