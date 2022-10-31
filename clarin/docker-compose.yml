@@ -1,9 +1,23 @@
 version: '2.4'
 services:
+  vlo-proxy:
+    image: nginx:stable
+    environment:
+      VIRTUAL_HOST: "vlo-data.sd.di.huc.knaw.nl"
+      VIRTUAL_PORT: "80"
+    ports:
+      - "38143:80"
+    volumes:
+      - ./vlo-web/default.conf:/etc/nginx/conf.d/default.conf
+      - ${METADATA_VOLUME:-vlo-data}:/srv/www-static/data:ro
+    restart: unless-stopped
+    networks:
+      - network_vlo
+      - network_internet
   vlo-solr:
     image: registry.gitlab.com/clarin-eric/docker-solr:8.11_1.1.2
     environment:
-       SOLR_HEAP: "${SOLR_HEAP:-4G}"
+       SOLR_HEAP: "${SOLR_HEAP:-2G}"
        SOLR_DATA_HOME: "${SOLR_DATA_HOME:-/solr-data}"
        SOLR_HOME_PROVISIONING_PATH: "${SOLR_HOME_PROVISIONING_PATH:-/docker-entrypoint-initsolr.d/solr_home}"
        VLO_DOCKER_SOLR_USER_READ_ONLY: "${VLO_DOCKER_SOLR_USER_READ_ONLY:-docker_user_read}"
@@ -22,6 +36,7 @@ services:
     restart: on-failure
     networks:
       - network_vlo
+      - network_internet
   vlo-web:
     image: &vlo_web_image registry.gitlab.com/clarin-eric/docker-vlo-beta:4.10.3_1.0.0
     environment:
@@ -89,9 +104,11 @@ services:
       - "${OTHER_PROVIDERS_MARKUP_DIR:-./providers}:/opt/vlo/markup/providers"
       - "${VLO_DOCKER_MONITOR_RULES_FILE_DIR:-./monitor/noop}:${VLO_DOCKER_MONITOR_RULES_DIR_CONTAINER:-/opt/vlo/config/monitor-rules}"
       - "${VLO_MONITORING_DATA_VOLUME:-vlo-monitoring-data}:${VLO_DOCKER_MONITOR_DB_PATH:-/opt/vlo-monitoring}"      
+    ports:
+      - 38081:8080
     restart: on-failure
     networks:
-        - network_vlo
+#        - network_vlo
         - network_internet
 
   vlo-solr-init:
@@ -103,6 +120,7 @@ services:
     restart: "no"
     networks:
         - network_vlo
+        - network_internet
 
 
 volumes:
@@ -124,9 +142,9 @@ networks:
   network_vlo:
     driver: bridge
     internal: true
-  network_internet:
-    external:
-      name: nginxproxynetwork
 #  network_internet:
-#    driver: bridge
-#    internal: false
+#    external:
+#      name: nginxproxynetwork
+  network_internet:
+    driver: bridge
+    internal: false
